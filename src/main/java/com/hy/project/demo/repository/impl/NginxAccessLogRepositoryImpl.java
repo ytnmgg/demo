@@ -54,8 +54,7 @@ public class NginxAccessLogRepositoryImpl implements NginxAccessLogRepository {
         NginxAccessLogDO logDO = new NginxAccessLogDO();
         logDO.setRemoteAddress(model.getRemoteAddress());
         logDO.setTimeLocal(model.getTimeLocal());
-        logDO.setRequestMethod(model.getRequestMethod());
-        logDO.setRequestUri(model.getRequestUri());
+        logDO.setRequest(model.getRequest());
         logDO.setStatus(model.getStatus());
         logDO.setBodyBytes(model.getBodyBytes());
         logDO.setHttpReferer(model.getHttpReferer());
@@ -76,8 +75,7 @@ public class NginxAccessLogRepositoryImpl implements NginxAccessLogRepository {
         model.setId(logDO.getId());
         model.setRemoteAddress(logDO.getRemoteAddress());
         model.setTimeLocal(logDO.getTimeLocal());
-        model.setRequestMethod(logDO.getRequestMethod());
-        model.setRequestUri(logDO.getRequestUri());
+        model.setRequest(logDO.getRequest());
         model.setStatus(logDO.getStatus());
         model.setBodyBytes(logDO.getBodyBytes());
         model.setHttpReferer(logDO.getHttpReferer());

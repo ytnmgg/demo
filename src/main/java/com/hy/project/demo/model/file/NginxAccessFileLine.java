@@ -23,9 +23,7 @@ public class NginxAccessFileLine extends FileLine {
 
     private Date timeLocal;
 
-    private String requestMethod;
-
-    private String requestUri;
+    private String request;
 
     private String status;
 
@@ -77,20 +75,12 @@ public class NginxAccessFileLine extends FileLine {
         this.timeLocal = timeLocal;
     }
 
-    public String getRequestMethod() {
-        return requestMethod;
+    public String getRequest() {
+        return request;
     }
 
-    public void setRequestMethod(String requestMethod) {
-        this.requestMethod = requestMethod;
-    }
-
-    public String getRequestUri() {
-        return requestUri;
-    }
-
-    public void setRequestUri(String requestUri) {
-        this.requestUri = requestUri;
+    public void setRequest(String request) {
+        this.request = request;
     }
 
     public String getStatus() {

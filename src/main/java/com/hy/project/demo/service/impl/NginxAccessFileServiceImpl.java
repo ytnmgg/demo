@@ -81,18 +81,6 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
         }
     }
 
-    public void readAccessLog() {
-        String path = "/Users/rick.wl/Desktop/access.log";
-
-        List<NginxAccessFileLine> lines = readAccessLogLines(path, null, 1, 10);
-
-        List<NginxAccessFileLine> anotherLines = readAccessLogLines(path, lines.get(9).getFileMarker(), 11, 10);
-
-        List<NginxAccessFileLine> lastLines = readAccessLogLines(path, anotherLines.get(9).getFileMarker(), 21, 10);
-
-        System.out.println(lastLines);
-    }
-
     private List<NginxAccessFileLine> readAccessLogLines(String filePath, String fileMarker, long startLine,
         long linesCount) {
 
@@ -172,16 +160,7 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
                 fileLine.setTimeLocal(DateUtil.parseNginxDate(dateStr));
             }
 
-            String requestStr = m.group(4);
-            if (StringUtils.isNotBlank(requestStr)) {
-                String[] requests = requestStr.split(" ");
-
-                if (requests.length > 1) {
-                    fileLine.setRequestMethod(requests[0]);
-                    fileLine.setRequestUri(requests[1]);
-                }
-            }
-
+            fileLine.setRequest(m.group(4));
             fileLine.setStatus(m.group(5));
 
             String bytesStr = m.group(6);

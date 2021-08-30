@@ -4,7 +4,7 @@
 <mapper namespace="com.hy.project.demo.mybatis.mapper.NginxAccessLogMapper">
 
     <sql id="insert_all_columns">
-        gmt_create,gmt_modified,remote_address,time_local,request_method,request_uri,status,body_bytes,http_referer,http_user_agent,file_marker,line_number,line_content
+        gmt_create,gmt_modified,remote_address,time_local,request,status,body_bytes,http_referer,http_user_agent,file_marker,line_number,line_content
     </sql>
 
     <sql id="all_columns">
@@ -17,7 +17,7 @@
         <include refid="insert_all_columns"/>
         )
         VALUES
-        (now(),now(),#{remoteAddress},#{timeLocal},#{requestMethod},#{requestUri},#{status},#{bodyBytes},#{httpReferer},#{httpUserAgent},#{fileMarker},#{lineNumber},#{lineContent})
+        (now(),now(),#{remoteAddress},#{timeLocal},#{request},#{status},#{bodyBytes},#{httpReferer},#{httpUserAgent},#{fileMarker},#{lineNumber},#{lineContent})
     </insert>
 
     <select id="list" resultType="com.hy.project.demo.mybatis.entity.NginxAccessLogDO">
