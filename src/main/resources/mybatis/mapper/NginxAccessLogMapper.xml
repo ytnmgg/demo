@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.hy.project.demo.mybatis.mapper.NginxAccessLogMapper">
+
+    <sql id="insert_all_columns">
+        gmt_create,gmt_modified,remote_address,time_local,request_method,request_uri,status,body_bytes,http_referer,http_user_agent,file_marker,line_number,line_content
+    </sql>
+
+    <sql id="all_columns">
+        id,<include refid="insert_all_columns"/>
+    </sql>
+
+    <insert id="insert" parameterType="com.hy.project.demo.mybatis.entity.NginxAccessLogDO">
+        INSERT INTO nginx_access_log
+        (
+        <include refid="insert_all_columns"/>
+        )
+        VALUES
+        (now(),now(),#{remoteAddress},#{timeLocal},#{requestMethod},#{requestUri},#{status},#{bodyBytes},#{httpReferer},#{httpUserAgent},#{fileMarker},#{lineNumber},#{lineContent})
+    </insert>
+
+    <select id="list" resultType="com.hy.project.demo.mybatis.entity.NginxAccessLogDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM nginx_access_log
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="gmtBegin != null">
+                AND time_local &gt;= #{gmtBegin}
+            </if>
+            <if test="gmtEnd != null">
+                AND time_local &lt;= #{gmtEnd}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getLatest" resultType="com.hy.project.demo.mybatis.entity.NginxAccessLogDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM nginx_access_log
+        ORDER BY gmt_create DESC,line_number DESC LIMIT 1
+    </select>
+</mapper>

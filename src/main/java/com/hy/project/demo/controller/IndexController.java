@@ -1,7 +1,3 @@
-/**
- * Alipay.com Inc.
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
 package com.hy.project.demo.controller;
 
 import org.slf4j.Logger;
@@ -18,7 +14,7 @@ public class IndexController {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
 
-    @RequestMapping("/")
+    @RequestMapping("/**/{:[^.]*}")
     public String indexPage() {
         return "index";
     }

@@ -1,7 +1,3 @@
-/**
- * Alipay.com Inc.
- * Copyright (c) 2004-2021 All Rights Reserved.
- */
 package com.hy.project.demo.controller;
 
 import java.util.List;

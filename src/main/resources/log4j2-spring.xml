@@ -10,7 +10,7 @@
         <!-- %logger{36} 表示 Logger 名字最长36个字符 -->
         <property name="LOG_PATTERN" value="%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
         <!-- 定义日志存储的路径 -->
-        <property name="FILE_PATH" value="/tmp" />
+        <property name="FILE_PATH" value="/var/log/app" />
         <property name="FILE_NAME" value="demo" />
     </Properties>
 
@@ -24,7 +24,7 @@
         </console>
 
         文件会打印出所有信息，这个log每次运行程序会自动清空，由append属性决定，适合临时测试用
-        <File name="Filelog" fileName="${FILE_PATH}/test.log" append="false">
+        <File name="Filelog" fileName="${RandomAccessFileFILE_PATH}/test.log" append="false">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </File>
 

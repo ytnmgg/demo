@@ -1,0 +1,56 @@
+package com.hy.project.demo.util;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ * @author rick.wl
+ * @date 2021/08/28
+ */
+public class DateUtil {
+
+    public static final String STANDARD_STR = "yyyy-MM-dd HH:mm:ss";
+
+    public static final String NGINX_LOG_DATE = "dd/MMM/yyyy:HH:mm:ss Z";
+
+    public static Date parse(String date, String format) {
+        if (StringUtils.isBlank(date) || StringUtils.isBlank(format)) {
+            return null;
+        }
+        try {
+            return new SimpleDateFormat(format).parse(date);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String format(Date date, String format) {
+        if (null == date || StringUtils.isBlank(format)) {
+            return null;
+        }
+        try {
+            return new SimpleDateFormat(format).format(date);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String format(long timestamp, String format) {
+        Date date = new Date(timestamp);
+        return format(date, format);
+    }
+
+    public static Date parseNginxDate(String dateStr) {
+        if (StringUtils.isBlank(dateStr) || StringUtils.isBlank(dateStr)) {
+            return null;
+        }
+        try {
+            return new SimpleDateFormat(NGINX_LOG_DATE, Locale.ENGLISH).parse(dateStr);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+}
