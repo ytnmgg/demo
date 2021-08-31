@@ -1,6 +1,5 @@
 package com.hy.project.demo.cron.tasks;
 
-import com.hy.project.demo.controller.TestController;
 import com.hy.project.demo.service.NginxAccessFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

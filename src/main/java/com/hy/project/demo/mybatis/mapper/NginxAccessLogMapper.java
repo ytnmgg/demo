@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.hy.project.demo.mybatis.entity.NginxAccessLogDO;
+import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -36,4 +37,11 @@ public interface NginxAccessLogMapper {
      * @return 结果
      */
     NginxAccessLogDO getLatest();
+
+    /**
+     * 统计状态
+     *
+     * @return 结果
+     */
+    List<NginxAccessLogStatusCountDO> countStatus();
 }

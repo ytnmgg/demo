@@ -8,6 +8,10 @@ spring:
     username: ${mysql.user}
     password: ${mysql.pwd}
 
+  #前端文件目录
+  resources:
+    static-locations: file:/var/front/
+
 #mybatis的相关配置
 mybatis:
   #mapper配置文件

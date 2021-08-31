@@ -6,7 +6,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hy.project.demo.model.file.NginxAccessFileLine;
+import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.mybatis.entity.NginxAccessLogDO;
+import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 import com.hy.project.demo.mybatis.mapper.NginxAccessLogMapper;
 import com.hy.project.demo.repository.NginxAccessLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,6 +47,44 @@ public class NginxAccessLogRepositoryImpl implements NginxAccessLogRepository {
         }
 
         return doToModel(logDO);
+    }
+
+    @Override
+    public NginxAccessLogStatusCount countStatus() {
+        List<NginxAccessLogStatusCountDO> dos = nginxAccessLogMapper.countStatus();
+
+        NginxAccessLogStatusCount count = new NginxAccessLogStatusCount();
+        if (CollectionUtils.isEmpty(dos)) {
+            return count;
+        }
+
+        long countOf200 = 0;
+        long countOf3xx = 0;
+        long countOf4xx = 0;
+        long countOf5xx = 0;
+        long countOfOthers = 0;
+        for(NginxAccessLogStatusCountDO countDo : dos) {
+            count.getStatusCount().put(countDo.getStatus(), countDo.getCount());
+
+            if ("200".equals(countDo.getStatus())) {
+                countOf200 = countDo.getCount();
+            } else if (countDo.getStatus().startsWith("3")) {
+                countOf3xx += countDo.getCount();
+            } else if (countDo.getStatus().startsWith("4")) {
+                countOf4xx += countDo.getCount();
+            } else if (countDo.getStatus().startsWith("5")) {
+                countOf5xx += countDo.getCount();
+            } else {
+                countOfOthers += countDo.getCount();
+            }
+        }
+
+        count.setCountOf200(countOf200);
+        count.setCountOf3xx(countOf3xx);
+        count.setCountOf4xx(countOf4xx);
+        count.setCountOf5xx(countOf5xx);
+        count.setCountOfOthers(countOfOthers);
+        return count;
     }
 
     private NginxAccessLogDO modelToDo(NginxAccessFileLine model) {

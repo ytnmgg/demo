@@ -56,10 +56,10 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
 
     @Override
     public void readAndStoreLines() {
-        String logPath = env.getProperty("host.log.path");
+        String logPath = env.getProperty("host.nginx.log.path");
         AssertUtil.notBlank(logPath, CONFIGURATION_EXCEPTION, "failed to find log path");
 
-        String path = logPath + "/nginx/access.log";
+        String path = logPath + "/access.log";
         long lineCount = 100L;
 
         LOGGER.info("read and store lines: #1 get latest line");

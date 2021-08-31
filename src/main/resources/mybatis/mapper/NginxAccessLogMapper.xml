@@ -40,4 +40,12 @@
         FROM nginx_access_log
         ORDER BY gmt_create DESC,line_number DESC LIMIT 1
     </select>
+
+    <select id="countStatus" resultType="com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO">
+        SELECT
+        status as status,count(status) as count
+        FROM nginx_access_log
+        GROUP BY status
+    </select>
+
 </mapper>
