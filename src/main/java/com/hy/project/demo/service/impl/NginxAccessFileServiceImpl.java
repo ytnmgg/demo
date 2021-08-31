@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import static com.hy.project.demo.exception.DemoExceptionEnum.CONFIGURATION_EXCEPTION;
@@ -77,7 +78,20 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
 
         if (CollectionUtils.isNotEmpty(lines)) {
             LOGGER.info("read and store lines: #3 insert lines");
-            lines.forEach(line -> nginxAccessLogRepository.insert(line));
+
+            for(NginxAccessFileLine line : lines) {
+                try {
+                    nginxAccessLogRepository.insert(line);
+
+                } catch (Exception e ) {
+                    if (e instanceof DataIntegrityViolationException) {
+                        LOGGER.error("insert exception of DataIntegrityViolationException: {}, line: {}", e.getMessage(), line);
+                    } else {
+                        LOGGER.error("insert exception of {}, line: {}", e.getMessage(), line);
+                        throw e;
+                    }
+                }
+            }
         }
     }
 
