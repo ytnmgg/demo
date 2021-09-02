@@ -50,41 +50,8 @@ public class NginxAccessLogRepositoryImpl implements NginxAccessLogRepository {
     }
 
     @Override
-    public NginxAccessLogStatusCount countStatus() {
-        List<NginxAccessLogStatusCountDO> dos = nginxAccessLogMapper.countStatus();
-
-        NginxAccessLogStatusCount count = new NginxAccessLogStatusCount();
-        if (CollectionUtils.isEmpty(dos)) {
-            return count;
-        }
-
-        long countOf200 = 0;
-        long countOf3xx = 0;
-        long countOf4xx = 0;
-        long countOf5xx = 0;
-        long countOfOthers = 0;
-        for(NginxAccessLogStatusCountDO countDo : dos) {
-            count.getStatusCount().put(countDo.getStatus(), countDo.getCount());
-
-            if ("200".equals(countDo.getStatus())) {
-                countOf200 = countDo.getCount();
-            } else if (countDo.getStatus().startsWith("3")) {
-                countOf3xx += countDo.getCount();
-            } else if (countDo.getStatus().startsWith("4")) {
-                countOf4xx += countDo.getCount();
-            } else if (countDo.getStatus().startsWith("5")) {
-                countOf5xx += countDo.getCount();
-            } else {
-                countOfOthers += countDo.getCount();
-            }
-        }
-
-        count.setCountOf200(countOf200);
-        count.setCountOf3xx(countOf3xx);
-        count.setCountOf4xx(countOf4xx);
-        count.setCountOf5xx(countOf5xx);
-        count.setCountOfOthers(countOfOthers);
-        return count;
+    public List<NginxAccessLogStatusCountDO> countStatus(Date gmtBegin, Date gmtEnd) {
+        return nginxAccessLogMapper.countStatus(gmtBegin, gmtEnd);
     }
 
     private NginxAccessLogDO modelToDo(NginxAccessFileLine model) {

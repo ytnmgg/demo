@@ -41,7 +41,9 @@ public interface NginxAccessLogMapper {
     /**
      * 统计状态
      *
+     * @param gmtBegin 开始时间
+     * @param gmtEnd 结束时间
      * @return 结果
      */
-    List<NginxAccessLogStatusCountDO> countStatus();
+    List<NginxAccessLogStatusCountDO> countStatus(@Param("gmtBegin") Date gmtBegin, @Param("gmtEnd") Date gmtEnd);
 }

@@ -12,6 +12,9 @@ import java.util.regex.Pattern;
 
 import com.hy.project.demo.exception.DemoException;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
+import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
+import com.hy.project.demo.model.nginx.NginxAccessLogStatusCountModel;
+import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 import com.hy.project.demo.repository.NginxAccessLogRepository;
 import com.hy.project.demo.service.NginxAccessFileService;
 import com.hy.project.demo.util.AssertUtil;
@@ -79,13 +82,14 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
         if (CollectionUtils.isNotEmpty(lines)) {
             LOGGER.info("read and store lines: #3 insert lines");
 
-            for(NginxAccessFileLine line : lines) {
+            for (NginxAccessFileLine line : lines) {
                 try {
                     nginxAccessLogRepository.insert(line);
 
-                } catch (Exception e ) {
+                } catch (Exception e) {
                     if (e instanceof DataIntegrityViolationException) {
-                        LOGGER.error("insert exception of DataIntegrityViolationException: {}, line: {}", e.getMessage(), line);
+                        LOGGER.error("insert exception of DataIntegrityViolationException: {}, line: {}",
+                            e.getMessage(), line);
                     } else {
                         LOGGER.error("insert exception of {}, line: {}", e.getMessage(), line);
                         throw e;
@@ -93,6 +97,58 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
                 }
             }
         }
+    }
+
+    @Override
+    public NginxAccessLogStatusCount countStatus() {
+        NginxAccessLogStatusCount result = new NginxAccessLogStatusCount();
+
+        Date today = new Date();
+        Date startOfToday = DateUtil.getStartOfDate(today);
+        Date endOfToday = DateUtil.getEndOfDate(today);
+
+        List<NginxAccessLogStatusCountDO> todayCounts = nginxAccessLogRepository.countStatus(startOfToday, endOfToday);
+        parseCount(todayCounts, result.getToday());
+
+        Date yesterday = DateUtil.addDays(today, -1);
+        Date startOfYesterday = DateUtil.getStartOfDate(yesterday);
+        Date endOfYesterday = DateUtil.getEndOfDate(yesterday);
+
+        List<NginxAccessLogStatusCountDO> yesterdayCount = nginxAccessLogRepository.countStatus(startOfYesterday,
+            endOfYesterday);
+        parseCount(yesterdayCount, result.getYesterday());
+
+        return result;
+    }
+
+    private void parseCount(List<NginxAccessLogStatusCountDO> countDos, NginxAccessLogStatusCountModel model) {
+        if (CollectionUtils.isEmpty(countDos)) {
+            return;
+        }
+        long countOf200 = 0;
+        long countOf3xx = 0;
+        long countOf4xx = 0;
+        long countOf5xx = 0;
+        long countOfOthers = 0;
+        for (NginxAccessLogStatusCountDO countDo : countDos) {
+            if ("200".equals(countDo.getStatus())) {
+                countOf200 = countDo.getCount();
+            } else if (countDo.getStatus().startsWith("3")) {
+                countOf3xx += countDo.getCount();
+            } else if (countDo.getStatus().startsWith("4")) {
+                countOf4xx += countDo.getCount();
+            } else if (countDo.getStatus().startsWith("5")) {
+                countOf5xx += countDo.getCount();
+            } else {
+                countOfOthers += countDo.getCount();
+            }
+        }
+
+        model.setCountOf200(countOf200);
+        model.setCountOf3xx(countOf3xx);
+        model.setCountOf4xx(countOf4xx);
+        model.setCountOf5xx(countOf5xx);
+        model.setCountOfOthers(countOfOthers);
     }
 
     private List<NginxAccessFileLine> readAccessLogLines(String filePath, String fileMarker, long startLine,

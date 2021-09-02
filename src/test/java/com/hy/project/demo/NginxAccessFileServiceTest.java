@@ -3,6 +3,7 @@ package com.hy.project.demo;
 import java.util.List;
 
 import com.hy.project.demo.model.file.NginxAccessFileLine;
+import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.service.NginxAccessFileService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,5 +31,11 @@ public class NginxAccessFileServiceTest {
     @Test
     public void readAndStoreLinesTest() {
         nginxAccessFileService.readAndStoreLines();
+    }
+
+    @Test
+    public void countStatusTest() {
+        NginxAccessLogStatusCount count = nginxAccessFileService.countStatus();
+        System.out.println(count);
     }
 }

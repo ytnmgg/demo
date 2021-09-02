@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.hy.project.demo.model.file.NginxAccessFileLine;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
+import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 
 /**
  * @author rick.wl
@@ -38,7 +39,9 @@ public interface NginxAccessLogRepository {
     /**
      * 统计状态
      *
+     * @param gmtBegin 开始
+     * @param gmtEnd 结束
      * @return 结果
      */
-    NginxAccessLogStatusCount countStatus();
+    List<NginxAccessLogStatusCountDO> countStatus(Date gmtBegin, Date gmtEnd);
 }

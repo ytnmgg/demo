@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.hy.project.demo.model.file.NginxAccessFileLine;
+import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 
 /**
  * @author rick.wl
@@ -24,4 +25,11 @@ public interface NginxAccessFileService {
      * 读取并存储
      */
     void readAndStoreLines();
+
+    /**
+     * 统计状态
+     *
+     * @return 结果
+     */
+    NginxAccessLogStatusCount countStatus();
 }

@@ -45,6 +45,14 @@
         SELECT
         status as status,count(status) as count
         FROM nginx_access_log
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="gmtBegin != null">
+                AND time_local &gt;= #{gmtBegin}
+            </if>
+            <if test="gmtEnd != null">
+                AND time_local &lt;= #{gmtEnd}
+            </if>
+        </trim>
         GROUP BY status
     </select>
 

@@ -6,7 +6,6 @@ import java.util.List;
 import com.hy.project.demo.controller.request.NginxLogListRequest;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
-import com.hy.project.demo.repository.NginxAccessLogRepository;
 import com.hy.project.demo.service.NginxAccessFileService;
 import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.DateUtil;
@@ -34,9 +33,6 @@ public class HostLogController {
     @Autowired
     NginxAccessFileService nginxAccessFileService;
 
-    @Autowired
-    NginxAccessLogRepository nginxAccessLogRepository;
-
     @CrossOrigin
     @GetMapping("/nginx/list.json")
     public List<NginxAccessFileLine> listNginxLogs(NginxLogListRequest request) {
@@ -59,8 +55,7 @@ public class HostLogController {
     @CrossOrigin
     @GetMapping("/nginx/status.json")
     public NginxAccessLogStatusCount countNginxStatus() {
-        return nginxAccessLogRepository.countStatus();
+        return nginxAccessFileService.countStatus();
     }
-
 
 }
