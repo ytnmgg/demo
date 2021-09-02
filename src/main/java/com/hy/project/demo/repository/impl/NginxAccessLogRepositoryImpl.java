@@ -1,12 +1,13 @@
 package com.hy.project.demo.repository.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
-import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.mybatis.entity.NginxAccessLogDO;
 import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 import com.hy.project.demo.mybatis.mapper.NginxAccessLogMapper;
@@ -31,12 +32,29 @@ public class NginxAccessLogRepositoryImpl implements NginxAccessLogRepository {
     }
 
     @Override
-    public List<NginxAccessFileLine> list(Date gmtBegin, Date gmtEnd) {
-        List<NginxAccessLogDO> logDOs = nginxAccessLogMapper.list(gmtBegin, gmtEnd);
-        if (CollectionUtils.isEmpty(logDOs)) {
-            return null;
+    public PageResult<List<NginxAccessFileLine>> list(Date gmtBegin, Date gmtEnd, int pageIndex, int pageSize) {
+        PageResult<List<NginxAccessFileLine>> result = new PageResult<>();
+        result.setData(new ArrayList<>());
+        result.setPageIndex(pageIndex);
+        result.setPageSize(pageSize);
+
+        long total = nginxAccessLogMapper.countForList(gmtBegin, gmtEnd);
+        result.setTotalCount(total);
+
+        if (total == 0) {
+            return result;
         }
-        return logDOs.stream().map(this::doToModel).filter(Objects::nonNull).collect(Collectors.toList());
+
+        int offset = (pageIndex - 1) * pageSize;
+        List<NginxAccessLogDO> logDOs = nginxAccessLogMapper.list(gmtBegin, gmtEnd, offset, pageSize);
+
+        if (CollectionUtils.isEmpty(logDOs)) {
+            return result;
+        }
+
+        result.setData(logDOs.stream().map(this::doToModel).filter(Objects::nonNull).collect(Collectors.toList()));
+
+        return result;
     }
 
     @Override

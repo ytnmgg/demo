@@ -3,7 +3,10 @@ package com.hy.project.demo.controller;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.hy.project.demo.controller.request.NginxLogListRequest;
+import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.service.NginxAccessFileService;
@@ -13,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +39,7 @@ public class HostLogController {
 
     @CrossOrigin
     @GetMapping("/nginx/list.json")
-    public List<NginxAccessFileLine> listNginxLogs(NginxLogListRequest request) {
+    public PageResult<List<NginxAccessFileLine>> listNginxLogs(@Valid NginxLogListRequest request) {
 
         AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
         Date gmtBegin = null;
@@ -49,7 +53,7 @@ public class HostLogController {
             gmtEnd = DateUtil.parse(request.getGmtEnd(), DateUtil.STANDARD_STR);
         }
 
-        return nginxAccessFileService.listLines(gmtBegin, gmtEnd);
+        return nginxAccessFileService.listLines(gmtBegin, gmtEnd, request.getPageIndex(), request.getPageSize());
     }
 
     @CrossOrigin

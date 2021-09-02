@@ -32,6 +32,21 @@
                 AND time_local &lt;= #{gmtEnd}
             </if>
         </trim>
+        ORDER BY id DESC
+        LIMIT #{offset},#{pageSize}
+    </select>
+
+    <select id="countForList" resultType="long">
+        SELECT count(*)
+        FROM nginx_access_log
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="gmtBegin != null">
+                AND time_local &gt;= #{gmtBegin}
+            </if>
+            <if test="gmtEnd != null">
+                AND time_local &lt;= #{gmtEnd}
+            </if>
+        </trim>
     </select>
 
     <select id="getLatest" resultType="com.hy.project.demo.mybatis.entity.NginxAccessLogDO">

@@ -3,8 +3,8 @@ package com.hy.project.demo.repository;
 import java.util.Date;
 import java.util.List;
 
+import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
-import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 
 /**
@@ -23,11 +23,13 @@ public interface NginxAccessLogRepository {
     /**
      * 列表查询
      *
-     * @param gmtBegin 开始日期
-     * @param gmtEnd   结束日期
+     * @param gmtBegin  开始日期
+     * @param gmtEnd    结束日期
+     * @param pageIndex 页码
+     * @param pageSize  单页大小
      * @return 结果
      */
-    List<NginxAccessFileLine> list(Date gmtBegin, Date gmtEnd);
+    PageResult<List<NginxAccessFileLine>> list(Date gmtBegin, Date gmtEnd, int pageIndex, int pageSize);
 
     /**
      * 查询最近的一条
@@ -40,7 +42,7 @@ public interface NginxAccessLogRepository {
      * 统计状态
      *
      * @param gmtBegin 开始
-     * @param gmtEnd 结束
+     * @param gmtEnd   结束
      * @return 结果
      */
     List<NginxAccessLogStatusCountDO> countStatus(Date gmtBegin, Date gmtEnd);

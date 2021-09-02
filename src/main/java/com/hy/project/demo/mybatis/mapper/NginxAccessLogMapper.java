@@ -26,10 +26,22 @@ public interface NginxAccessLogMapper {
      * 获取全部用户
      *
      * @param gmtBegin 开始时间
-     * @param gmtEnd 结束时间
+     * @param gmtEnd   结束时间
+     * @param offset   偏移量
+     * @param pageSize 单页大小
      * @return 结果
      */
-    List<NginxAccessLogDO> list(@Param("gmtBegin") Date gmtBegin, @Param("gmtEnd") Date gmtEnd);
+    List<NginxAccessLogDO> list(@Param("gmtBegin") Date gmtBegin, @Param("gmtEnd") Date gmtEnd,
+        @Param("offset") int offset, @Param("pageSize") int pageSize);
+
+    /**
+     * 分页计数
+     *
+     * @param gmtBegin 开始时间
+     * @param gmtEnd   结束时间
+     * @return 结果
+     */
+    long countForList(@Param("gmtBegin") Date gmtBegin, @Param("gmtEnd") Date gmtEnd);
 
     /**
      * 查找最近的一条
@@ -42,7 +54,7 @@ public interface NginxAccessLogMapper {
      * 统计状态
      *
      * @param gmtBegin 开始时间
-     * @param gmtEnd 结束时间
+     * @param gmtEnd   结束时间
      * @return 结果
      */
     List<NginxAccessLogStatusCountDO> countStatus(@Param("gmtBegin") Date gmtBegin, @Param("gmtEnd") Date gmtEnd);

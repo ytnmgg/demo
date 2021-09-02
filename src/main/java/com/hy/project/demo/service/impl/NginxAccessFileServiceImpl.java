@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hy.project.demo.exception.DemoException;
+import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCountModel;
@@ -53,8 +54,8 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
     NginxAccessLogRepository nginxAccessLogRepository;
 
     @Override
-    public List<NginxAccessFileLine> listLines(Date gmtBegin, Date gmtEnd) {
-        return nginxAccessLogRepository.list(gmtBegin, gmtEnd);
+    public PageResult<List<NginxAccessFileLine>> listLines(Date gmtBegin, Date gmtEnd, int pageIndex, int pageSize) {
+        return nginxAccessLogRepository.list(gmtBegin, gmtEnd, pageIndex, pageSize);
     }
 
     @Override
