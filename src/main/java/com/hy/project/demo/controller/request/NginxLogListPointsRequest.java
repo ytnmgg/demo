@@ -2,12 +2,14 @@ package com.hy.project.demo.controller.request;
 
 import javax.validation.constraints.NotBlank;
 
+import com.hy.project.demo.model.ToString;
+
 /**
  * @author rick.wl
- * @date 2021/08/30
+ * @date 2021/09/07
  */
-public class NginxLogListRequest extends PageRequest {
-    private static final long serialVersionUID = -3075477661553818065L;
+public class NginxLogListPointsRequest extends ToString {
+    private static final long serialVersionUID = -7932872765459036655L;
 
     @NotBlank(message = "开始时间不能为空")
     String gmtBegin;

@@ -83,4 +83,23 @@ public class DateUtil {
         return calendar.getTime();
     }
 
+    /**
+     * 比较日期start与日期end之间差了多少天
+     * 只计算天的维度，不计算小时/分钟/秒的差异
+     *
+     * @param start 开始日期
+     * @param end 结束日期
+     * @return 结果
+     */
+    public static long dayDiff(Date start, Date end) {
+        return (getStartOfDate(end).getTime() - getStartOfDate(start).getTime()) / (1000 * 60 * 60 * 24);
+    }
+
+    public static Date addHours(Date date, int hours) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.add(Calendar.HOUR, hours);
+        return calendar.getTime();
+    }
+
 }

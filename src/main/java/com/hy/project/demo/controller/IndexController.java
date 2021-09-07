@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -21,7 +20,7 @@ public class IndexController {
     @Autowired
     private Environment env;
 
-    @RequestMapping("/**/{:[^.]*}")
+    @RequestMapping({"/", "/**/{:[^.]*}"})
     public String indexPage(Model model) {
         model.addAttribute("front_version", env.getProperty("front.version"));
         return "index";

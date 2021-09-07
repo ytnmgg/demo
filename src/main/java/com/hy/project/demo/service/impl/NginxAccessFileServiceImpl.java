@@ -7,14 +7,20 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.hy.project.demo.exception.DemoException;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
+import com.hy.project.demo.model.nginx.NginxAccessLogPointModel;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCountModel;
+import com.hy.project.demo.mybatis.entity.NginxAccessLogPointDO;
 import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 import com.hy.project.demo.repository.NginxAccessLogRepository;
 import com.hy.project.demo.service.NginxAccessFileService;
@@ -32,6 +38,10 @@ import org.springframework.stereotype.Service;
 
 import static com.hy.project.demo.exception.DemoExceptionEnum.CONFIGURATION_EXCEPTION;
 import static com.hy.project.demo.exception.DemoExceptionEnum.FILE_EXCEPTION;
+import static com.hy.project.demo.exception.DemoExceptionEnum.INVALID_PARAM_EXCEPTION;
+import static com.hy.project.demo.exception.DemoExceptionEnum.UNEXPECTED;
+import static com.hy.project.demo.util.DateUtil.addHours;
+import static com.hy.project.demo.util.DateUtil.dayDiff;
 
 /**
  * @author rick.wl
@@ -46,6 +56,8 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
     public static final String LOG_PATTERN_STR =
         "^(.*)\\s-\\s(.*)\\s\\[(.*)]\\s\"(.*)\"\\s(.*)\\s(.*)\\s\"(.*)\"\\s\"(.*)\"\\s\"(.*)\"\\s*$";
     public static final Pattern LOG_PATTERN = Pattern.compile(LOG_PATTERN_STR);
+    public static final String STATUS_200 = "200";
+    public static final String STATUS_OTHER = "其它";
 
     @Autowired
     private Environment env;
@@ -120,6 +132,59 @@ public class NginxAccessFileServiceImpl implements NginxAccessFileService {
         parseCount(yesterdayCount, result.getYesterday());
 
         return result;
+    }
+
+    @Override
+    public List<NginxAccessLogPointModel> listPoints(Date gmtBegin, Date gmtEnd) {
+        if (null == gmtBegin || null == gmtEnd || dayDiff(gmtBegin, gmtEnd) > 3) {
+            throw new DemoException(INVALID_PARAM_EXCEPTION, "入参错误");
+        }
+
+        // 拉取全量
+        List<NginxAccessLogPointDO> pointsOfAll = nginxAccessLogRepository.listPoints(gmtBegin, gmtEnd, null);
+        Map<String, Integer> pointsOfAllMap = Optional.ofNullable(pointsOfAll).orElse(Lists.newArrayList()).stream()
+            .collect(
+                Collectors.toMap(NginxAccessLogPointDO::getTime, NginxAccessLogPointDO::getCount, (v1, v2) -> v2));
+
+        // 拉取状态为200的
+        List<NginxAccessLogPointDO> pointsOf200 = nginxAccessLogRepository.listPoints(gmtBegin, gmtEnd, "200");
+        Map<String, Integer> pointsOf200Map = Optional.ofNullable(pointsOf200).orElse(Lists.newArrayList()).stream()
+            .collect(
+                Collectors.toMap(NginxAccessLogPointDO::getTime, NginxAccessLogPointDO::getCount, (v1, v2) -> v2));
+
+        // 组装
+        Date date = gmtBegin;
+        List<NginxAccessLogPointModel> result = new ArrayList<>();
+        while (date.compareTo(gmtEnd) <= 0) {
+            String dateStr = DateUtil.format(date, "yyyy-MM-dd HH");
+            Integer all = pointsOfAllMap.get(dateStr);
+            Integer s200 = pointsOf200Map.get(dateStr);
+
+            if (null == all && null == s200) {
+                result.add(buildModel(dateStr, STATUS_200, 0));
+                result.add(buildModel(dateStr, STATUS_OTHER, 0));
+            } else if (null != all && null == s200) {
+                result.add(buildModel(dateStr, STATUS_200, 0));
+                result.add(buildModel(dateStr, STATUS_OTHER, all));
+            } else if (null != all && null != s200) {
+                result.add(buildModel(dateStr, STATUS_200, s200));
+                result.add(buildModel(dateStr, STATUS_OTHER, all - s200));
+            } else {
+                throw new DemoException(UNEXPECTED, "非预期逻辑");
+            }
+
+            date = addHours(date, 1);
+        }
+
+        return result;
+    }
+
+    private NginxAccessLogPointModel buildModel(String dateStr, String status, int count) {
+        NginxAccessLogPointModel model = new NginxAccessLogPointModel();
+        model.setTime(dateStr);
+        model.setStatus(status);
+        model.setCount(count);
+        return model;
     }
 
     private void parseCount(List<NginxAccessLogStatusCountDO> countDos, NginxAccessLogStatusCountModel model) {

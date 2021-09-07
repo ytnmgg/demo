@@ -5,9 +5,11 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.hy.project.demo.controller.request.NginxLogListPointsRequest;
 import com.hy.project.demo.controller.request.NginxLogListRequest;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
+import com.hy.project.demo.model.nginx.NginxAccessLogPointModel;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 import com.hy.project.demo.service.NginxAccessFileService;
 import com.hy.project.demo.util.AssertUtil;
@@ -16,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +61,14 @@ public class HostLogController {
     @GetMapping("/nginx/status.json")
     public NginxAccessLogStatusCount countNginxStatus() {
         return nginxAccessFileService.countStatus();
+    }
+
+    @CrossOrigin
+    @GetMapping("/nginx/listPoints.json")
+    public List<NginxAccessLogPointModel> listNginxPoints(@Valid NginxLogListPointsRequest request) {
+        Date begin = DateUtil.parse(request.getGmtBegin(), DateUtil.STANDARD_STR);
+        Date end = DateUtil.parse(request.getGmtEnd(), DateUtil.STANDARD_STR);
+        return nginxAccessFileService.listPoints(begin, end);
     }
 
 }

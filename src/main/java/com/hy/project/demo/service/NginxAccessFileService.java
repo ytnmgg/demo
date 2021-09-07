@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
+import com.hy.project.demo.model.nginx.NginxAccessLogPointModel;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
 
 /**
@@ -35,4 +36,13 @@ public interface NginxAccessFileService {
      * @return 结果
      */
     NginxAccessLogStatusCount countStatus();
+
+    /**
+     * 拉取按小时统计的状态个数列表
+     *
+     * @param gmtBegin 开始日期
+     * @param gmtEnd 结束日期
+     * @return 结果
+     */
+    List<NginxAccessLogPointModel> listPoints(Date gmtBegin, Date gmtEnd);
 }

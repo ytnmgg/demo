@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
 import com.hy.project.demo.mybatis.entity.NginxAccessLogDO;
+import com.hy.project.demo.mybatis.entity.NginxAccessLogPointDO;
 import com.hy.project.demo.mybatis.entity.NginxAccessLogStatusCountDO;
 import com.hy.project.demo.mybatis.mapper.NginxAccessLogMapper;
 import com.hy.project.demo.repository.NginxAccessLogRepository;
@@ -70,6 +71,11 @@ public class NginxAccessLogRepositoryImpl implements NginxAccessLogRepository {
     @Override
     public List<NginxAccessLogStatusCountDO> countStatus(Date gmtBegin, Date gmtEnd) {
         return nginxAccessLogMapper.countStatus(gmtBegin, gmtEnd);
+    }
+
+    @Override
+    public List<NginxAccessLogPointDO> listPoints(Date gmtBegin, Date gmtEnd, String status) {
+        return nginxAccessLogMapper.listPoints(gmtBegin, gmtEnd, status);
     }
 
     private NginxAccessLogDO modelToDo(NginxAccessFileLine model) {

@@ -19,7 +19,7 @@ public enum DemoExceptionEnum {
     JSON_EXCEPTION("003", "JSON转换异常"),
 
     /** 非预期执行 */
-    NON_EXPECTED("004", "非预期执行"),
+    UNEXPECTED("004", "非预期执行"),
 
     /** 配置异常 */
     CONFIGURATION_EXCEPTION("005", "配置异常"),

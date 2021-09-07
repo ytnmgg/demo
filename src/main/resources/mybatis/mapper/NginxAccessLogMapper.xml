@@ -71,4 +71,22 @@
         GROUP BY status
     </select>
 
+    <select id="listPoints" resultType="com.hy.project.demo.mybatis.entity.NginxAccessLogPointDO">
+        SELECT
+        DATE_FORMAT(time_local, '%Y-%m-%d %H') AS time, COUNT(*) AS count
+        FROM nginx_access_log
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="gmtBegin != null">
+                AND time_local &gt;= #{gmtBegin}
+            </if>
+            <if test="gmtEnd != null">
+                AND time_local &lt;= #{gmtEnd}
+            </if>
+            <if test="status != null">
+                AND status=#{status}
+            </if>
+        </trim>
+        GROUP BY time
+    </select>
+
 </mapper>
