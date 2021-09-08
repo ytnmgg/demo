@@ -18,7 +18,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +37,6 @@ public class HostLogController {
     @Autowired
     NginxAccessFileService nginxAccessFileService;
 
-    @CrossOrigin
     @GetMapping("/nginx/list.json")
     public PageResult<List<NginxAccessFileLine>> listNginxLogs(@Valid NginxLogListRequest request) {
 
@@ -57,13 +55,11 @@ public class HostLogController {
         return nginxAccessFileService.listLines(gmtBegin, gmtEnd, request.getPageIndex(), request.getPageSize());
     }
 
-    @CrossOrigin
     @GetMapping("/nginx/status.json")
     public NginxAccessLogStatusCount countNginxStatus() {
         return nginxAccessFileService.countStatus();
     }
 
-    @CrossOrigin
     @GetMapping("/nginx/listPoints.json")
     public List<NginxAccessLogPointModel> listNginxPoints(@Valid NginxLogListPointsRequest request) {
         Date begin = DateUtil.parse(request.getGmtBegin(), DateUtil.STANDARD_STR);

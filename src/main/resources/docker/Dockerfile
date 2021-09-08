@@ -22,6 +22,8 @@ ENV docker.remote.host.version v1.26
 ENV host.nginx.log.path /var/log/nginx
 # 前端文件版本
 ENV front.version v0.0.1
+# 动态配置文件
+ENV dynamic.config.path /var/config/config.properties
 # 运行jar包
 RUN bash -c 'touch /app.jar'
 # 创建app日志文件夹
@@ -29,3 +31,4 @@ RUN bash -c 'mkdir -p /var/log/app'
 # 创建nginx日志文件夹
 RUN bash -c 'mkdir -p /var/log/nginx'
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Duser.timezone=GMT+08","-Dfile.encoding=UTF8","-jar","/app.jar"]
+
