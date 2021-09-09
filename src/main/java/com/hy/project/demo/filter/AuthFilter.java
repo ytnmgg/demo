@@ -38,7 +38,7 @@ public class AuthFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
 
         String ip = dynamicConfigService.get("valid_ip");
-        if (StringUtils.isNotBlank(ip)) {
+        if (StringUtils.isNotBlank(ip) && needAuth(request)) {
             String remoteIp = IpUtil.getIpAddr(request);
             if (!StringUtils.equals(ip, remoteIp)) {
                 response.setStatus(HttpStatus.FORBIDDEN.value());
@@ -48,5 +48,17 @@ public class AuthFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean needAuth(HttpServletRequest request) {
+        if (request.getRequestURI().endsWith(".json")) {
+            return true;
+        }
+
+        if (request.getRequestURI().startsWith("/actuator")) {
+            return true;
+        }
+
+        return false;
     }
 }

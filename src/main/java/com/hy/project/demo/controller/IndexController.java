@@ -20,7 +20,7 @@ public class IndexController {
     @Autowired
     private Environment env;
 
-    @RequestMapping({"/", "/**/{:[^.]*}"})
+    @RequestMapping({"/", "/exception/**", "/monitor/**/{:[^.]*}", "/app/**/{:[^.]*}"})
     public String indexPage(Model model) {
         model.addAttribute("front_version", env.getProperty("front.version"));
         return "index";
