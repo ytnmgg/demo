@@ -35,11 +35,13 @@ public class IndexPathFilter extends OncePerRequestFilter {
     }
 
     private boolean redirectToIndex(String path) {
-        if (path.endsWith(".html") || path.endsWith(".htm") || path.endsWith(".vm")) {
+        if (path.startsWith("/actuator")) {
+            return false;
+        } else if (path.endsWith(".html") || path.endsWith(".htm") || path.endsWith(".vm")) {
             return true;
+        } else {
+            String b = path.substring(path.lastIndexOf("/") + 1);
+            return !b.contains(".");
         }
-
-        String b = path.substring(path.lastIndexOf("/") + 1);
-        return !b.contains(".");
     }
 }
