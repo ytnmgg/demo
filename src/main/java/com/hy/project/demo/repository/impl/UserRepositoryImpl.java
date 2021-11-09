@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hy.project.demo.model.User;
+import com.hy.project.demo.model.sso.User;
 import com.hy.project.demo.mybatis.entity.UserDO;
 import com.hy.project.demo.mybatis.mapper.UserMapper;
 import com.hy.project.demo.repository.UserRepository;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
@@ -23,9 +24,23 @@ public class UserRepositoryImpl implements UserRepository {
     UserMapper userMapper;
 
     @Override
-    public List<User> list(String type, String name) {
+    public void insert(User user) {
+        userMapper.insert(toDo(user));
+    }
 
-        List<UserDO> dos = userMapper.list(type, name);
+    @Override
+    public User getById(String uid) {
+        return toModel(userMapper.getById(uid));
+    }
+
+    @Override
+    public User getByName(String name) {
+        return toModel(userMapper.getByName(name));
+    }
+
+    @Override
+    public List<User> list(String role, String status, String name) {
+        List<UserDO> dos = userMapper.list(role, status, name);
 
         if (CollectionUtils.isEmpty(dos)) {
             return new ArrayList<>();
@@ -34,17 +49,41 @@ public class UserRepositoryImpl implements UserRepository {
         return dos.stream().map(this::toModel).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
+    private UserDO toDo(User user) {
+        if (null == user) {
+            return null;
+        }
+
+        UserDO userDO = new UserDO();
+        if (StringUtils.isNotBlank(user.getUid())) {
+            userDO.setId(Long.valueOf(user.getUid()));
+        }
+        if (null != user.getGmtCreate()) {
+            userDO.setGmtCreate(user.getGmtCreate());
+        }
+        if (null != user.getGmtModified()) {
+            userDO.setGmtModified(user.getGmtModified());
+        }
+
+        userDO.setName(user.getName());
+        userDO.setRole(user.getRole());
+        userDO.setPassword(user.getPassword());
+        userDO.setStatus(user.getStatus());
+        return userDO;
+    }
+
     private User toModel(UserDO userDO) {
         if (null == userDO) {
             return null;
         }
         User user = new User();
-        user.setUid(userDO.getUid());
         user.setGmtCreate(userDO.getGmtCreate());
         user.setGmtModified(userDO.getGmtModified());
-        user.setType(userDO.getType());
+        user.setPassword(userDO.getPassword());
+        user.setStatus(userDO.getStatus());
+        user.setUid(String.valueOf(userDO.getId()));
         user.setName(userDO.getName());
-
+        user.setRole(userDO.getRole());
         return user;
     }
 }

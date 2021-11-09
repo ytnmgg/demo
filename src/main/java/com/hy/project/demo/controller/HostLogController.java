@@ -11,7 +11,7 @@ import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
 import com.hy.project.demo.model.nginx.NginxAccessLogPointModel;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
-import com.hy.project.demo.service.NginxAccessFileService;
+import com.hy.project.demo.service.monitor.NginxAccessFileService;
 import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;

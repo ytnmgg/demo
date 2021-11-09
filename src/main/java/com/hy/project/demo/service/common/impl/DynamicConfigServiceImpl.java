@@ -1,8 +1,8 @@
-package com.hy.project.demo.service.impl;
+package com.hy.project.demo.service.common.impl;
 
 import java.util.Properties;
 
-import com.hy.project.demo.service.DynamicConfigService;
+import com.hy.project.demo.service.common.DynamicConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

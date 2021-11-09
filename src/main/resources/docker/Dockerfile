@@ -22,8 +22,11 @@ ENV docker.remote.host.version v1.26
 ENV host.nginx.log.path /var/log/nginx
 # 前端文件版本
 ENV front.version v0.0.1
+ENV front.sso.version v0.0.1
 # 动态配置文件
 ENV dynamic.config.path /var/config/config.properties
+# redis host
+ENV redis.host redis01
 # 运行jar包
 RUN bash -c 'touch /app.jar'
 # 创建app日志文件夹

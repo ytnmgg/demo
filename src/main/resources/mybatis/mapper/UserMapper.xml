@@ -3,21 +3,52 @@
 
 <mapper namespace="com.hy.project.demo.mybatis.mapper.UserMapper">
 
-    <sql id="select_columns">
-        id, gmt_create, gmt_modified, uid, type, name
+    <sql id="all_columns">
+        id, gmt_create, gmt_modified, name, role, password, status
     </sql>
+
+    <sql id="insert_columns">
+        gmt_create, gmt_modified, name, role, password, status
+    </sql>
+
+    <insert id="insert" parameterType="com.hy.project.demo.mybatis.entity.UserDO">
+        INSERT INTO user_info
+        (
+        <include refid="insert_columns"/>
+        )
+        VALUES
+        (now(),now(),#{name},#{role},#{password},#{status})
+    </insert>
+
+    <select id="getById" resultType="com.hy.project.demo.mybatis.entity.UserDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM user_info
+        WHERE id=#{id}
+    </select>
+
+    <select id="getByName" resultType="com.hy.project.demo.mybatis.entity.UserDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM user_info
+        WHERE name=#{name}
+    </select>
 
     <select id="list" resultType="com.hy.project.demo.mybatis.entity.UserDO">
         SELECT
-        <include refid="select_columns"/>
-        FROM user
+        <include refid="all_columns"/>
+        FROM user_info
         <trim prefix="WHERE" prefixOverrides="AND">
-            <if test="type != null">
-                AND pid = #{pid}
+            <if test="role != null">
+                AND role = #{role}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
             </if>
             <if test="name != null">
                 AND name like CONCAT('%',#{name},'%')
             </if>
         </trim>
+        ORDER BY gmt_create DESC
     </select>
 </mapper>

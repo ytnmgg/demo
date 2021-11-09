@@ -1,6 +1,6 @@
 package com.hy.project.demo.cron.tasks;
 
-import com.hy.project.demo.service.NginxAccessFileService;
+import com.hy.project.demo.service.monitor.NginxAccessFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

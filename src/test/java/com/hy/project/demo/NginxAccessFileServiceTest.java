@@ -6,7 +6,7 @@ import java.util.List;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.file.NginxAccessFileLine;
 import com.hy.project.demo.model.nginx.NginxAccessLogStatusCount;
-import com.hy.project.demo.service.NginxAccessFileService;
+import com.hy.project.demo.service.monitor.NginxAccessFileService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

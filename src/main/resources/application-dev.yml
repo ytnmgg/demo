@@ -12,6 +12,15 @@ spring:
   resources:
     static-locations: file:/var/front/
 
+  #redis
+  redis:
+    host: 47.99.61.11
+    port: 6379
+    #Redis数据库索引（默认为0）
+    database: 0
+    #超时时间，毫秒
+    timeout: 5000
+
 #mybatis的相关配置
 mybatis:
   #mapper配置文件

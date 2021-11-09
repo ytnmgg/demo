@@ -14,11 +14,35 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper {
 
     /**
-     * 获取全部用户
+     * 插入
      *
-     * @param type type
+     * @param userDO userDO
+     */
+    void insert(UserDO userDO);
+
+    /**
+     * 根据id查找
+     *
+     * @param id id
+     * @return 结果
+     */
+    UserDO getById(@Param("id") String id);
+
+    /**
+     * 根据name查找
+     *
      * @param name name
      * @return 结果
      */
-    List<UserDO> list(@Param("type") String type, @Param("name") String name);
+    UserDO getByName(@Param("name") String name);
+
+    /**
+     * 获取全部用户
+     *
+     * @param role   role
+     * @param status status
+     * @param name   name
+     * @return 结果
+     */
+    List<UserDO> list(@Param("role") String role, @Param("status") String status, @Param("name") String name);
 }
