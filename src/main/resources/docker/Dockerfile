@@ -13,7 +13,7 @@ ADD demo-0.0.1-SNAPSHOT.jar app.jar
 ENV profile.active prod
 ENV mysql.host mysql01
 ENV mysql.user root
-ENV mysql.pwd
+ENV mysql.pwd 1234Qweh
 # 宿主机docker网卡ip，以及docker remote api的映射端口
 ENV docker.remote.host http://172.17.0.1:8989
 # 宿主机docker remote api 版本

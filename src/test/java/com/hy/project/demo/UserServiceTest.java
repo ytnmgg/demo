@@ -1,11 +1,11 @@
 package com.hy.project.demo;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import com.hy.project.demo.model.DemoResult;
-import com.hy.project.demo.service.common.RedisService;
+import com.hy.project.demo.model.PageResult;
+import com.hy.project.demo.model.sso.User;
+import com.hy.project.demo.service.user.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,34 +16,18 @@ import org.springframework.util.Assert;
 
 /**
  * @author rick.wl
- * @date 2021/08/30
+ * @date 2021/11/30
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoApplication.class)
 @TestPropertySource("classpath:test.properties")
-public class RedisServiceTest {
-
+public class UserServiceTest {
     @Autowired
-    RedisService redisService;
+    UserService userService;
 
     @Test
-    public void redisTest() {
-
-        String key = "test_key";
-        System.out.println(redisService.exists(key));
-
-        redisService.set(key, "haha", 20L, TimeUnit.SECONDS);
-
-        System.out.println(redisService.get(key));
-        redisService.remove(key);
-        System.out.println(redisService.exists(key));
-
-    }
-
-    @Test
-    public void listByKeyTest() {
-
-        DemoResult<Map<String, Object>> result = redisService.list("SESSION");
+    public void listUsersTest() {
+        DemoResult<PageResult<List<User>>> result = userService.pageListUsers(1, 10);
         Assert.notNull(result);
     }
 }

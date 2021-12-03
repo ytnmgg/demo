@@ -45,4 +45,20 @@ public interface UserMapper {
      * @return 结果
      */
     List<UserDO> list(@Param("role") String role, @Param("status") String status, @Param("name") String name);
+
+    /**
+     * 获取全部用户(分页)
+     *
+     * @param offset   偏移量
+     * @param pageSize 单页大小
+     * @return 结果
+     */
+    List<UserDO> pageList(@Param("offset") int offset, @Param("pageSize") int pageSize);
+
+    /**
+     * 分页计数
+     *
+     * @return 结果
+     */
+    long countForPageList();
 }

@@ -1,6 +1,5 @@
 package com.hy.project.demo.service.sso.impl;
 
-import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +15,7 @@ import com.hy.project.demo.model.sso.User;
 import com.hy.project.demo.service.common.RedisService;
 import com.hy.project.demo.service.sso.LoginService;
 import com.hy.project.demo.service.sso.RsaService;
-import com.hy.project.demo.service.sso.UserService;
+import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;

@@ -1,5 +1,9 @@
-package com.hy.project.demo.service.sso;
+package com.hy.project.demo.service.user;
 
+import java.util.List;
+
+import com.hy.project.demo.model.DemoResult;
+import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sso.User;
 
 /**
@@ -26,9 +30,19 @@ public interface UserService {
 
     /**
      * 创建新用户
-     * @param name name
+     *
+     * @param name     name
      * @param password password
      * @param role
      */
     void createNewUser(String name, String password, String role);
+
+    /**
+     * 查询用户ØØ列表
+     *
+     * @param pageIndex index
+     * @param pageSize  页码
+     * @return 结果
+     */
+    DemoResult<PageResult<List<User>>> pageListUsers(int pageIndex, int pageSize);
 }

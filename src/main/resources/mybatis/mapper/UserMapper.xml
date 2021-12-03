@@ -51,4 +51,17 @@
         </trim>
         ORDER BY gmt_create DESC
     </select>
+
+    <select id="pageList" resultType="com.hy.project.demo.mybatis.entity.UserDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM user_info
+        ORDER BY id DESC
+        LIMIT #{offset},#{pageSize}
+    </select>
+
+    <select id="countForPageList" resultType="long">
+        SELECT count(*)
+        FROM user_info
+    </select>
 </mapper>

@@ -1,6 +1,9 @@
 package com.hy.project.demo.service.common;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import com.hy.project.demo.model.DemoResult;
 
 /**
  * @author rick.wl
@@ -59,4 +62,12 @@ public interface RedisService {
      * @param timeUnit timeUnit
      */
     void expire(final String key, final Long expireTime, final TimeUnit timeUnit);
+
+    /**
+     * 查询以prefix开头的所有值
+     *
+     * @param prefix 开头串
+     * @return 值列表
+     */
+    DemoResult<Map<String, Object>> list(String prefix);
 }

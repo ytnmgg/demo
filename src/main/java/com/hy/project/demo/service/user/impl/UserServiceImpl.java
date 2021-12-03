@@ -1,8 +1,12 @@
-package com.hy.project.demo.service.sso.impl;
+package com.hy.project.demo.service.user.impl;
 
+import java.util.List;
+
+import com.hy.project.demo.model.DemoResult;
+import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sso.User;
 import com.hy.project.demo.repository.UserRepository;
-import com.hy.project.demo.service.sso.UserService;
+import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,5 +53,11 @@ public class UserServiceImpl implements UserService {
         user.setName(name);
         user.setRole(r);
         userRepository.insert(user);
+    }
+
+    @Override
+    public DemoResult<PageResult<List<User>>> pageListUsers(int pageIndex, int pageSize) {
+        PageResult<List<User>> result = userRepository.pageList(pageIndex, pageSize);
+        return DemoResult.buildSuccessResult(result);
     }
 }
