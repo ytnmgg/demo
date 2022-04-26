@@ -9,8 +9,8 @@ spring:
     password: ${mysql.pwd}
 
   #前端文件目录
-  resources:
-    static-locations: file:/var/front/
+#  resources:
+#    static-locations: file:/var/front/
 
   #redis
   redis:
