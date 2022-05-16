@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: influxdb-deploy
+  name: deployment-influxdb
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb-pod
+  template:
+    metadata:
+      labels:
+        app: influxdb-pod
+    spec:
+      containers:
+        - image: influxdb:2.0.6
+          name: influxdb
+          ports:
+            - containerPort: 8086
+              name: influxdb
+          volumeMounts:
+            - mountPath: /var/lib/influxdb2
+              name: influxdb-data
+          env:
+            - name: TZ
+              value: Asia/Shanghai
+
+      volumes:
+        - name: influxdb-data
+          nfs:
+            server: master
+            path: /root/data/nfs/influxdb/data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-influxdb
+  namespace: dev
+spec:
+  ports:
+    - name: influxdb
+      port: 8086
+      targetPort: 8086
+      nodePort: 30001
+  selector:
+    app: influxdb-pod
+  type: NodePort
+  #clusterIP: 10.101.188.188 # service的ip地址，如果不写，默认会生成一个

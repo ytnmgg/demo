@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-deploy
+  name: deployment-nginx
+  namespace: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-pod
+  template:
+    metadata:
+      labels:
+        app: nginx-pod
+    spec:
+      containers:
+        - image: nginx:1.17.1
+          ports:
+            - containerPort: 80 # pod端口
+          name: nginx
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d
+            - name: nginx-log
+              mountPath: /var/log/nginx
+            - name: nginx-static
+              mountPath: /usr/share/nginx/static
+          env:
+            - name: TZ
+              value: Asia/Shanghai
+      volumes:
+        - name: nginx-conf
+          nfs:
+            server: master
+            path: /root/data/nfs/nginx/conf.d
+        - name: nginx-static
+          nfs:
+            server: master
+            path: /root/data/nfs/nginx/static
+        - name: nginx-log
+          hostPath:
+            path: /root/data/nginx/logs
+            type: Directory
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-nginx
+  namespace: dev
+spec:
+  selector:
+    app: nginx-pod
+  type: NodePort # service类型
+  ports:
+    - port: 80 # service端口
+      nodePort: 30000 # NodePort类型的Service，指定绑定的node的端口(默认的取值范围是：30000-32767), 如果不指定，会默认分配
+      targetPort: 80 # pod端口
