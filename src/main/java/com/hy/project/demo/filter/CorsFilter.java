@@ -19,9 +19,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author rick.wl
  * @date 2021/08/16
  */
-@Component
-@WebFilter(urlPatterns = "/*", filterName = "CorsFilter")
-@Order(Ordered.HIGHEST_PRECEDENCE)
+//@Component
+//@WebFilter(urlPatterns = "/*", filterName = "CorsFilter")
+//@Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,

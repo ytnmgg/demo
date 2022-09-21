@@ -15,8 +15,12 @@ import org.apache.commons.lang3.StringUtils;
 public class DateUtil {
 
     public static final String STANDARD_STR = "yyyy-MM-dd HH:mm:ss";
-
     public static final String NGINX_LOG_DATE = "dd/MMM/yyyy:HH:mm:ss Z";
+    public static final String TODAY_STR = "yyyyMMdd";
+
+    public static String formatToday() {
+        return format(new Date(), TODAY_STR);
+    }
 
     public static Date parse(String date, String format) {
         if (StringUtils.isBlank(date) || StringUtils.isBlank(format)) {

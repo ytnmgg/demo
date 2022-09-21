@@ -39,9 +39,9 @@ import static com.hy.project.demo.util.SsoUtil.getToken;
  * @author rick.wl
  * @date 2021/08/16
  */
-@Component
-@WebFilter(urlPatterns = "/*", filterName = "AuthFilter")
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+//@Component
+//@WebFilter(urlPatterns = "/*", filterName = "AuthFilter")
+//@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class AuthFilter extends OncePerRequestFilter {
     private final static Logger LOGGER = LoggerFactory.getLogger(AuthFilter.class);
 

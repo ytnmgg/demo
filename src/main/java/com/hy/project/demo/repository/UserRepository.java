@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sso.User;
+import com.hy.project.demo.security.SysUser;
 
 /**
  * @author rick.wl
@@ -11,12 +12,11 @@ import com.hy.project.demo.model.sso.User;
  */
 public interface UserRepository {
 
-    /**
-     * 插入
-     *
-     * @param user user
-     */
-    void insert(User user);
+    String insert(SysUser sysUser);
+
+    SysUser findByName(String name);
+
+    SysUser findByUserId(String userId);
 
     /**
      * 查询
@@ -51,5 +51,5 @@ public interface UserRepository {
      * @param pageSize  单页大小
      * @return 结果
      */
-    PageResult<List<User>> pageList(int pageIndex, int pageSize);
+    PageResult<List<SysUser>> pageList(int pageIndex, int pageSize);
 }

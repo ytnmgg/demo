@@ -11,54 +11,10 @@ import org.apache.ibatis.annotations.Param;
  * @date 2021/08/11
  */
 @Mapper
-public interface UserMapper {
+public interface UserMapper extends CrudMapper<UserDO, String> {
 
-    /**
-     * 插入
-     *
-     * @param userDO userDO
-     */
-    void insert(UserDO userDO);
+    List<UserDO> findByPage(@Param("offset") int offset, @Param("pageSize") int pageSize);
 
-    /**
-     * 根据id查找
-     *
-     * @param id id
-     * @return 结果
-     */
-    UserDO getById(@Param("id") String id);
+    UserDO findByName(String name);
 
-    /**
-     * 根据name查找
-     *
-     * @param name name
-     * @return 结果
-     */
-    UserDO getByName(@Param("name") String name);
-
-    /**
-     * 获取全部用户
-     *
-     * @param role   role
-     * @param status status
-     * @param name   name
-     * @return 结果
-     */
-    List<UserDO> list(@Param("role") String role, @Param("status") String status, @Param("name") String name);
-
-    /**
-     * 获取全部用户(分页)
-     *
-     * @param offset   偏移量
-     * @param pageSize 单页大小
-     * @return 结果
-     */
-    List<UserDO> pageList(@Param("offset") int offset, @Param("pageSize") int pageSize);
-
-    /**
-     * 分页计数
-     *
-     * @return 结果
-     */
-    long countForPageList();
 }

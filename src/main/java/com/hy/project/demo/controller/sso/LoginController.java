@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.hy.project.demo.controller.request.LoginRequest;
+import com.hy.project.demo.model.AjaxResult;
 import com.hy.project.demo.model.DemoResult;
 import com.hy.project.demo.service.sso.LoginService;
 import com.hy.project.demo.service.sso.RsaService;
@@ -45,14 +46,16 @@ public class LoginController {
 
     @PostMapping(LOGIN_REQUEST_URL)
     public @ResponseBody
-    DemoResult<Void> login(@RequestBody LoginRequest request, HttpServletResponse response) throws Throwable {
-        return loginService.login(request.getName(), request.getPassword(), request.getCallback(), response);
+    AjaxResult login(@RequestBody LoginRequest request, HttpServletResponse response) throws Throwable {
+        String token = loginService.login(request.getName(), request.getPassword(), request.getCallback(), response);
+        return AjaxResult.success(token);
     }
 
     @GetMapping("/get_encrypt_key.json")
     public @ResponseBody
-    DemoResult<String> getEncryptKey() throws Throwable {
-        return DemoResult.buildSuccessResult(rsaService.getRsaPublicKey());
+    AjaxResult getEncryptKey() throws Throwable {
+        String key = rsaService.getRsaPublicKeyString();
+        return AjaxResult.success(key);
     }
 
     @PostMapping(LOGOUT_REQUEST_URL)

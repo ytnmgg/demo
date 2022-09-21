@@ -1,28 +1,29 @@
 package com.hy.project.demo.service.sso.impl;
 
-import java.util.UUID;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 
-import com.hy.project.demo.model.DemoResult;
 import com.hy.project.demo.model.sso.Account;
 import com.hy.project.demo.model.sso.User;
+import com.hy.project.demo.security.LoginUser;
+import com.hy.project.demo.security.SysUser;
 import com.hy.project.demo.service.common.RedisService;
 import com.hy.project.demo.service.sso.LoginService;
 import com.hy.project.demo.service.sso.RsaService;
+import com.hy.project.demo.service.sso.TokenService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
+import com.hy.project.demo.util.DateUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import static com.hy.project.demo.constant.CommonConstants.COOKIE_SESSION_KEY_PREFIX;
 import static com.hy.project.demo.exception.DemoExceptionEnum.INVALID_PARAM_EXCEPTION;
@@ -42,6 +43,7 @@ public class LoginServiceImpl implements LoginService {
     private static final String REDIS_SESSION_KEY_PREFIX = "SESSION";
     private static final long REDIS_SESSION_TIMEOUT_SECONDS = 600;
     private static final String DEFAULT_PAGE = "/index";
+    private static final int DEFAULT_EXPIRE_HOUR = 1;
 
     @Autowired
     UserService userService;
@@ -55,42 +57,57 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     RsaService rsaService;
 
+    @Autowired
+    TokenService tokenService;
+
     @Override
-    public void register(String name, String password) {
+    public String register(String name, String password) {
         // 验证用户信息
         validateUserForCreate(name, password);
 
+        // 用RSA私钥解密前端加密后的用户登录密码
+        String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(password));
+        AssertUtil.isTrue(StringUtils.isNotBlank(pwd) && pwd.length() <= MAX_PASSWORD_LENGTH,
+            USER_PASSWORD_LENGTH_INVALID, "密码长度非法");
+
         // 加密用户密码
-        String encoded = bCryptPasswordEncoder.encode(password);
+        String encoded = bCryptPasswordEncoder.encode(pwd);
 
         // 创建用户
-        userService.createNewUser(name, encoded, null);
+        return userService.createNewUser(name, encoded);
     }
 
     @Override
-    public DemoResult<Void> login(String name, String password, String callback, HttpServletResponse response)
+    public String login(String name, String password, String callback, HttpServletResponse response)
         throws Throwable {
 
         // 用RSA私钥解密前端加密后的用户登录密码
         String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(password));
 
         // 验证用户信息
-        User user = validateUserForLogin(name, pwd);
+         SysUser user = validateUserForLogin(name, pwd);
 
         // 生成token
-        String nameEncoded = DigestUtils.md5DigestAsHex(name.getBytes());
-        String token = String.format("%s_%s", nameEncoded, UUID.randomUUID());
+        //String nameEncoded = DigestUtils.md5DigestAsHex(name.getBytes());
+        //String token = String.format("%s_%s", nameEncoded, UUID.randomUUID());
+        String token = tokenService.createToken(user.getUserId());
 
-        // 把用户信息写入redis
-        String key = createRedisSessionKey(token);
-        Account account = user.getAccount();
-        redisService.set(key, account, REDIS_SESSION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUserId(user.getUserId());
+        loginUser.setUser(user);
+        loginUser.setToken(token);
+        loginUser.setExpireTime(DateUtil.addHours(new Date(), DEFAULT_EXPIRE_HOUR).getTime());
+
+        // TODO 把用户信息loginUser存入redis
+        //String key = createRedisSessionKey(token);
+        //Account account = user.getAccount();
+        //redisService.set(key, account, REDIS_SESSION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         // 写入cookie
-        response.addCookie(new Cookie(COOKIE_SESSION_KEY_PREFIX, token));
+        //response.addCookie(new Cookie(COOKIE_SESSION_KEY_PREFIX, token));
 
         // 返回结果
-        return DemoResult.buildSuccessResult(null);
+        return token;
     }
 
     @Override
@@ -127,17 +144,14 @@ public class LoginServiceImpl implements LoginService {
     private void validateUserForCreate(String name, String password) {
         AssertUtil.isTrue(StringUtils.isNotBlank(name) && name.length() <= MAX_NAME_LENGTH, USER_NAME_LENGTH_INVALID,
             "用户名长度非法");
-        AssertUtil.isTrue(StringUtils.isNotBlank(password) && password.length() <= MAX_PASSWORD_LENGTH,
-            USER_PASSWORD_LENGTH_INVALID,
-            "用户密码长度非法");
     }
 
-    private User validateUserForLogin(String name, String password) {
-        User user = userService.getUserByName(name);
-        AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "用户名或密码不正确...");
+    private SysUser validateUserForLogin(String name, String password) {
+        SysUser user = userService.loadSysUserByName(name);
+        AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "用户不存在...");
 
         boolean matches = bCryptPasswordEncoder.matches(password, user.getPassword());
-        AssertUtil.isTrue(matches, INVALID_PARAM_EXCEPTION, "用户名或密码不正确...");
+        AssertUtil.isTrue(matches, INVALID_PARAM_EXCEPTION, "密码不正确...");
 
         return user;
     }

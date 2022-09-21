@@ -12,7 +12,7 @@ import com.hy.project.demo.model.ToString;
 public class PageRequest extends ToString {
     private static final long serialVersionUID = -3325526594945168592L;
 
-    @Min(10)
+    @Min(2)
     @Max(100)
     int pageSize;
 

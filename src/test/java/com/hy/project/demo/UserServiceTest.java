@@ -5,6 +5,7 @@ import java.util.List;
 import com.hy.project.demo.model.DemoResult;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sso.User;
+import com.hy.project.demo.security.SysUser;
 import com.hy.project.demo.service.user.UserService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,7 @@ public class UserServiceTest {
 
     @Test
     public void listUsersTest() {
-        DemoResult<PageResult<List<User>>> result = userService.pageListUsers(1, 10);
+        PageResult<List<SysUser>> result = userService.pageListUsers(1, 10);
         Assert.notNull(result);
     }
 }

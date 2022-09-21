@@ -7,52 +7,87 @@ import java.util.Date;
  * @date 2021/08/11
  */
 public class UserDO {
-    private Long id;
-    private Date gmtCreate;
-    private Date gmtModified;
-    private String name;
-    private String role;
+    private String userId;
+    private String userName;
+    private String nickName;
+    private String userType;
+    private String email;
+    private String phone;
+    private String sex;
+    private String avatar;
     private String password;
     private String status;
+    private String delFlag;
+    private String loginIp;
+    private Date loginDate;
+    private String createBy;
+    private Date createTime;
+    private String updateBy;
+    private Date updateTime;
+    private String remark;
 
-    public Long getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public Date getGmtCreate() {
-        return gmtCreate;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setGmtCreate(Date gmtCreate) {
-        this.gmtCreate = gmtCreate;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public Date getGmtModified() {
-        return gmtModified;
+    public String getNickName() {
+        return nickName;
     }
 
-    public void setGmtModified(Date gmtModified) {
-        this.gmtModified = gmtModified;
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
-    public String getName() {
-        return name;
+    public String getUserType() {
+        return userType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserType(String userType) {
+        this.userType = userType;
     }
 
-    public String getRole() {
-        return role;
+    public String getEmail() {
+        return email;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getPassword() {
@@ -69,5 +104,69 @@ public class UserDO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getDelFlag() {
+        return delFlag;
+    }
+
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
+
+    public String getLoginIp() {
+        return loginIp;
+    }
+
+    public void setLoginIp(String loginIp) {
+        this.loginIp = loginIp;
+    }
+
+    public Date getLoginDate() {
+        return loginDate;
+    }
+
+    public void setLoginDate(Date loginDate) {
+        this.loginDate = loginDate;
+    }
+
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

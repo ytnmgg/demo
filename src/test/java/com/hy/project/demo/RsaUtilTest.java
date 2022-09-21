@@ -19,10 +19,10 @@ public class RsaUtilTest {
         //生成密钥
         Map<String, Object> keyMap = RsaUtil.initKey();
         //公钥
-        byte[] publicKey = RsaUtil.getPublicKey(keyMap);
+        byte[] publicKey = RsaUtil.parsePublicKeyBytes(keyMap);
 
         //私钥
-        byte[] privateKey = RsaUtil.getPrivateKey(keyMap);
+        byte[] privateKey = RsaUtil.parsePrivateKeyBytes(keyMap);
         System.out.println("公钥：" + Base64.encodeBase64String(publicKey));
         System.out.println("私钥：" + Base64.encodeBase64String(privateKey));
 

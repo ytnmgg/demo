@@ -5,6 +5,7 @@ import java.util.List;
 import com.hy.project.demo.model.DemoResult;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sso.User;
+import com.hy.project.demo.security.SysUser;
 
 /**
  * @author rick.wl
@@ -20,14 +21,9 @@ public interface UserService {
      */
     User getUserById(String uid);
 
-    /**
-     * 查找用户
-     *
-     * @param name name
-     * @return 结果
-     */
-    User getUserByName(String name);
+    SysUser loadSysUserByName(String name);
 
+    SysUser loadSysUserByUserId(String userId);
     /**
      * 创建新用户
      *
@@ -35,7 +31,7 @@ public interface UserService {
      * @param password password
      * @param role
      */
-    void createNewUser(String name, String password, String role);
+    String createNewUser(String name, String password);
 
     /**
      * 查询用户ØØ列表
@@ -44,5 +40,5 @@ public interface UserService {
      * @param pageSize  页码
      * @return 结果
      */
-    DemoResult<PageResult<List<User>>> pageListUsers(int pageIndex, int pageSize);
+    PageResult<List<SysUser>> pageListUsers(int pageIndex, int pageSize);
 }

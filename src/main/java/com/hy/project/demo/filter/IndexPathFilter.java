@@ -21,9 +21,9 @@ import static com.hy.project.demo.constant.CommonConstants.LOGIN_PAGE_URL;
  * @author rick.wl
  * @date 2021/09/09
  */
-@Component
-@WebFilter(urlPatterns = "/*", filterName = "IndexPathFilter")
-@Order(Ordered.HIGHEST_PRECEDENCE + 2)
+//@Component
+//@WebFilter(urlPatterns = "/*", filterName = "IndexPathFilter")
+//@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 public class IndexPathFilter extends OncePerRequestFilter {
     private final static Set<String> ESCAPE_PATH = new HashSet<>();
 

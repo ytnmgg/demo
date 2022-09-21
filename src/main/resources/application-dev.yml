@@ -4,9 +4,63 @@ spring:
   #数据库连接配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.99.61.11:3306/default?characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: ${mysql.user}
-    password: ${mysql.pwd}
+    #url: jdbc:mysql://139.224.72.37:3306/demo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+    #username: root
+    #password: 1234Qweh
+    type: com.alibaba.druid.pool.DruidDataSource
+    # DRUID连接池配置
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://139.224.72.37:3306/demo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+        username: root
+        password: 1234Qweh
+        # 初始连接数
+        initial-size: 5
+        # 最小连接池数量
+        min-idle: 10
+        # 最大连接池数量
+        max-active: 20
+        # 配置获取连接等待超时的时间
+        max-wait: 60000
+        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+        time-between-eviction-runs-millis: 60000
+        # 配置一个连接在池中最小生存的时间，单位是毫秒
+        min-evictable-idle-time-millis: 300000
+        # 配置一个连接在池中最大生存的时间，单位是毫秒
+        max-evictable-idle-time-millis: 900000
+        # 配置检测连接是否有效
+        validation-query: SELECT 1;
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        web-stat-filter:
+          enabled: true
+        stat-view-servlet:
+          enabled: true
+          # 设置白名单，不填则允许所有访问
+          allow:
+          url-pattern: /druid/*
+          # 控制台管理用户名和密码
+          login-username: admin
+          login-password: 1234Qweh
+        filter:
+          stat:
+            enabled: true
+            # 慢SQL记录
+            log-slow-sql: true
+            slow-sql-millis: 1000
+            merge-sql: true
+          wall:
+            config:
+              multi-statement-allow: true
+      # 从库数据源
+      slave:
+        # 从数据源开关/默认关闭
+        enabled: false
+        url:
+        username:
+        password:
 
   #前端文件目录
 #  resources:
@@ -29,6 +83,8 @@ mybatis:
   #开启驼峰命名
   configuration:
     map-underscore-to-camel-case: true
+    #sql日志，dev调试用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # actuator 监控配置
 management:
@@ -50,3 +106,10 @@ management:
       enabled: true #打开shutdown端点
     health:
       show-details: always #获得健康检查中所有指标的详细信息
+
+# 单点登录配置
+sso:
+    token:
+        header: Authorization
+        # 失效时间（分钟）
+        expireTime: 30

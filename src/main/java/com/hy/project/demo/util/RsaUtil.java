@@ -1,6 +1,7 @@
 package com.hy.project.demo.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -16,13 +17,16 @@ import java.util.Map;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author rick.wl
  * @date 2021/11/08
  */
 public class RsaUtil {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RsaUtil.class);
+
     //非对称密钥算法
     public static final String KEY_ALGORITHM = "RSA";
 
@@ -70,7 +74,7 @@ public class RsaUtil {
      * 私钥加密
      *
      * @param data 待加密数据
-     * @param key 私钥
+     * @param key  私钥
      * @return byte[] 加密数据
      */
     public static byte[] encryptByPrivateKey(byte[] data, byte[] key) throws Exception {
@@ -90,7 +94,7 @@ public class RsaUtil {
      * 公钥加密
      *
      * @param data 待加密数据
-     * @param key 公钥
+     * @param key  公钥
      * @return byte[] 加密数据
      */
     public static byte[] encryptByPublicKey(byte[] data, byte[] key) throws Exception {
@@ -130,11 +134,12 @@ public class RsaUtil {
 
     /**
      * 使用私钥解密
+     *
      * @param data 已加密数据
-     * @param key 密钥
+     * @param key  密钥
      * @return 结果
      */
-    public static String decryptByPrivateKeyWithSeg(byte[] data,  byte[] key) throws Throwable {
+    public static String decryptByPrivateKeyWithSeg(byte[] data, byte[] key) {
         // 加密
         String str = "";
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -171,7 +176,11 @@ public class RsaUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            out.close();
+            try {
+                out.close();
+            } catch (IOException ioException) {
+                LOGGER.error("close ByteArrayOutputStream failed", ioException);
+            }
         }
 
         return str;
@@ -205,9 +214,13 @@ public class RsaUtil {
      * @param keyMap 密钥map
      * @return byte[] 私钥
      */
-    public static byte[] getPrivateKey(Map<String, Object> keyMap) {
+    public static byte[] parsePrivateKeyBytes(Map<String, Object> keyMap) {
+        return parsePrivateKey(keyMap).getEncoded();
+    }
+
+    public static Key parsePrivateKey(Map<String, Object> keyMap) {
         Key key = (Key)keyMap.get(PRIVATE_KEY);
-        return key.getEncoded();
+        return key;
     }
 
     /**
@@ -216,8 +229,12 @@ public class RsaUtil {
      * @param keyMap 密钥map
      * @return byte[] 公钥
      */
-    public static byte[] getPublicKey(Map<String, Object> keyMap) throws Exception {
+    public static byte[] parsePublicKeyBytes(Map<String, Object> keyMap) {
+        return parsePublicKey(keyMap).getEncoded();
+    }
+
+    public static Key parsePublicKey(Map<String, Object> keyMap) {
         Key key = (Key)keyMap.get(PUBLIC_KEY);
-        return key.getEncoded();
+        return key;
     }
 }

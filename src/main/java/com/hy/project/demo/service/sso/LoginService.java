@@ -20,7 +20,7 @@ public interface LoginService {
      * @param name     name
      * @param password password
      */
-    void register(String name, String password);
+    String register(String name, String password);
 
     /**
      * 登录
@@ -30,7 +30,7 @@ public interface LoginService {
      * @param callback callback
      * @param response response
      */
-    DemoResult<Void> login(String name, String password, String callback, HttpServletResponse response) throws Throwable;
+    String login(String name, String password, String callback, HttpServletResponse response) throws Throwable;
 
     /**
      * 登出

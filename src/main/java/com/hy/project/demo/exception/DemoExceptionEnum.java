@@ -42,14 +42,17 @@ public enum DemoExceptionEnum {
     /** 数据库重复插入异常 */
     DUPLICATE_KEY_EXCEPTION("011", "数据库重复插入异常"),
 
+    /** 数据库行锁异常 */
+    ROW_LOCK_EXCEPTION("012", "数据库行锁异常"),
+
     /** 远程调用业务异常 */
-    REMOTE_BIZ_EXCEPTION("012", "远程调用业务异常"),
+    REMOTE_BIZ_EXCEPTION("013", "远程调用业务异常"),
 
     /** 远程调用未知异常 */
-    REMOTE_UNKNOWN_EXCEPTION("013", "远程调用未知异常"),
+    REMOTE_UNKNOWN_EXCEPTION("014", "远程调用未知异常"),
 
     /** HTTP调用异常 */
-    HTTP_EXCEPTION("014", "HTTP调用异常"),
+    HTTP_EXCEPTION("015", "HTTP调用异常"),
 
     //========================================================================//
     //                        SSO错误码[300-349]                              //
