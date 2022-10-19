@@ -1,17 +1,16 @@
 package com.hy.project.demo.security;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
-import org.springframework.security.core.GrantedAuthority;
+import com.hy.project.demo.model.user.Permission;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 /**
  * 登录用户身份权限
+ * spring security框架使用，业务代码用SysUser
  *
  * @author rick.wl
  * @date 2022/09/07
@@ -22,127 +21,27 @@ public class LoginUser implements UserDetails {
     private static final long serialVersionUID = -8083407673475502481L;
 
     /**
-     * 用户ID
-     */
-    private String userId;
-
-    /**
-     * 用户唯一标识
-     */
-    private String token;
-
-    /**
-     * 过期时间
-     */
-    private Long expireTime;
-
-    /**
-     * 权限列表
-     */
-    private Set<String> permissions;
-
-    /**
      * 用户信息
      */
     private SysUser user;
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
+    /**
+     * 权限列表
+     */
+    private List<SysAuthority> authorities;
 
     public LoginUser() {
+        super();
     }
 
-    public LoginUser(SysUser user, Set<String> permissions) {
+    public LoginUser(SysUser user) {
         this.user = user;
-        this.permissions = permissions;
-    }
-
-    public LoginUser(String userId, SysUser user, Set<String> permissions) {
-        this.userId = userId;
-        this.user = user;
-        this.permissions = permissions;
-    }
-
-    @JSONField(serialize = false)
-    @Override
-    public String getPassword() {
-        return user.getPassword();
-    }
-
-    @Override
-    public String getUsername() {
-        return user.getUserName();
-    }
-
-    /**
-     * 账户是否未过期,过期无法验证
-     */
-    @JSONField(serialize = false)
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    /**
-     * 指定用户是否解锁,锁定的用户无法进行身份验证
-     *
-     * @return
-     */
-    @JSONField(serialize = false)
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    /**
-     * 指示是否已过期的用户的凭据(密码),过期的凭据防止认证
-     *
-     * @return
-     */
-    @JSONField(serialize = false)
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    /**
-     * 是否可用 ,禁用的用户不能身份验证
-     *
-     * @return
-     */
-    @JSONField(serialize = false)
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    public Long getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(Long expireTime) {
-        this.expireTime = expireTime;
-    }
-
-    public Set<String> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Set<String> permissions) {
-        this.permissions = permissions;
+        authorities = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(user.getPermissions())) {
+            for (Permission permission : user.getPermissions()) {
+                authorities.add(new SysAuthority(permission.getPermissionKey()));
+            }
+        }
     }
 
     public SysUser getUser() {
@@ -154,14 +53,41 @@ public class LoginUser implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return "ROLE_roo";
-            }
-        });
+    public List<SysAuthority> getAuthorities() {
         return authorities;
+    }
+
+    @Override
+    public String getPassword() {
+        return this.getUser().getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getUser().getUserName();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    public void setAuthorities(List<SysAuthority> authorities) {
+        this.authorities = authorities;
     }
 }

@@ -45,7 +45,7 @@ import static com.hy.project.demo.util.ResultUtil.CODE_401;
  * @date 2021/11/04
  */
 @Configuration
-@EnableWebSecurity(debug=true)
+@EnableWebSecurity(debug=false)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
@@ -115,6 +115,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
+     * [暂时不用，自己做登录逻辑]
      * 身份认证配置
      */
     @Override

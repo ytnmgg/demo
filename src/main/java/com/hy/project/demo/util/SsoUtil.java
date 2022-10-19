@@ -3,12 +3,10 @@ package com.hy.project.demo.util;
 import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import com.hy.project.demo.security.LoginUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -24,6 +22,10 @@ public class SsoUtil {
     public static final String LOGIN_USER_UID = "login_user_uid";
 
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
+
+    private static final String REDIS_USER_INFO_PREFIX = "USER";
+    private static final String REDIS_TOKEN_PREFIX = "TOKEN";
+
 
     public static String createToken(String uuid, String uid, Key secret) {
         Map<String, Object> claims = new HashMap<>();
@@ -44,11 +46,11 @@ public class SsoUtil {
     }
 
     public static String getUuid(Claims claims) {
-        return (String) claims.get(LOGIN_USER_KEY);
+        return (String)claims.get(LOGIN_USER_KEY);
     }
 
     public static String getUid(Claims claims) {
-        return (String) claims.get(LOGIN_USER_UID);
+        return (String)claims.get(LOGIN_USER_UID);
     }
 
     public static String getTokenFromHeader(HttpServletRequest request, String tokenHeader) {
@@ -63,5 +65,13 @@ public class SsoUtil {
     public static String getToken(HttpServletRequest request, String key) {
         Cookie cookie = WebUtils.getCookie(request, key);
         return null != cookie ? cookie.getValue() : null;
+    }
+
+    public static String createRedisUserInfoKey(String userId) {
+        return String.format("%s_%s", REDIS_USER_INFO_PREFIX, userId);
+    }
+
+    public static String createRedisTokenKey(String token) {
+        return String.format("%s_%s", REDIS_TOKEN_PREFIX, token);
     }
 }

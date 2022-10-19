@@ -2,7 +2,6 @@ package com.hy.project.demo.service.user;
 
 import java.util.List;
 
-import com.hy.project.demo.model.DemoResult;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sso.User;
 import com.hy.project.demo.security.SysUser;
@@ -24,6 +23,17 @@ public interface UserService {
     SysUser loadSysUserByName(String name);
 
     SysUser loadSysUserByUserId(String userId);
+
+    void updateSysUser(SysUser sysUser);
+
+    void touchUser(SysUser user);
+
+    SysUser touchUser(String userId);
+
+    SysUser getCacheUser(String userId);
+
+    SysUser getMe();
+
     /**
      * 创建新用户
      *

@@ -1,11 +1,14 @@
 package com.hy.project.demo.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -31,22 +34,16 @@ public class CustomAccessDecisionManager implements AccessDecisionManager {
         for (ConfigAttribute configAttribute : configAttributes) {
             if (authentication.getPrincipal() instanceof LoginUser) {
                 LoginUser loginUser = (LoginUser)authentication.getPrincipal();
-                Set<String> allCodes = new HashSet<>();
-
-                if (CollectionUtils.isNotEmpty(loginUser.getPermissions())) {
-                    allCodes.addAll(loginUser.getPermissions());
+                List<SysAuthority> authorities = loginUser.getAuthorities();
+                if (null == authorities) {
+                    continue;
                 }
 
-                List<SysRole> roles = loginUser.getUser().getRoles();
-                if (CollectionUtils.isNotEmpty(roles)) {
-                    for (SysRole role : roles) {
-                        allCodes.addAll(role.getPermissions());
+                for (SysAuthority sysAuthority: authorities) {
+                    if (StringUtils.equals(sysAuthority.getAuthority(), configAttribute.getAttribute())) {
+                        // 权限或者角色有满足的，放行
+                        return;
                     }
-                }
-
-                if (allCodes.contains(configAttribute.getAttribute())) {
-                    // 权限或者角色有满足的，放行
-                    return;
                 }
             }
         }

@@ -7,10 +7,6 @@
         user_id,user_name,nick_name,user_type,email,phone,sex,avatar,password,status,del_flag,login_ip,login_date,create_by,create_time,update_by,update_time,remark
     </sql>
 
-    <sql id="insert_columns">
-        gmt_create, gmt_modified, name, role, password, status
-    </sql>
-
     <insert id="insert" parameterType="com.hy.project.demo.mybatis.entity.UserDO">
         INSERT INTO sys_user
         (
@@ -20,7 +16,7 @@
         (#{userId},#{userName},#{nickName},#{userType},#{email},#{phone},#{sex},#{avatar},#{password},#{status},#{delFlag},#{loginIp},#{loginDate},#{createBy},now(),#{updateBy},#{updateTime},#{remark})
     </insert>
 
-    <insert id="insertAll" parameterType="java.util.List">
+    <insert id="insertAll" parameterType="com.hy.project.demo.mybatis.entity.UserDO">
         INSERT INTO sys_user
         (
         <include refid="all_columns"/>
@@ -32,7 +28,7 @@
             #{item.sex,jdbcType=CHAR},#{item.avatar,jdbcType=VARCHAR},#{item.password,jdbcType=VARCHAR},
             #{item.status,jdbcType=CHAR},#{item.delFlag,jdbcType=CHAR},#{item.loginIp,jdbcType=VARCHAR},
             #{item.loginDate,jdbcType=DATETIME},#{item.createBy,jdbcType=VARCHAR},#{item.createTime,jdbcType=DATETIME},
-            #{item.updateBy,jdbcType=VARCHAR},#{item.updateTime,jdbcType=DATETIME},#{item.remark,jdbcType=VARCHAR},
+            #{item.updateBy,jdbcType=VARCHAR},#{item.updateTime,jdbcType=DATETIME},#{item.remark,jdbcType=VARCHAR}
             )
         </foreach>
     </insert>
@@ -63,7 +59,7 @@
         </trim>
     </update>
 
-    <update id="updateAll" parameterType="java.util.List">
+    <update id="updateAll" parameterType="com.hy.project.demo.mybatis.entity.UserDO">
         <foreach collection="entities" item="item" index="index" separator=";">
             UPDATE sys_user
             <trim prefix="SET" suffixOverrides=",">
@@ -98,6 +94,14 @@
         WHERE user_id=#{id}
     </select>
 
+    <select id="lockById" resultType="com.hy.project.demo.mybatis.entity.UserDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_user
+        WHERE user_id=#{id}
+        FOR UPDATE
+    </select>
+
     <select id="findByName" resultType="com.hy.project.demo.mybatis.entity.UserDO">
         SELECT
         <include refid="all_columns"/>
@@ -105,18 +109,18 @@
         WHERE user_name=#{name}
     </select>
 
-    <select id="findAllById" resultType="java.util.List">
+    <select id="findAllById" resultType="com.hy.project.demo.mybatis.entity.UserDO">
         SELECT
         <include refid="all_columns"/>
         FROM sys_user
         WHERE user_id
         IN
-        <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
     </select>
 
-    <select id="findAll" resultType="java.util.List">
+    <select id="findAll" resultType="com.hy.project.demo.mybatis.entity.UserDO">
         SELECT
         <include refid="all_columns"/>
         FROM sys_user
@@ -137,7 +141,7 @@
         DELETE FROM sys_user
         WHERE user_id
         IN
-        <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
             #{item}
         </foreach>
     </delete>

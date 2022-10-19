@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.hy.project.demo.mybatis.mapper.RoleMapper">
+
+    <sql id="all_columns">
+        role_id,role_name,role_key,status,del_flag,create_by,create_time,update_by,update_time,remark
+    </sql>
+
+    <insert id="insert" parameterType="com.hy.project.demo.mybatis.entity.RoleDO">
+        INSERT INTO sys_role
+        (
+        <include refid="all_columns"/>
+        )
+        VALUES
+        (#{roleId},#{roleName},#{roleKey},#{status},#{delFlag},#{createBy},now(),#{updateBy},#{updateTime},#{remark})
+    </insert>
+
+    <insert id="insertAll" parameterType="com.hy.project.demo.mybatis.entity.RoleDO">
+        INSERT INTO sys_role
+        (
+        <include refid="all_columns"/>
+        )
+        VALUES
+        <foreach collection="entities" item="item" index="index" separator=",">
+            ( #{item.roleId,jdbcType=VARCHAR},#{item.roleName,jdbcType=VARCHAR},#{item.roleKey,jdbcType=VARCHAR},#{item.status,jdbcType=CHAR},
+            #{item.delFlag,jdbcType=CHAR},#{item.createBy,jdbcType=VARCHAR}, #{item.createTime,jdbcType=DATETIME},#{item.updateBy,jdbcType=VARCHAR},
+            #{item.updateTime,jdbcType=DATETIME},#{item.remark,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+    <update id="update" parameterType="com.hy.project.demo.mybatis.entity.RoleDO">
+        UPDATE sys_role
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roleName != null">role_name=#{roleName},</if>
+            <if test="roleKey != null">role_key=#{roleKey},</if>
+            <if test="status != null">status=#{status},</if>
+            <if test="delFlag != null">del_flag=#{delFlag},</if>
+            <if test="createBy != null">create_by=#{createBy},</if>
+            <if test="createTime != null">create_time=#{createTime},</if>
+            <if test="updateBy != null">update_by=#{updateBy},</if>
+            <if test="updateTime != null">update_time=#{updateTime},</if>
+            <if test="remark != null">remark=#{remark},</if>
+        </trim>
+        <trim prefix="WHERE" prefixOverrides="AND">
+            <if test="roleId != null">AND role_id=#{roleId}</if>
+        </trim>
+    </update>
+
+    <update id="updateAll" parameterType="com.hy.project.demo.mybatis.entity.RoleDO">
+        <foreach collection="entities" item="item" index="index" separator=";">
+            UPDATE sys_role
+            <trim prefix="SET" suffixOverrides=",">
+                <if test="item.roleName != null">role_name=#{item.roleName},</if>
+                <if test="item.roleKey != null">role_key=#{item.roleKey},</if>
+                <if test="item.status != null">status=#{item.status},</if>
+                <if test="item.delFlag != null">del_flag=#{item.delFlag},</if>
+                <if test="item.createBy != null">create_by=#{item.createBy},</if>
+                <if test="item.createTime != null">create_time=#{item.createTime},</if>
+                <if test="item.updateBy != null">update_by=#{item.updateBy},</if>
+                <if test="item.updateTime != null">update_time=#{item.updateTime},</if>
+                <if test="item.remark != null">remark=#{item.remark},</if>
+            </trim>
+            <trim prefix="WHERE" prefixOverrides="AND">
+                <if test="item.roleId != null">AND role_id=#{item.roleId}</if>
+            </trim>
+        </foreach>
+    </update>
+
+    <select id="findById" resultType="com.hy.project.demo.mybatis.entity.RoleDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_role
+        WHERE role_id=#{id}
+    </select>
+
+    <select id="lockById" resultType="com.hy.project.demo.mybatis.entity.RoleDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_role
+        WHERE role_id=#{id}
+        FOR UPDATE
+    </select>
+
+    <select id="findByKey" resultType="com.hy.project.demo.mybatis.entity.RoleDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_role
+        WHERE role_key=#{key}
+    </select>
+
+    <select id="findAllById" resultType="com.hy.project.demo.mybatis.entity.RoleDO" parameterType="List">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_role
+        WHERE role_id
+        IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

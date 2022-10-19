@@ -17,4 +17,5 @@ public interface UserMapper extends CrudMapper<UserDO, String> {
 
     UserDO findByName(String name);
 
+    UserDO lockById(String id);
 }

@@ -42,6 +42,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     public UserDetails createLoginUser(SysUser user)
     {
-        return new LoginUser(user.getUserId(),  user, null);
+        return new LoginUser(user);
     }
 }

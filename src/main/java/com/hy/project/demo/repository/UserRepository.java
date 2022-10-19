@@ -18,6 +18,10 @@ public interface UserRepository {
 
     SysUser findByUserId(String userId);
 
+    void updateUser(SysUser sysUser);
+
+    SysUser lockByUserId(String userId);
+
     /**
      * 查询
      *

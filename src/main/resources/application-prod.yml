@@ -34,12 +34,13 @@ spring:
         test-while-idle: true
         test-on-borrow: false
         test-on-return: false
+        filters: stat,wall,logback
         web-stat-filter:
           enabled: true
         stat-view-servlet:
           enabled: true
           # 设置白名单，不填则允许所有访问
-          allow:
+          #allow:
           url-pattern: /druid/*
           # 控制台管理用户名和密码
           login-username: admin
@@ -111,3 +112,6 @@ sso:
     header: Authorization
     # 失效时间（分钟）
     expireTime: 30
+  user:
+    # 失效时间（分钟）(24小时）
+    expireTime: 1440

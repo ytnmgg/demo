@@ -32,28 +32,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public String insert(SysUser sysUser) {
-        //userMapper.insert(toDo(user));
-
+        UserDO userDO = toDo(sysUser);
         String userId = idGenerator.generateId(SequenceNameEnum.SEQ_USER_ID);
-        UserDO userDO = new UserDO();
         userDO.setUserId(userId);
-        userDO.setUserName(sysUser.getUserName());
-        userDO.setNickName(sysUser.getNickName());
-        userDO.setUserType(sysUser.getUserType());
-        userDO.setEmail(sysUser.getEmail());
-        userDO.setPhone(sysUser.getPhonenumber());
-        userDO.setSex(sysUser.getSex());
-        userDO.setAvatar(sysUser.getAvatar());
-        userDO.setPassword(sysUser.getPassword());
-        userDO.setStatus(sysUser.getStatus());
-        userDO.setDelFlag(sysUser.getDelFlag());
-        userDO.setLoginIp(sysUser.getLoginIp());
-        userDO.setLoginDate(sysUser.getLoginDate());
-        userDO.setCreateBy(sysUser.getUserName());
-        userDO.setCreateTime(new Date());
-        userDO.setUpdateBy(null);
-        userDO.setUpdateTime(null);
-        userDO.setRemark(null);
         userMapper.insert(userDO);
         return userId;
     }
@@ -67,6 +48,18 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public SysUser findByUserId(String userId) {
         UserDO userDO = userMapper.findById(userId);
+        return null == userDO ? null : toModel(userDO);
+    }
+
+    @Override
+    public void updateUser(SysUser sysUser) {
+        UserDO userDO = toDo(sysUser);
+        userMapper.update(userDO);
+    }
+
+    @Override
+    public SysUser lockByUserId(String userId) {
+        UserDO userDO = userMapper.lockById(userId);
         return null == userDO ? null : toModel(userDO);
     }
 
@@ -119,29 +112,31 @@ public class UserRepositoryImpl implements UserRepository {
         return result;
     }
 
-    //private UserDO toDo(User user) {
-    //    if (null == user) {
-    //        return null;
-    //    }
-    //
-    //    UserDO userDO = new UserDO();
-    //    if (StringUtils.isNotBlank(user.getUid())) {
-    //        userDO.setId(Long.valueOf(user.getUid()));
-    //    }
-    //    if (null != user.getGmtCreate()) {
-    //        userDO.setGmtCreate(user.getGmtCreate());
-    //    }
-    //    if (null != user.getGmtModified()) {
-    //        userDO.setGmtModified(user.getGmtModified());
-    //    }
-    //
-    //    userDO.setName(user.getName());
-    //    userDO.setRole(user.getRole());
-    //    userDO.setPassword(user.getPassword());
-    //    userDO.setStatus(user.getStatus());
-    //    return userDO;
-    //}
-    //
+    private UserDO toDo(SysUser sysUser) {
+        if (null == sysUser) {
+            return null;
+        }
+
+        UserDO userDO = new UserDO();
+        userDO.setUserName(sysUser.getUserName());
+        userDO.setNickName(sysUser.getNickName());
+        userDO.setUserType(sysUser.getUserType());
+        userDO.setEmail(sysUser.getEmail());
+        userDO.setPhone(sysUser.getPhonenumber());
+        userDO.setSex(sysUser.getSex());
+        userDO.setAvatar(sysUser.getAvatar());
+        userDO.setPassword(sysUser.getPassword());
+        userDO.setStatus(sysUser.getStatus());
+        userDO.setDelFlag(sysUser.getDelFlag());
+        userDO.setLoginIp(sysUser.getLoginIp());
+        userDO.setLoginDate(sysUser.getLoginDate());
+        userDO.setCreateBy(sysUser.getUserName());
+        userDO.setCreateTime(new Date());
+        userDO.setUpdateBy(null);
+        userDO.setUpdateTime(null);
+        userDO.setRemark(null);
+        return userDO;
+    }
 
     private SysUser toModel(UserDO userDO) {
         if (null == userDO) {

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
@@ -15,25 +17,24 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CustomFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
+    @Autowired
+    AuthorityConfigManager authorityConfigManager;
+
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         //获取请求路径
         String requestUri = ((FilterInvocation)object).getRequest().getRequestURI();
 
-        // TODO 加载配置：requestUrl -> 权限配置
+        String authCodes = authorityConfigManager.getAuthorities(requestUri);
 
-        // TODO 根据 requestUrl 从上面的配置中获取权限配置信息
-
-        // mock
         List<ConfigAttribute> attributes = new ArrayList<>();
-        if ("/user/list.json".equals(requestUri)) {
-            attributes.add(new ConfigAttribute() {
-                @Override
-                public String getAttribute() {
-                    return "USER_QUERY";
-                }
-            });
+
+        if (StringUtils.isNotBlank(authCodes)) {
+            for (String code : StringUtils.split(authCodes, ",")) {
+                attributes.add((ConfigAttribute)() -> code);
+            }
         }
+
         return attributes;
     }
 

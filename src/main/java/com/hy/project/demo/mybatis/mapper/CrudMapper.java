@@ -1,5 +1,7 @@
 package com.hy.project.demo.mybatis.mapper;
 
+import java.util.List;
+
 /**
  * @author rick.wl
  * @date 2022/09/19
@@ -7,23 +9,23 @@ package com.hy.project.demo.mybatis.mapper;
 public interface CrudMapper<DO, ID> {
     void insert(DO entity);
 
-    void insertAll(Iterable<DO> entities);
+    void insertAll(List<DO> entities);
 
     void update(DO entity);
 
-    void updateAll(Iterable<DO> entities);
+    void updateAll(List<DO> entities);
 
     DO findById(ID id);
 
-    Iterable<DO> findAllById(Iterable<ID> ids);
+    List<DO> findAllById(List<ID> ids);
 
-    Iterable<DO> findAll();
+    List<DO> findAll();
 
     long count();
 
     void deleteById(ID id);
 
-    void deleteAllById(Iterable<ID> ids);
+    void deleteAllById(List<ID> ids);
 
     void deleteAll();
 }

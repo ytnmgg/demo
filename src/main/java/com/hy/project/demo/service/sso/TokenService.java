@@ -2,7 +2,7 @@ package com.hy.project.demo.service.sso;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.hy.project.demo.security.LoginUser;
+import com.hy.project.demo.security.SysUser;
 
 /**
  * @author rick.wl
@@ -10,7 +10,9 @@ import com.hy.project.demo.security.LoginUser;
  */
 public interface TokenService {
 
-    LoginUser getLoginUser(HttpServletRequest request);
+    SysUser getUserByToken(HttpServletRequest request);
 
     String createToken(String userId);
+
+    void cacheToken(String token);
 }

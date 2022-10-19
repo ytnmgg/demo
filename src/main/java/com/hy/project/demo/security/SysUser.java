@@ -2,12 +2,17 @@ package com.hy.project.demo.security;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.google.common.collect.Lists;
+import com.hy.project.demo.model.user.Permission;
+import com.hy.project.demo.model.user.Role;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -86,20 +91,9 @@ public class SysUser implements Serializable {
     /**
      * 角色对象
      */
-    private List<SysRole> roles;
+    private List<Role> roles;
 
-    /**
-     * 角色组
-     */
-    private String[] roleIds;
-
-    public SysUser() {
-
-    }
-
-    public SysUser(String userId) {
-        this.userId = userId;
-    }
+    private List<Permission> permissions;
 
     public String getUserId() {
         return userId;
@@ -219,20 +213,19 @@ public class SysUser implements Serializable {
         this.loginDate = loginDate;
     }
 
-    public List<SysRole> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<SysRole> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
-    public String[] getRoleIds() {
-        return roleIds;
+    public List<Permission> getPermissions() {
+        return permissions;
     }
 
-    public void setRoleIds(String[] roleIds) {
-        this.roleIds = roleIds;
+    public void setPermissions(List<Permission> permissions) {
+        this.permissions = permissions;
     }
-
 }

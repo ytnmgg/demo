@@ -10,6 +10,14 @@ public enum SequenceNameEnum {
      */
     SEQ_USER_ID("10", "SEQ_USER_ID", "用户id序列号"),
 
+    SEQ_ROLE_ID("11", "SEQ_ROLE_ID", "角色id序列号"),
+
+    SEQ_PERMISSION_ID("12", "SEQ_PERMISSION_ID", "权限码id序列号"),
+
+    SEQ_USER_ROLE_ID("13", "SEQ_USER_ROLE_ID", "用户角色关系id序列号"),
+
+    SEQ_ROLE_PERMISSION_ID("14", "SEQ_ROLE_PERMISSION_ID", "角色权限码关系id序列号"),
+
     ;
 
     private String code;

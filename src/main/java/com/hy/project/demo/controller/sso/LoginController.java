@@ -47,7 +47,7 @@ public class LoginController {
     @PostMapping(LOGIN_REQUEST_URL)
     public @ResponseBody
     AjaxResult login(@RequestBody LoginRequest request, HttpServletResponse response) throws Throwable {
-        String token = loginService.login(request.getName(), request.getPassword(), request.getCallback(), response);
+        String token = loginService.login(request.getUsername(), request.getPassword(), request.getCallback(), response);
         return AjaxResult.success(token);
     }
 

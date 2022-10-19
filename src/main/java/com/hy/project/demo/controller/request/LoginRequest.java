@@ -5,16 +5,16 @@ package com.hy.project.demo.controller.request;
  * @date 2021/11/08
  */
 public class LoginRequest {
-    private String name;
+    private String username;
     private String password;
     private String callback;
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

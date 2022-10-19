@@ -93,7 +93,8 @@ INSERT INTO `sys_permission` (`permission_id`, `permission_name`, `permission_ke
 VALUES ('1220220909000001', '用户查询', 'USER_QUERY', 'admin', sysdate());
 INSERT INTO `sys_permission` (`permission_id`, `permission_name`, `permission_key`, `create_by`, `create_time`)
 VALUES ('1220220909000002', '用户管理', 'USER_MANAGE', 'admin', sysdate());
-
+INSERT INTO `sys_permission` (`permission_id`, `permission_name`, `permission_key`, `create_by`, `create_time`)
+VALUES ('1220220909000003', '登录普通', 'LOGIN_NORMAL', 'admin', sysdate());
 -- ----------------------------
 -- 3. 用户和角色关联表
 -- ----------------------------
@@ -118,7 +119,7 @@ CREATE TABLE `sys_user_role` (
 -- 初始化-用户和角色关联表数据
 -- ----------------------------
 INSERT INTO `sys_user_role` (`user_role_id`, `user_id`, `role_id`, `create_by`, `create_time`)
-VALUES ('1320220909000001', '0020220909000001', '0120220909000001', 'admin', sysdate());
+VALUES ('1320220909000001', '1020220909000001', '1120220909000001', 'admin', sysdate());
 
 -- ----------------------------
 -- 4. 角色和权限关联表
@@ -141,13 +142,14 @@ CREATE TABLE `sys_role_permission` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 comment='角色和权限关联表';
 
 -- ----------------------------
--- 初始化-用户和角色关联表数据
+-- 初始化-角色和权限关联表数据
 -- ----------------------------
 INSERT INTO `sys_role_permission` (`role_permission_id`, `role_id`, `permission_id`, `create_by`, `create_time`)
-VALUES ('1420220909000001', '0120220909000001', '0220220909000001', 'admin', sysdate());
+VALUES ('1420220909000001', '1120220909000001', '1220220909000001', 'admin', sysdate());
 INSERT INTO `sys_role_permission` (`role_permission_id`, `role_id`, `permission_id`, `create_by`, `create_time`)
-VALUES ('1420220909000002', '0120220909000001', '0220220909000002', 'admin', sysdate());
-
+VALUES ('1420220909000002', '1120220909000001', '1220220909000002', 'admin', sysdate());
+INSERT INTO `sys_role_permission` (`role_permission_id`, `role_id`, `permission_id`, `create_by`, `create_time`)
+VALUES ('1420220909000003', '1120220909000001', '1220220909000003', 'admin', sysdate());
 -- ----------------------------
 -- 5. sequence表
 -- ----------------------------
