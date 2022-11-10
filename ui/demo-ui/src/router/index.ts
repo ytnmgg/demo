@@ -30,7 +30,32 @@ export const routes: Array<RouteRecordRaw> = [
           title: "首页",
           icon: 'ep:home-filled',
           noCache: true,
-          affix: true
+          affix: true,
+          activeMenu: "index",
+        }
+      },
+      {
+        path: 'user',
+        component: () => import('@/views/User/User.vue'),
+        name: Names.USER,
+        meta: {
+          title: "用户管理",
+          icon: 'ep:home-filled',
+          noCache: true,
+          affix: true,
+          activeMenu: "user",
+        }
+      },
+      {
+        path: 'log-login',
+        component: () => import('@/views/log/LOGIN/LOGIN-LOG.vue'),
+        name: Names.LOGIN_LOG,
+        meta: {
+          title: "登录日志管理",
+          icon: 'ep:home-filled',
+          noCache: true,
+          affix: true,
+          activeMenu: "log-login",
         }
       }
     ]

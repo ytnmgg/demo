@@ -7,6 +7,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author rick.wl
@@ -20,7 +21,7 @@ public class IndexController {
     @Autowired
     private Environment env;
 
-    @RequestMapping("/")
+    @RequestMapping(value = {"/", "/**"}, method = RequestMethod.GET)
     public String indexPage(Model model) {
         model.addAttribute("front_version", env.getProperty("front.version"));
         return "index";

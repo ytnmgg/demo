@@ -13,10 +13,13 @@ import com.hy.project.demo.mybatis.entity.UserDO;
 import com.hy.project.demo.mybatis.mapper.UserMapper;
 import com.hy.project.demo.repository.UserRepository;
 import com.hy.project.demo.security.SysUser;
+import com.hy.project.demo.util.DateUtil;
 import com.hy.project.demo.util.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+
+import static com.hy.project.demo.util.DateUtil.STANDARD_STR;
 
 /**
  * @author rick.wl
@@ -112,12 +115,18 @@ public class UserRepositoryImpl implements UserRepository {
         return result;
     }
 
+    @Override
+    public void deleteByUserId(String userId) {
+        userMapper.deleteById(userId);
+    }
+
     private UserDO toDo(SysUser sysUser) {
         if (null == sysUser) {
             return null;
         }
 
         UserDO userDO = new UserDO();
+        userDO.setUserId(sysUser.getUserId());
         userDO.setUserName(sysUser.getUserName());
         userDO.setNickName(sysUser.getNickName());
         userDO.setUserType(sysUser.getUserType());
@@ -131,9 +140,9 @@ public class UserRepositoryImpl implements UserRepository {
         userDO.setLoginIp(sysUser.getLoginIp());
         userDO.setLoginDate(sysUser.getLoginDate());
         userDO.setCreateBy(sysUser.getUserName());
-        userDO.setCreateTime(new Date());
-        userDO.setUpdateBy(null);
-        userDO.setUpdateTime(null);
+        userDO.setCreateTime(DateUtil.parse(sysUser.getCreateTime(), STANDARD_STR));
+        userDO.setUpdateBy(sysUser.getUserName());
+        userDO.setUpdateTime(new Date());
         userDO.setRemark(null);
         return userDO;
     }
@@ -156,6 +165,12 @@ public class UserRepositoryImpl implements UserRepository {
         sysUser.setDelFlag(userDO.getDelFlag());
         sysUser.setLoginIp(userDO.getLoginIp());
         sysUser.setLoginDate(userDO.getLoginDate());
+        if (null != userDO.getCreateTime()) {
+            sysUser.setCreateTime(DateUtil.format(userDO.getCreateTime(), STANDARD_STR));
+        }
+        if (null != userDO.getUpdateTime()) {
+            sysUser.setUpdateTime(DateUtil.format(userDO.getUpdateTime(), STANDARD_STR));
+        }
         return sysUser;
     }
 }

@@ -16,6 +16,7 @@ import { setupRouter } from '@/router'
 // 引入组件库 element-plus
 import { setupElementPlus } from '@/plugins/elementPlus'
 
+
 const start = async () => {
   const app = createApp(App)
 

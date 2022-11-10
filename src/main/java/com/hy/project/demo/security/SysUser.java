@@ -2,15 +2,12 @@ package com.hy.project.demo.security;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.google.common.collect.Lists;
 import com.hy.project.demo.model.user.Permission;
 import com.hy.project.demo.model.user.Role;
 import org.apache.commons.lang3.StringUtils;
@@ -92,6 +89,11 @@ public class SysUser implements Serializable {
      * 角色对象
      */
     private List<Role> roles;
+
+    private String createTime;
+    private String updateTime;
+
+    private String token;
 
     private List<Permission> permissions;
 
@@ -227,5 +229,29 @@ public class SysUser implements Serializable {
 
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
     }
 }

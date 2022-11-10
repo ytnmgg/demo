@@ -34,6 +34,7 @@ import static com.hy.project.demo.constant.CommonConstants.LOGIN_REQUEST_URL;
 import static com.hy.project.demo.constant.CommonConstants.LOGOUT_REQUEST_URL;
 import static com.hy.project.demo.exception.DemoExceptionEnum.AUTH_STATUS_INVALID;
 import static com.hy.project.demo.util.SsoUtil.getToken;
+import static com.hy.project.demo.util.SsoUtil.isEscapeUri;
 
 /**
  * @author rick.wl
@@ -48,15 +49,6 @@ public class AuthFilter extends OncePerRequestFilter {
     private final static String TICKET_NAME = "login_ticket";
 
     private final static String SESSION_KEY_PREFIX = "SESSION:";
-    private final static Set<String> ESCAPE_PATH = new HashSet<>();
-
-    static {
-        ESCAPE_PATH.add(LOGIN_PAGE_URL);
-        ESCAPE_PATH.add(LOGIN_REQUEST_URL);
-        ESCAPE_PATH.add(LOGOUT_REQUEST_URL);
-        ESCAPE_PATH.add("/get_encrypt_key.json");
-        ESCAPE_PATH.add("/manifest.json");
-    }
 
     @Autowired
     LoginService loginService;
@@ -94,16 +86,16 @@ public class AuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean needAuth(String path) {
+    private boolean needAuth(String uri) {
         String authClose = environment.getProperty("auth.close");
         if (StringUtils.equalsIgnoreCase(authClose, Boolean.TRUE.toString())) {
             return false;
         }
 
-        if (ESCAPE_PATH.contains(path)) {
+        if (isEscapeUri(uri)) {
             return false;
-        } else if (StringUtils.endsWithIgnoreCase(path, "js") || StringUtils.endsWithIgnoreCase(path, "css")
-            || StringUtils.endsWithIgnoreCase(path, "ico") || StringUtils.endsWithIgnoreCase(path, "png")) {
+        } else if (StringUtils.endsWithIgnoreCase(uri, "js") || StringUtils.endsWithIgnoreCase(uri, "css")
+            || StringUtils.endsWithIgnoreCase(uri, "ico") || StringUtils.endsWithIgnoreCase(uri, "png")) {
             return false;
         } else {
             return true;

@@ -1,6 +1,8 @@
 package com.hy.project.demo.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -13,9 +15,11 @@ import com.hy.project.demo.service.sso.TokenService;
 import com.hy.project.demo.service.sso.impl.RsaServiceImpl;
 import com.hy.project.demo.util.SsoUtil;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -29,6 +33,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
+    private static final List<String> HANDLE_METHODS = new ArrayList<>();
 
     @Autowired
     RsaService rsaService;
@@ -36,21 +41,38 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     TokenService tokenService;
 
+    static {
+        HANDLE_METHODS.add(HttpMethod.GET.name());
+        HANDLE_METHODS.add(HttpMethod.HEAD.name());
+        HANDLE_METHODS.add(HttpMethod.POST.name());
+        HANDLE_METHODS.add(HttpMethod.PUT.name());
+        HANDLE_METHODS.add(HttpMethod.DELETE.name());
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         FilterChain filterChain) throws ServletException, IOException {
 
-        SysUser user = tokenService.getUserByToken(httpServletRequest);
+        if (needHandle(httpServletRequest)) {
 
-        // 设置安全上下文，业务代码获取当前用户信息都从SecurityContextHolder.getContext()获取
-        if (null != user) {
-            LoginUser loginUser = new LoginUser(user);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser,
-                null, loginUser.getAuthorities());
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            SysUser user = tokenService.getUserByToken(httpServletRequest);
+
+            // 设置安全上下文，业务代码获取当前用户信息都从SecurityContextHolder.getContext()获取
+            if (null != user) {
+                LoginUser loginUser = new LoginUser(user);
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                    loginUser,
+                    null, loginUser.getAuthorities());
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+    private boolean needHandle(HttpServletRequest request) {
+        String method = request.getMethod();
+        return HANDLE_METHODS.contains(method);
     }
 }

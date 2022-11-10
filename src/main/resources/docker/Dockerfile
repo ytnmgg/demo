@@ -1,5 +1,5 @@
 # 基础镜像使用java
-FROM java:8
+FROM openjdk:8
 # 作者
 LABEL author=rick<rick.wl@antfin.com>
 # 自定义标签，用于查询image的时候过滤：docker images -f label=type=demoapp -q

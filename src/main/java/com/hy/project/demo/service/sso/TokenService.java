@@ -15,4 +15,6 @@ public interface TokenService {
     String createToken(String userId);
 
     void cacheToken(String token);
+
+    void cleanToken(String token);
 }

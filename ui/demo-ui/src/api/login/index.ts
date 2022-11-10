@@ -28,6 +28,11 @@ export const loginApi = (data: UserLoginVO) => {
   return request.post({ url: '/login.json', data })
 }
 
+// 登出
+export const logoutApi = () => {
+  return request.post({ url: '/logout.json' })
+}
+
 // 刷新访问令牌
 export const refreshToken = () => {
   return request.post({ url: '/system/auth/refresh-token?refreshToken=' + getRefreshToken() })
@@ -38,10 +43,7 @@ export const getTenantIdByNameApi = (name: string) => {
   return request.get({ url: '/system/tenant/get-id-by-name?name=' + name })
 }
 
-// 登出
-export const loginOutApi = () => {
-  return request.delete({ url: '/system/auth/logout' })
-}
+
 
 // 获取用户权限信息
 export const getInfoApi = () => {

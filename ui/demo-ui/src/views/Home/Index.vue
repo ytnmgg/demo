@@ -6,19 +6,20 @@ import type { SysUser } from "@/api/user/types";
 
 const user = ref<SysUser>();
 
-const getUser = async () => {
-  const res = await UserApi.getMe();
-  user.value = res;
-};
+// const getUser = async () => {
+//   const res = await UserApi.getMe();
+//   user.value = res;
+// };
 
-onMounted(async () => {
-  await getUser();
-});
+// onMounted(async () => {
+//   await getUser();
+// });
 
 </script>
 
 <template>
-  <div v-if="user">Welcome {{ user.nickName }} !</div>
+  <!-- <div v-if="user">Welcome {{ user.nickName }} !</div> -->
+  <div>in home</div>
 </template>
 
 <style></style>

@@ -56,4 +56,6 @@ public interface UserRepository {
      * @return 结果
      */
     PageResult<List<SysUser>> pageList(int pageIndex, int pageSize);
+
+    void deleteByUserId(String userId);
 }

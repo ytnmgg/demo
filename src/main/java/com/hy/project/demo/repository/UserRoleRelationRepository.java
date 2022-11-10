@@ -12,4 +12,5 @@ public interface UserRoleRelationRepository {
 
     List<String> findRolesByUserId(String userId);
 
+    void deleteByUserId(String userId);
 }

@@ -100,13 +100,14 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public void logout(HttpServletRequest request) {
-        String token = getToken(request, COOKIE_SESSION_KEY_PREFIX);
-        if (StringUtils.isBlank(token)) {
-            return;
-        }
 
-        String key = createRedisUserInfoKey(token);
-        redisService.remove(key);
+        SysUser sysUser = userService.getMe();
+
+        if (null != sysUser) {
+            tokenService.cleanToken(sysUser.getToken());
+
+            userService.clearUser(sysUser.getUserId());
+        }
     }
 
     @Override

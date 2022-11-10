@@ -11,6 +11,8 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.stereotype.Component;
 
+import static com.hy.project.demo.util.SsoUtil.isEscapeUri;
+
 /**
  * @author rick.wl
  * @date 2022/09/13
@@ -29,7 +31,13 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
 
         List<ConfigAttribute> attributes = new ArrayList<>();
 
-        if (StringUtils.isNotBlank(authCodes)) {
+        if (StringUtils.isBlank(authCodes)) {
+            // 没配置权限，默认按LOGIN_NORMAL处理
+            if (needLoginCheck(requestUri)) {
+                attributes.add((ConfigAttribute)() -> "LOGIN_NORMAL");
+            }
+
+        } else {
             for (String code : StringUtils.split(authCodes, ",")) {
                 attributes.add((ConfigAttribute)() -> code);
             }
@@ -46,5 +54,18 @@ public class CustomFilterInvocationSecurityMetadataSource implements FilterInvoc
     @Override
     public boolean supports(Class<?> clazz) {
         return true;
+    }
+
+    private boolean needLoginCheck(String requestUri) {
+        if (StringUtils.isBlank(requestUri)) {
+            return false;
+        }
+
+        if (!requestUri.endsWith(".json")) {
+            // 非ajax请求，页面请求，不用鉴权
+            return false;
+        }
+
+        return !isEscapeUri(requestUri);
     }
 }

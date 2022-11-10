@@ -11,7 +11,6 @@ import {
 } from "element-plus";
 import { useLoginState, LoginStateEnum } from "./useLogin";
 import type { FormInstance } from "element-plus";
-import { useIcon } from "@/hooks/web/useIcon";
 import { required, lengthValidate } from "@/utils/formRules";
 import { zxcvbn } from "@zxcvbn-ts/core";
 import * as LoginApi from "@/api/login";
@@ -22,10 +21,6 @@ import { encrypt } from "@/utils/jsencrypt";
 const { handleBackLogin, getLoginState } = useLoginState();
 
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.REGISTER);
-
-const iconAvatar = useIcon({ icon: "ep:avatar" });
-
-const iconLock = useIcon({ icon: "ep:lock" });
 
 const formRegister = ref<FormInstance>();
 
@@ -113,7 +108,6 @@ const handleRegister = async () => {
     await UserApi.register(data);
 
     afterRegisterSuccess();
-
   } catch (err) {
     registerLoading.value = false;
   }
@@ -121,15 +115,15 @@ const handleRegister = async () => {
 
 const afterRegisterSuccess = () => {
   ElMessage({
-    message: '注册成功，马上跳转登录页面登录...',
-    type: 'success',
+    message: "注册成功，马上跳转登录页面登录...",
+    type: "success",
     onClose: () => {
       formRegister.value!.resetFields();
       registerLoading.value = false;
       handleBackLogin();
-    }
+    },
   });
-}
+};
 
 // 密码强度显示
 const percentage = ref(0);
@@ -189,50 +183,100 @@ const checkPasswordChange = (value: string) => {
 </script>
 
 <template>
-  <el-form :model="registerData.registerForm" :rules="RegisterRules" label-position="top" label-width="120px"
-    size="large" v-show="getShow" ref="formRegister">
+  <el-form
+    :model="registerData.registerForm"
+    :rules="RegisterRules"
+    label-position="top"
+    label-width="120px"
+    size="large"
+    v-show="getShow"
+    ref="formRegister"
+  >
     <el-row>
       <el-col :span="24" class="pl-10px pr-10px flex justify-center items-center">
         <el-form-item>
-          <h2 class="mb-3 text-2xl font-bold text-center text-sky-800 xl:text-3xl enter-x xl:text-center">
+          <h2
+            class="mb-3 text-2xl font-bold text-center text-sky-800 xl:text-3xl enter-x xl:text-center"
+          >
             账号注册
           </h2>
         </el-form-item>
       </el-col>
       <el-col :span="24" class="pl-10px pr-10px mb-[-10px]">
         <el-form-item prop="username">
-          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center">用户名</span>
-          <el-input v-model="registerData.registerForm.username" placeholder="请输入用户名称" :prefix-icon="iconAvatar" />
+          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
+            >用户名</span
+          >
+          <el-input
+            v-model="registerData.registerForm.username"
+            placeholder="请输入用户名称"
+          >
+            <template #prepend> <i-ep-avatar /> </template
+          ></el-input>
         </el-form-item>
       </el-col>
       <el-col :span="24" class="pl-10px pr-10px">
         <el-form-item prop="password">
-          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center">密码</span>
-          <el-input v-model="registerData.registerForm.password" type="password" placeholder="请输入密码" show-password
-            :prefix-icon="iconLock" @input="passwordChange" />
+          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
+            >密码</span
+          >
+          <el-input
+            v-model="registerData.registerForm.password"
+            type="password"
+            placeholder="请输入密码"
+            show-password
+            @input="passwordChange"
+          >
+            <template #prepend> <i-ep-lock /> </template
+          ></el-input>
         </el-form-item>
         <div class="password-strength">
-          <el-progress :percentage="percentage" :color="customColorMethod" :format="customProgressText" />
+          <el-progress
+            :percentage="percentage"
+            :color="customColorMethod"
+            :format="customProgressText"
+          />
         </div>
       </el-col>
       <el-col :span="24" class="pl-10px pr-10px">
         <el-form-item prop="checkPassword">
-          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center">确认密码</span>
-          <el-input v-model="registerData.registerForm.checkPassword" type="password" placeholder="请确认密码" show-password
-            :prefix-icon="iconLock" @input="checkPasswordChange" />
+          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
+            >确认密码</span
+          >
+          <el-input
+            v-model="registerData.registerForm.checkPassword"
+            type="password"
+            placeholder="请确认密码"
+            show-password
+            @input="checkPasswordChange"
+          >
+            <template #prepend> <i-ep-lock /> </template
+          ></el-input>
         </el-form-item>
         <div class="password-strength">
-          <el-progress :percentage="checkPercentage" :color="customColorMethod" :format="customProgressText" />
+          <el-progress
+            :percentage="checkPercentage"
+            :color="customColorMethod"
+            :format="customProgressText"
+          />
         </div>
       </el-col>
       <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
         <el-form-item>
-          <el-button :loading="registerLoading" type="primary" class="w-[100%]" @click="handleRegister">注册</el-button>
+          <el-button
+            :loading="registerLoading"
+            type="primary"
+            class="w-[100%]"
+            @click="handleRegister"
+            >注册</el-button
+          >
         </el-form-item>
       </el-col>
       <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
         <el-form-item>
-          <el-button class="w-[100%]" @click="handleBackLogin">已有账号？去登录</el-button>
+          <el-button class="w-[100%]" @click="handleBackLogin"
+            >已有账号？去登录</el-button
+          >
         </el-form-item>
       </el-col>
     </el-row>

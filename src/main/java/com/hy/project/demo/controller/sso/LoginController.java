@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.hy.project.demo.controller.request.LoginRequest;
 import com.hy.project.demo.model.AjaxResult;
-import com.hy.project.demo.model.DemoResult;
 import com.hy.project.demo.service.sso.LoginService;
 import com.hy.project.demo.service.sso.RsaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,16 +37,17 @@ public class LoginController {
     @Autowired
     private Environment env;
 
-    @RequestMapping(LOGIN_PAGE_URL)
-    public String loginPage(Model model) {
-        model.addAttribute("front_sso_version", env.getProperty("front.sso.version"));
-        return "login";
-    }
+    //@RequestMapping(LOGIN_PAGE_URL)
+    //public String loginPage(Model model) {
+    //    model.addAttribute("front_sso_version", env.getProperty("front.sso.version"));
+    //    return "login";
+    //}
 
     @PostMapping(LOGIN_REQUEST_URL)
     public @ResponseBody
     AjaxResult login(@RequestBody LoginRequest request, HttpServletResponse response) throws Throwable {
-        String token = loginService.login(request.getUsername(), request.getPassword(), request.getCallback(), response);
+        String token = loginService.login(request.getUsername(), request.getPassword(), request.getCallback(),
+            response);
         return AjaxResult.success(token);
     }
 
@@ -60,9 +60,9 @@ public class LoginController {
 
     @PostMapping(LOGOUT_REQUEST_URL)
     public @ResponseBody
-    DemoResult<Void> logout(HttpServletRequest httpReq) {
+    AjaxResult logout(HttpServletRequest httpReq) {
         loginService.logout(httpReq);
-        return DemoResult.buildSuccessResult(null);
+        return AjaxResult.success(null);
     }
 
 }

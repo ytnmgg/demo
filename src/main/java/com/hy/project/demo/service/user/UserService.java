@@ -34,6 +34,13 @@ public interface UserService {
 
     SysUser getMe();
 
+    void clearUser(String userId);
+
+    void deleteUser(String userId);
+
+    void updateUserPassword(String userId, String newPwd);
+
+
     /**
      * 创建新用户
      *

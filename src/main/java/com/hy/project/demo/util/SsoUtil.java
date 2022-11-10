@@ -1,8 +1,12 @@
 package com.hy.project.demo.util;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +15,10 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.web.util.WebUtils;
+
+import static com.hy.project.demo.constant.CommonConstants.LOGIN_PAGE_URL;
+import static com.hy.project.demo.constant.CommonConstants.LOGIN_REQUEST_URL;
+import static com.hy.project.demo.constant.CommonConstants.LOGOUT_REQUEST_URL;
 
 /**
  * @author rick.wl
@@ -25,7 +33,20 @@ public class SsoUtil {
 
     private static final String REDIS_USER_INFO_PREFIX = "USER";
     private static final String REDIS_TOKEN_PREFIX = "TOKEN";
+    private final static List<String> ESCAPE_PATH = new ArrayList<>();
 
+    static {
+        ESCAPE_PATH.add(LOGIN_PAGE_URL);
+        ESCAPE_PATH.add(LOGIN_REQUEST_URL);
+        ESCAPE_PATH.add(LOGOUT_REQUEST_URL);
+        ESCAPE_PATH.add("/get_encrypt_key.json");
+        ESCAPE_PATH.add("/manifest.json");
+        ESCAPE_PATH.add("/user/register.json");
+    }
+
+    public static boolean isEscapeUri(String uri) {
+        return ESCAPE_PATH.contains(uri);
+    }
 
     public static String createToken(String uuid, String uid, Key secret) {
         Map<String, Object> claims = new HashMap<>();

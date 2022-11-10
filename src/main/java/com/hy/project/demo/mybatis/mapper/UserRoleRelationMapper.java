@@ -14,4 +14,5 @@ public interface UserRoleRelationMapper extends CrudMapper<UserRoleRelationDO, S
 
     List<UserRoleRelationDO> findByUserId(String userId);
 
+    void deleteByUserId(String userId);
 }

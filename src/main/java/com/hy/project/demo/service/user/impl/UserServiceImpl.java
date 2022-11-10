@@ -19,9 +19,11 @@ import com.hy.project.demo.repository.UserRoleRelationRepository;
 import com.hy.project.demo.security.LoginUser;
 import com.hy.project.demo.security.SysUser;
 import com.hy.project.demo.service.common.RedisService;
+import com.hy.project.demo.service.sso.RsaService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.EnvUtil;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +67,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RedisService redisService;
+
+    @Autowired
+    RsaService rsaService;
+
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public User getUserById(String uid) {
@@ -150,6 +159,34 @@ public class UserServiceImpl implements UserService {
         }
         LoginUser loginUser = (LoginUser)authentication.getPrincipal();
         return loginUser.getUser();
+    }
+
+    @Override
+    public void clearUser(String userId) {
+        String key = createRedisUserInfoKey(userId);
+        redisService.remove(key);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void deleteUser(String userId) {
+        userRepository.deleteByUserId(userId);
+        userRoleRelationRepository.deleteByUserId(userId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateUserPassword(String userId, String newPwd) {
+        SysUser user = userRepository.lockByUserId(userId);
+        AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", userId);
+
+        // 用RSA私钥解密前端加密后的用户登录密码
+        String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(newPwd));
+        // 加密用户密码
+        String encoded = bCryptPasswordEncoder.encode(pwd);
+
+        user.setPassword(encoded);
+        userRepository.updateUser(user);
     }
 
     @Transactional(rollbackFor = Exception.class)

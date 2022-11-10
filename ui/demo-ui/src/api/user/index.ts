@@ -1,5 +1,5 @@
 import { useAxios } from '@/hooks/web/useAxios'
-import type { UserRegisterVO } from './types';
+import type { UserRegisterVO, PageRequest, SysUser } from './types';
 
 const request = useAxios()
 
@@ -13,30 +13,39 @@ export const register = (data: UserRegisterVO) => {
     return request.post({ url: '/user/register.json', data })
 }
 
-// // 查询用户管理列表
-// export const getUserPageApi = (params) => {
-//   return request.get({ url: '/system/user/page', params })
-// }
+// 查询用户管理列表
+export const getUserPageApi = (params: PageRequest) => {
+    return request.get({ url: '/user/list.json', params })
+}
 
-// // 查询用户详情
-// export const getUserApi = (id: number) => {
-//   return request.get({ url: '/system/user/get?id=' + id })
-// }
+// 查询用户详情
+export const getById = (userId: string) => {
+    return request.get({ url: '/user/getById.json?userId=' + userId })
+}
+
+// 修改用户
+export const updateUser = (data: SysUser) => {
+    return request.post({ url: '/user/update.json', data })
+}
+
+// 删除用户
+export const deleteUser = (data: string) => {
+  return request.post({ url: '/user/deleteById.json', data })
+}
+
+// 用户密码重置
+export const resetUserPwd = (data: SysUser) => {
+  return request.post({ url: '/user/updatePwd.json', data })
+}
 
 // // 新增用户
 // export const createUserApi = (data: UserVO) => {
 //   return request.post({ url: '/system/user/create', data })
 // }
 
-// // 修改用户
-// export const updateUserApi = (data: UserVO) => {
-//   return request.put({ url: '/system/user/update', data })
-// }
 
-// // 删除用户
-// export const deleteUserApi = (id: number) => {
-//   return request.delete({ url: '/system/user/delete?id=' + id })
-// }
+
+
 
 // // 导出用户
 // export const exportUserApi = (params) => {

@@ -80,7 +80,10 @@ public class TokenServiceImpl implements TokenService {
             touchToken(token);
 
             // 通过userId去缓存拿用户并刷新缓存时间（没有就放进去）
-            return userService.touchUser(userId);
+            SysUser user = userService.touchUser(userId);
+            user.setToken(token);
+
+            return user;
 
         } catch (Exception e) {
             LOGGER.error("parse user info failed", e);
@@ -99,6 +102,12 @@ public class TokenServiceImpl implements TokenService {
         String key = createRedisTokenKey(token);
         boolean result = redisService.set(key, "", getTokenExpireTime(), TimeUnit.MINUTES);
         AssertUtil.isTrue(result, DemoExceptionEnum.REDIS_EXCEPTION, "cache token error");
+    }
+
+    @Override
+    public void cleanToken(String token) {
+        String key = createRedisTokenKey(token);
+        redisService.remove(key);
     }
 
     private boolean checkTokenInCache(String tokenKey) {

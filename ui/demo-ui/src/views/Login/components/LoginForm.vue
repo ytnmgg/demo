@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useIcon } from "@/hooks/web/useIcon";
 import {
   ElForm,
   ElFormItem,
@@ -40,8 +39,6 @@ const { setLoginState, getLoginState } = useLoginState();
 const getShow = computed(() => unref(getLoginState) === LoginStateEnum.LOGIN);
 
 const redirect = ref<string>("");
-const iconAvatar = useIcon({ icon: "ep:avatar" });
-const iconLock = useIcon({ icon: "ep:lock" });
 const LoginRules = {
   username: [required, lengthValidate(3, 10)],
   password: [required, lengthValidate(3, 20)],
@@ -171,11 +168,11 @@ onMounted(() => {
       </el-col>
       <el-col :span="24" class="pl-10px pr-10px">
         <el-form-item prop="username">
-          <el-input
-            v-model="loginData.loginForm.username"
-            placeholder="请输入用户名称"
-            :prefix-icon="iconAvatar"
-          />
+          <el-input v-model="loginData.loginForm.username" placeholder="请输入用户名称">
+            <template #prepend>
+              <i-ep-avatar />
+            </template>
+          </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="24" class="pl-10px pr-10px">
@@ -185,8 +182,11 @@ onMounted(() => {
             type="password"
             placeholder="请输入密码"
             show-password
-            :prefix-icon="iconLock"
-          />
+          >
+            <template #prepend>
+              <i-ep-lock />
+            </template>
+          </el-input>
         </el-form-item>
       </el-col>
       <el-col :span="24" class="pl-10px pr-10px mt-[-10px] mb-[-20px]">

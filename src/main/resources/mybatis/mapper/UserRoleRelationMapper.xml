@@ -23,4 +23,9 @@
         FROM sys_user_role
         WHERE user_id=#{userId}
     </select>
+
+    <delete id="deleteByUserId">
+        DELETE FROM sys_user_role
+        WHERE user_id=#{id}
+    </delete>
 </mapper>

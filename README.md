@@ -1,8 +1,10 @@
 # 依赖安装
 
 ## 启动并配置nginx
-systemctl status nginx
+yum install nginx
+
 systemctl start nginx
+systemctl status nginx
 
 配置nginx：
 /etc/nginx/nginx.conf
@@ -49,7 +51,6 @@ http {
         listen       80;
         listen       [::]:80;
         server_name  _;
-        "/etc/nginx/nginx.conf" 104L, 3802C                                                                                                      14,1         顶端
         gzip_buffers 4 16k;      #设置gzip申请内存的大小,其作用是按块大小的倍数申请内存空间,param2:int(k) 后面单位是k。这里设置以16k为单位,按照原始数据大小
         以16k为单位的4倍申请内存
         gzip_http_version 1.1;   #识别http协议的版本,早起浏览器可能不支持gzip自解压,用户会看到乱码
@@ -80,9 +81,23 @@ http {
         location /static/ {
            root /data/app/front;
         }
+        
+#        location / {
+#            proxy_pass http://127.0.0.1:8080$request_uri;
+#        }
+
+        location /assets {
+            alias /data/app/front/assets;
+        }
     }
 }
 ```
+
+### 重新加载配置
+sudo nginx -s reload
+或
+sudo systemctl reload nginx
+
 
 
 ## 创建docker网络
@@ -118,5 +133,14 @@ docker run -d -p 6379:6379 --network mynet --network-alias redis01 --name redis0
 docker ps
 docker exec -it 32320064d6f0 redis-cli
 
+## 其它准备
+### 文件夹路径准备好
+mkdir -p /data/app/config
 
+# 前端部署
+cd ui/demo-ui 
+sh deploy.sh
+
+# 部署后端
+sh src/main/resources/docker/deploy.sh
 

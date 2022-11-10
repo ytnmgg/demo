@@ -52,4 +52,9 @@ public class UserRoleRelationRepositoryImpl implements UserRoleRelationRepositor
 
         return relationDoList.stream().map(UserRoleRelationDO::getRoleId).collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteByUserId(String userId) {
+        userRoleRelationMapper.deleteByUserId(userId);
+    }
 }

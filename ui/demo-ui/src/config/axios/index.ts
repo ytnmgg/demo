@@ -122,39 +122,40 @@ service.interceptors.response.use(
       // 如果是忽略的错误码，直接返回 msg 异常
       return Promise.reject(msg)
     } else if (code === 401) {
+      return handleAuthorized();
       // 如果未认证，并且未进行刷新令牌，说明可能是访问令牌过期了
-      if (!isRefreshToken) {
-        isRefreshToken = true
-        // 1. 如果获取不到刷新令牌，则只能执行登出操作
-        if (!getRefreshToken()) {
-          return handleAuthorized()
-        }
-        // 2. 进行刷新访问令牌
-        try {
-          const refreshTokenRes = await refreshToken()
-          // 2.1 刷新成功，则回放队列的请求 + 当前请求
-          setToken(refreshTokenRes.data)
-          requestList.forEach((cb: any) => cb())
-          return service(response.config)
-        } catch (e) {
-          // 为什么需要 catch 异常呢？刷新失败时，请求因为 Promise.reject 触发异常。
-          // 2.2 刷新失败，只回放队列的请求
-          requestList.forEach((cb: any) => cb())
-          // 提示是否要登出。即不回放当前请求！不然会形成递归
-          return handleAuthorized()
-        } finally {
-          requestList = []
-          isRefreshToken = false
-        }
-      } else {
-        // 添加到队列，等待刷新获取到新的令牌
-        return new Promise((resolve) => {
-          requestList.push(() => {
-            ; (config as Recordable).headers.Authorization = 'Bearer ' + getAccessToken() // 让每个请求携带自定义token 请根据实际情况自行修改
-            resolve(service(response.config))
-          })
-        })
-      }
+      // if (!isRefreshToken) {
+      //   isRefreshToken = true
+      //   // 1. 如果获取不到刷新令牌，则只能执行登出操作
+      //   if (!getRefreshToken()) {
+      //     return handleAuthorized()
+      //   }
+      //   // 2. 进行刷新访问令牌
+      //   try {
+      //     const refreshTokenRes = await refreshToken()
+      //     // 2.1 刷新成功，则回放队列的请求 + 当前请求
+      //     setToken(refreshTokenRes.data)
+      //     requestList.forEach((cb: any) => cb())
+      //     return service(response.config)
+      //   } catch (e) {
+      //     // 为什么需要 catch 异常呢？刷新失败时，请求因为 Promise.reject 触发异常。
+      //     // 2.2 刷新失败，只回放队列的请求
+      //     requestList.forEach((cb: any) => cb())
+      //     // 提示是否要登出。即不回放当前请求！不然会形成递归
+      //     return handleAuthorized()
+      //   } finally {
+      //     requestList = []
+      //     isRefreshToken = false
+      //   }
+      // } else {
+      //   // 添加到队列，等待刷新获取到新的令牌
+      //   return new Promise((resolve) => {
+      //     requestList.push(() => {
+      //       ; (config as Recordable).headers.Authorization = 'Bearer ' + getAccessToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+      //       resolve(service(response.config))
+      //     })
+      //   })
+      // }
     } else if (code === 500) {
       ElMessage.error(t('sys.api.errMsg500'))
       return Promise.reject(new Error(msg))

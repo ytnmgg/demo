@@ -12,6 +12,7 @@ import com.hy.project.demo.security.SysUser;
 import com.hy.project.demo.service.sso.LoginService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
+import com.hy.project.demo.util.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,8 +45,12 @@ public class UserController {
 
     @PostMapping("/register.json")
     public AjaxResult register(@RequestBody LoginRequest request) {
-        String userId = loginService.register(request.getUsername(), request.getPassword());
-        return AjaxResult.success(userId);
+        // mock
+        return AjaxResult.fail(ResultUtil.CODE_403, "暂不支持");
+
+        // 权限管理完善前，注册功能暂时不开放
+        //String userId = loginService.register(request.getUsername(), request.getPassword());
+        //return AjaxResult.success(userId);
     }
 
     @GetMapping("/me.json")
@@ -53,4 +58,29 @@ public class UserController {
         SysUser me = userService.getMe();
         return AjaxResult.success(me);
     }
+
+    @GetMapping("/getById.json")
+    public AjaxResult getById(String userId) {
+        SysUser user = userService.loadSysUserByUserId(userId);
+        return AjaxResult.success(user);
+    }
+
+    @PostMapping("/update.json")
+    public AjaxResult update(@RequestBody SysUser user) {
+        userService.updateSysUser(user);
+        return AjaxResult.success(null);
+    }
+
+    @PostMapping("/deleteById.json")
+    public AjaxResult deleteById(@RequestBody SysUser user) {
+        userService.deleteUser(user.getUserId());
+        return AjaxResult.success(null);
+    }
+
+    @PostMapping("/updatePwd.json")
+    public AjaxResult updatePwd(@RequestBody SysUser user) {
+        userService.updateUserPassword(user.getUserId(), user.getPassword());
+        return AjaxResult.success(null);
+    }
+
 }
