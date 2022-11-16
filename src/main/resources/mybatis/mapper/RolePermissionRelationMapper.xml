@@ -16,6 +16,19 @@
         (#{rolePermissionId},#{roleId},#{permissionId},#{createBy},now(),#{updateBy},#{updateTime},#{remark})
     </insert>
 
+    <insert id="insertAll">
+        INSERT INTO sys_role_permission
+        (
+        <include refid="all_columns"/>
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.rolePermissionId,jdbcType=VARCHAR},#{item.roleId,jdbcType=VARCHAR},#{item.permissionId,jdbcType=VARCHAR},
+            #{item.createBy,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateBy,jdbcType=VARCHAR},#{item.updateTime,jdbcType=TIMESTAMP},#{item.remark,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
 
     <select id="findByRoleId" resultType="com.hy.project.demo.mybatis.entity.RolePermissionRelationDO">
         SELECT
@@ -23,6 +36,11 @@
         FROM sys_role_permission
         WHERE role_id=#{roleId}
     </select>
+
+    <delete id="deleteByRoleId">
+        DELETE FROM sys_role_permission
+        WHERE role_id=#{roleId}
+    </delete>
 
     <select id="findByRoleIds" resultType="com.hy.project.demo.mybatis.entity.RolePermissionRelationDO" parameterType="List">
         SELECT

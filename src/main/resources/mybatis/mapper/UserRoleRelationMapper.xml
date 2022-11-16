@@ -17,6 +17,21 @@
     </insert>
 
 
+    <insert id="insertAll">
+        INSERT INTO sys_user_role
+        (
+        <include refid="all_columns"/>
+        )
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.userRoleId,jdbcType=VARCHAR},#{item.userId,jdbcType=VARCHAR},#{item.roleId,jdbcType=VARCHAR},
+            #{item.createBy,jdbcType=VARCHAR},#{item.createTime,jdbcType=TIMESTAMP},
+            #{item.updateBy,jdbcType=VARCHAR},#{item.updateTime,jdbcType=TIMESTAMP},#{item.remark,jdbcType=VARCHAR}
+            )
+        </foreach>
+    </insert>
+
+
     <select id="findByUserId" resultType="com.hy.project.demo.mybatis.entity.UserRoleRelationDO">
         SELECT
         <include refid="all_columns"/>
@@ -24,8 +39,20 @@
         WHERE user_id=#{userId}
     </select>
 
+    <select id="findByUserIds" resultType="com.hy.project.demo.mybatis.entity.UserRoleRelationDO" parameterType="List">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_user_role
+        WHERE user_id
+        IN
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
     <delete id="deleteByUserId">
         DELETE FROM sys_user_role
         WHERE user_id=#{id}
     </delete>
+
 </mapper>

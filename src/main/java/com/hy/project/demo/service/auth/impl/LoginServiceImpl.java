@@ -1,18 +1,13 @@
-package com.hy.project.demo.service.sso.impl;
-
-import java.util.concurrent.TimeUnit;
+package com.hy.project.demo.service.auth.impl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONObject;
-
-import com.hy.project.demo.model.sso.Account;
 import com.hy.project.demo.security.SysUser;
+import com.hy.project.demo.service.auth.LoginService;
+import com.hy.project.demo.service.auth.RsaService;
+import com.hy.project.demo.service.auth.TokenService;
 import com.hy.project.demo.service.common.RedisService;
-import com.hy.project.demo.service.sso.LoginService;
-import com.hy.project.demo.service.sso.RsaService;
-import com.hy.project.demo.service.sso.TokenService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import org.apache.commons.codec.binary.Base64;
@@ -21,12 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.hy.project.demo.constant.CommonConstants.COOKIE_SESSION_KEY_PREFIX;
 import static com.hy.project.demo.exception.DemoExceptionEnum.INVALID_PARAM_EXCEPTION;
 import static com.hy.project.demo.exception.DemoExceptionEnum.USER_NAME_LENGTH_INVALID;
 import static com.hy.project.demo.exception.DemoExceptionEnum.USER_PASSWORD_LENGTH_INVALID;
-import static com.hy.project.demo.util.SsoUtil.createRedisUserInfoKey;
-import static com.hy.project.demo.util.SsoUtil.getToken;
 
 /**
  * @author rick.wl
@@ -108,22 +100,6 @@ public class LoginServiceImpl implements LoginService {
 
             userService.clearUser(sysUser.getUserId());
         }
-    }
-
-    @Override
-    public Account getAccountByToken(String token) {
-        String key = createRedisUserInfoKey(token);
-        Object accountObj = redisService.get(key);
-        if (null == accountObj) {
-            return null;
-        }
-        return JSONObject.toJavaObject((JSONObject)accountObj, Account.class);
-    }
-
-    @Override
-    public void refreshToken(String token) {
-        String key = createRedisUserInfoKey(token);
-        redisService.expire(key, REDIS_SESSION_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
 
     private void validateUserForCreate(String name, String password) {

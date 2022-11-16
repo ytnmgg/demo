@@ -8,15 +8,11 @@ export type SysUser = {
     sex?: string
     avatar?: string
     status?: string
+    roles?: Array<object>
 }
 
 
 export type UserRegisterVO = {
     username: string
     password: string
-  }
-
-export type PageRequest = {
-    pageSize: number
-    pageIndex: number
 }

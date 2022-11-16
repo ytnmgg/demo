@@ -2,7 +2,8 @@ package com.hy.project.demo.repository;
 
 import java.util.List;
 
-import com.hy.project.demo.model.user.Role;
+import com.hy.project.demo.model.PageResult;
+import com.hy.project.demo.model.user.RoleBase;
 
 /**
  * @author rick.wl
@@ -10,11 +11,17 @@ import com.hy.project.demo.model.user.Role;
  */
 public interface RoleRepository {
 
-    String insert(Role role);
+    String insert(RoleBase role);
 
-    Role findByKey(String key);
+    RoleBase findByKey(String key);
 
-    Role findByRoleId(String roleId);
+    RoleBase findByRoleId(String roleId);
 
-    List<Role> findByRoleIds(List<String> roleIds);
+    RoleBase lockByRoleId(String roleId);
+
+    List<RoleBase> findByRoleIds(List<String> roleIds);
+
+    PageResult<List<RoleBase>> pageList(int pageIndex, int pageSize);
+
+    void deleteById(String id);
 }

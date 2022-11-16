@@ -13,6 +13,7 @@ import {
   ElDropdownMenu,
   ElDropdownItem,
   ElMessageBox,
+  ElDialog,
 } from "element-plus";
 import zhCn from "element-plus/lib/locale/lang/zh-cn";
 
@@ -21,7 +22,10 @@ import * as LoginApi from "@/api/login";
 import type { SysUser } from "@/api/user/types";
 import { transferUserType, transferUserStatus } from "@/api/user/util";
 import UserDetail from "./UserDetail.vue";
+import SetRole from "./SetRole.vue";
+
 import { encrypt } from "@/utils/jsencrypt";
+import IconVenetianMask from "~icons/lucide/venetian-mask";
 
 const locale = ref(zhCn);
 
@@ -116,34 +120,50 @@ const handleDeleteClick = (row: SysUser) => {
     });
 };
 
-const handleResetPwd = (row: SysUser) => {
-  ElMessageBox.prompt("请输入新密码", "重置密码", {
-    confirmButtonText: "确定",
-    cancelButtonText: "取消",
-    inputPattern: /^(?=.*\S).+$/,
-    inputErrorMessage: "请输入新的密码",
-    callback: async (action, instance) => {
-      if (action.action == "confirm") {
-        instance.confirmButtonLoading = true;
+// ============= 重置密码相关 =============
+const resetPasswordVisable = ref(false);
+const submitResetPasswordLoading = ref(false);
+const resetPasswordUserId = ref("");
+const newPassword = ref("");
+const handleResetPasswordClick = async (row: SysUser) => {
+  resetPasswordVisable.value = true;
+  resetPasswordUserId.value = row.userId;
+  submitResetPasswordLoading.value = false;
+  newPassword.value = "";
+};
 
-        const publicKey = await LoginApi.getPublicKey();
-        const passwordEncrypted = encrypt(publicKey, instance.inputValue);
+const submitResetPassword = async () => {
+  submitResetPasswordLoading.value = true;
+  try {
+    const publicKey = await LoginApi.getPublicKey();
+    const passwordEncrypted = encrypt(publicKey, newPassword);
 
-        const newUser: SysUser = {
-          userId: row.userId,
-          password: passwordEncrypted,
-        };
+    const newUser: SysUser = {
+      userId: resetPasswordUserId.value,
+      password: passwordEncrypted,
+    };
 
-        await UserApi.resetUserPwd(newUser);
+    await UserApi.resetUserPwd(newUser);
 
-        ElMessage.success("重置用户密码成功");
-        instance.confirmButtonLoading = false;
-      }
-    },
-  });
+    ElMessage.success("重置用户密码成功");
+    resetPasswordVisable.value = false;
+  } finally {
+    submitResetPasswordLoading.value = false;
+  }
+};
+
+const closeResetPassword = () => {
+  resetPasswordVisable.value = false;
 };
 
 const moreDropdown = ref();
+
+// ============= 设置角色相关 =============
+const setRoleRef = ref();
+
+const handleSetRoleClick = (row: SysUser) => {
+  unref(setRoleRef).showDialog(row);
+};
 </script>
 
 <template>
@@ -152,8 +172,8 @@ const moreDropdown = ref();
       <div class="flex items-center justify-between">
         <div>
           <el-button plain type="primary">
-            <i-ep-circle-plus class="mr-5px" />新增</el-button
-          >
+            <i-ep-circle-plus class="mr-5px" />新增
+          </el-button>
         </div>
 
         <div>
@@ -179,17 +199,22 @@ const moreDropdown = ref();
           >
             <el-table-column prop="userId" label="ID" width="180" />
             <el-table-column prop="userName" label="用户名" width="180" />
-            <el-table-column prop="nickName" label="昵称" />
-            <el-table-column label="用户类型">
+            <el-table-column prop="nickName" label="昵称" width="180" />
+            <el-table-column label="角色">
               <template #default="scope">
-                <div style="display: flex; align-items: center">
-                  <div>{{ transferUserType(scope.row.userType) }}</div>
-                </div>
+                <el-tag
+                  v-for="tag in scope.row.roles"
+                  :key="tag"
+                  class="ml-1 mb-1"
+                  :disable-transitions="false"
+                >
+                  {{ tag.roleName }}
+                </el-tag>
               </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="创建时间" />
+            <el-table-column prop="createTime" label="创建时间" width="200" />
 
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="status" label="状态" width="100">
               <template #default="scope">
                 <div style="display: flex; align-items: center">
                   <div v-if="scope.row.status === '0'">
@@ -204,7 +229,7 @@ const moreDropdown = ref();
                 </div>
               </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="120">
+            <el-table-column fixed="right" label="操作" width="200">
               <template #default="scope">
                 <div class="flex space-x-2">
                   <el-button
@@ -212,20 +237,24 @@ const moreDropdown = ref();
                     type="primary"
                     size="small"
                     @click="handleDetailClick(scope.row)"
-                    ><div class="font-normal">详情</div></el-button
                   >
+                    <div class="font-normal flex items-center"><i-ep-setting class="text-xs mr-1px "/>详情管理</div>
+                  </el-button>
                   <el-dropdown ref="moreDropdown" trigger="click">
-                    <el-button link type="primary" size="small"
-                      ><div class="font-normal">更多...</div></el-button
-                    >
+                    <el-button link type="primary" size="small">
+                      <div class="font-normal">更多...</div>
+                    </el-button>
                     <template #dropdown>
                       <el-dropdown-menu>
-                        <el-dropdown-item @click="handleResetPwd(scope.row)"
-                          >重置用户密码</el-dropdown-item
+                        <el-dropdown-item @click="handleSetRoleClick(scope.row)"
+                          ><icon-venetian-mask class="text-xs mr-2" />设置用户角色</el-dropdown-item
+                        >
+                        <el-dropdown-item @click="handleResetPasswordClick(scope.row)"
+                          ><i-ep-lock class="text-xs mr-2"/>重置用户密码</el-dropdown-item
                         >
                         <el-dropdown-item @click="handleDeleteClick(scope.row)">
                           <template #default>
-                            <div class="font-normal text-red-500">删除用户</div>
+                            <div class="font-normal text-red-500 flex items-center "><i-ep-delete class="text-xs mr-2"/>删除用户</div>
                           </template>
                         </el-dropdown-item>
                       </el-dropdown-menu>
@@ -252,6 +281,27 @@ const moreDropdown = ref();
       <UserDetail ref="detailRef" @refreshList="refreshUserList"></UserDetail>
     </el-config-provider>
   </div>
+  <el-dialog v-model="resetPasswordVisable" title="重置用户密码" width="400px">
+    <div class="flex flex-col justify-center items-center space-y-5 ml-4 mr-4">
+      <el-input v-model="newPassword" placeholder="输入新的用户密码">
+        <template #prepend>
+          <i-ep-lock />
+        </template>
+      </el-input>
+
+      <el-button-group>
+        <el-button style="margin-top: 12px" @click="closeResetPassword">取消</el-button>
+        <el-button
+          style="margin-top: 12px"
+          type="primary"
+          @click="submitResetPassword"
+          :loading="submitResetPasswordLoading"
+          >提交</el-button
+        >
+      </el-button-group>
+    </div>
+  </el-dialog>
+  <SetRole ref="setRoleRef" @refreshList="refreshUserList" />
 </template>
 
 <style></style>

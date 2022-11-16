@@ -1,12 +1,7 @@
-package com.hy.project.demo.service.sso;
-
-import java.io.IOException;
+package com.hy.project.demo.service.auth;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import com.hy.project.demo.model.DemoResult;
-import com.hy.project.demo.model.sso.Account;
 
 /**
  * @author rick.wl
@@ -38,19 +33,4 @@ public interface LoginService {
      * @param request 请求
      */
     void logout(HttpServletRequest request);
-
-    /**
-     * 获取账号信息
-     *
-     * @param token token
-     * @return 结果
-     */
-    Account getAccountByToken(String token);
-
-    /**
-     * 刷新token时间
-     *
-     * @param token token
-     */
-    void refreshToken(String token);
 }

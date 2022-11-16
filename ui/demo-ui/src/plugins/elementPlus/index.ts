@@ -5,17 +5,7 @@ import ElementPlus from 'element-plus'
 
 import 'element-plus/dist/index.css'
 
-// const plugins = [ElLoading]
-
-// const components = [ElScrollbar, ElButton]
-
 export const setupElementPlus = (app: App<Element>) => {
-  // plugins.forEach((plugin) => {
-  //   app.use(plugin)
-  // })
 
-  // components.forEach((component) => {
-  //   app.component(component.name, component)
-  // })
   app.use(ElementPlus)
 }

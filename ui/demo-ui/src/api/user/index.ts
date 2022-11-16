@@ -1,5 +1,5 @@
 import { useAxios } from '@/hooks/web/useAxios'
-import type { UserRegisterVO, PageRequest, SysUser } from './types';
+import type { UserRegisterVO, SysUser } from './types';
 
 const request = useAxios()
 
@@ -36,6 +36,11 @@ export const deleteUser = (data: string) => {
 // 用户密码重置
 export const resetUserPwd = (data: SysUser) => {
   return request.post({ url: '/user/updatePwd.json', data })
+}
+
+// 修改用户角色
+export const updateUserRoles = (data: object) => {
+    return request.post({ url: '/user/updateUserRoles.json', data })
 }
 
 // // 新增用户

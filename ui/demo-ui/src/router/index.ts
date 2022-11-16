@@ -28,7 +28,6 @@ export const routes: Array<RouteRecordRaw> = [
         name: Names.INDEX,
         meta: {
           title: "首页",
-          icon: 'ep:home-filled',
           noCache: true,
           affix: true,
           activeMenu: "index",
@@ -40,10 +39,31 @@ export const routes: Array<RouteRecordRaw> = [
         name: Names.USER,
         meta: {
           title: "用户管理",
-          icon: 'ep:home-filled',
           noCache: true,
           affix: true,
           activeMenu: "user",
+        }
+      },
+      {
+        path: 'role',
+        component: () => import('@/views/Role/Role.vue'),
+        name: Names.ROLE,
+        meta: {
+          title: "角色管理",
+          noCache: true,
+          affix: true,
+          activeMenu: "role",
+        }
+      },
+      {
+        path: 'permission',
+        component: () => import('@/views/Permission/Permission.vue'),
+        name: Names.PERMISSION,
+        meta: {
+          title: "权限管理",
+          noCache: true,
+          affix: true,
+          activeMenu: "permission",
         }
       },
       {

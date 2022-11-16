@@ -12,6 +12,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,10 +43,10 @@ public class RsaUtil {
     private static final int MAX_DECRYPT_BLOCK = 64;
 
     //公钥
-    private static final String PUBLIC_KEY = "RSAPublicKey";
+    public static final String PUBLIC_KEY = "RSAPublicKey";
 
     //私钥
-    private static final String PRIVATE_KEY = "RSAPrivateKey";
+    public static final String PRIVATE_KEY = "RSAPrivateKey";
 
     /**
      * 初始化密钥对
@@ -236,5 +237,23 @@ public class RsaUtil {
     public static Key parsePublicKey(Map<String, Object> keyMap) {
         Key key = (Key)keyMap.get(PUBLIC_KEY);
         return key;
+    }
+
+    public static String encodeKeyToBase64(byte[] key) {
+        return Base64.getEncoder().encodeToString(key);
+    }
+
+    public static Key decodePublicKeyFromBase64(String keyStr) throws Exception {
+        byte[] pb = Base64.getDecoder().decode(keyStr);
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(pb);
+        KeyFactory keyfactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        return keyfactory.generatePublic(keySpec);
+    }
+
+    public static Key decodePrivateKeyFromBase64(String keyStr) throws Exception {
+        byte[] pb = Base64.getDecoder().decode(keyStr);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pb);
+        KeyFactory keyfactory = KeyFactory.getInstance(KEY_ALGORITHM);
+        return keyfactory.generatePrivate(keySpec);
     }
 }

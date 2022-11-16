@@ -13,6 +13,19 @@ public class PageResult<T> extends ToString {
     private long totalCount;
     private T data;
 
+    public static <T> PageResult<T> of(T data) {
+        return of(data, 0, 0, 0);
+    }
+
+    public static <T> PageResult<T> of(T data, int pageIndex, int pageSize, long totalCount) {
+        PageResult<T> result = new PageResult<>();
+        result.setData(data);
+        result.setPageIndex(pageIndex);
+        result.setPageSize(pageSize);
+        result.setTotalCount(totalCount);
+        return result;
+    }
+
     public int getPageIndex() {
         return pageIndex;
     }

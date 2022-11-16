@@ -9,13 +9,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.collect.Sets;
-import com.hy.project.demo.service.sso.RsaService;
-import com.hy.project.demo.service.sso.TokenService;
-import com.hy.project.demo.service.sso.impl.RsaServiceImpl;
-import com.hy.project.demo.util.SsoUtil;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
+import com.hy.project.demo.service.auth.RoleService;
+import com.hy.project.demo.service.auth.RsaService;
+import com.hy.project.demo.service.auth.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +37,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
     TokenService tokenService;
 
+    @Autowired
+    RoleService roleService;
+
     static {
         HANDLE_METHODS.add(HttpMethod.GET.name());
         HANDLE_METHODS.add(HttpMethod.HEAD.name());
@@ -59,7 +58,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
             // 设置安全上下文，业务代码获取当前用户信息都从SecurityContextHolder.getContext()获取
             if (null != user) {
-                LoginUser loginUser = new LoginUser(user);
+                LoginUser loginUser = roleService.buildLoginUser(user);
+
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                     loginUser,
                     null, loginUser.getAuthorities());

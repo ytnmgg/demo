@@ -1,22 +1,36 @@
 package com.hy.project.demo.service.common.impl;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.hy.project.demo.exception.DemoException;
 import com.hy.project.demo.model.DemoResult;
 import com.hy.project.demo.service.common.RedisService;
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+
+import static com.hy.project.demo.constant.RedisConstants.KEY_LOCK;
+import static com.hy.project.demo.constant.RedisConstants.LOCK_DURATION_SECONDS;
+import static com.hy.project.demo.constant.RedisConstants.LOCK_TRY_MILLISECONDS;
+import static com.hy.project.demo.constant.RedisConstants.REDIS_SCRIPT_RETURN_SUCCESS;
+import static com.hy.project.demo.exception.DemoExceptionEnum.REDIS_LOCK_EXCEPTION;
 
 /**
  * @author rick.wl
@@ -100,6 +114,80 @@ public class RedisServiceImpl implements RedisService {
         Map<String, Object> kvs = keys.stream().collect(Collectors.toMap(k -> k, k -> values.get(keys.indexOf(k))));
 
         return DemoResult.buildSuccessResult(kvs);
+    }
+
+    @Override
+    public void setHash(String hashName, Map hash) {
+        redisTemplate.opsForHash().putAll(hashName, hash);
+    }
+
+    @Override
+    public void setHash(String hashName, String key, Object value) {
+        redisTemplate.opsForHash().put(hashName, key, value);
+    }
+
+    @Override
+    public Object getHash(String hashName, String key) {
+        return redisTemplate.opsForHash().get(hashName, key);
+    }
+
+    @Override
+    public Map<String, Object> getHash(String hashName) {
+        return redisTemplate.opsForHash().entries(hashName);
+    }
+
+    @Override
+    public void removeHash(String hashName, String key) {
+        redisTemplate.opsForHash().delete(hashName, key);
+    }
+
+    @Override
+    public <R> R runWithLock(Supplier<R> supplier) {
+        String uniqueValue = String.format("%s_%s", System.currentTimeMillis(), UUID.randomUUID());
+
+        if (tryLock(uniqueValue)) {
+            R result;
+            try {
+                result = supplier.get();
+            } finally {
+                if (unLock(KEY_LOCK, uniqueValue)) {
+                    LOGGER.info("release lock success: [{}]", uniqueValue);
+                } else {
+                    LOGGER.error("release lock failed: [{}]", uniqueValue);
+                }
+            }
+
+            return result;
+
+        } else {
+            throw new DemoException(REDIS_LOCK_EXCEPTION, "获取redis锁失败");
+        }
+    }
+
+    private boolean tryLock(String uniqueValue) {
+        long start = System.currentTimeMillis();
+        for (; ; ) {
+            LOGGER.info("try lock: [{}]", uniqueValue);
+            Boolean getLock = redisTemplate.opsForValue().setIfAbsent(KEY_LOCK, uniqueValue,
+                Duration.ofSeconds(LOCK_DURATION_SECONDS));
+            if (BooleanUtils.isTrue(getLock)) {
+                LOGGER.info("get lock success: [{}]", uniqueValue);
+                return true;
+            }
+            long time = System.currentTimeMillis() - start;
+            if (time > LOCK_TRY_MILLISECONDS) {
+                LOGGER.info("get lock timeout: [{}]", uniqueValue);
+                return false;
+            }
+        }
+    }
+
+    public boolean unLock(String key, String val) {
+        String script
+            = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+        RedisScript<Long> redisScript = new DefaultRedisScript<>(script, Long.class);
+        Object execute = redisTemplate.execute(redisScript, Collections.singletonList(key), val);
+        return REDIS_SCRIPT_RETURN_SUCCESS.equals(execute);
     }
 
 }

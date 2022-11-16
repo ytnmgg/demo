@@ -10,4 +10,6 @@ public class CommonConstants {
     public final static String LOGOUT_REQUEST_URL = "/logout.json";
     public final static String COOKIE_SESSION_KEY_PREFIX = "SSO_SESSION";
 
+    public final static String USER_SYS = "SYS";
+
 }

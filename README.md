@@ -138,9 +138,14 @@ docker exec -it 32320064d6f0 redis-cli
 mkdir -p /data/app/config
 
 # 前端部署
+进入前端目录：
 cd ui/demo-ui 
+
+执行部署脚本：
 sh deploy.sh
 
 # 部署后端
+回到项目根目录下面（/demo），执行：
+
 sh src/main/resources/docker/deploy.sh
 

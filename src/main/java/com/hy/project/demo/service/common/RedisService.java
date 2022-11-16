@@ -2,6 +2,8 @@ package com.hy.project.demo.service.common;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.hy.project.demo.model.DemoResult;
 
@@ -70,4 +72,17 @@ public interface RedisService {
      * @return 值列表
      */
     DemoResult<Map<String, Object>> list(String prefix);
+
+    void setHash(final String hashName, final Map hash);
+
+    void setHash(final String hashName, final String key, final Object value);
+
+    Object getHash(final String hashName, final String key);
+
+    Map<String, Object> getHash(final String hashName);
+
+    void removeHash(final String hashName, final String key);
+
+    <R> R runWithLock(Supplier<R> supplier);
+
 }

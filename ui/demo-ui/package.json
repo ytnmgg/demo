@@ -14,7 +14,7 @@
     "@vueuse/core": "^9.3.0",
     "@zxcvbn-ts/core": "^2.0.4",
     "axios": "^0.27.2",
-    "element-plus": "^2.2.20",
+    "element-plus": "^2.2.21",
     "jsencrypt": "^3.2.1",
     "lodash-es": "^4.17.21",
     "pinia": "^2.0.17",
@@ -39,6 +39,7 @@
     "unplugin-vue-components": "^0.22.9",
     "vite": "^3.1.0",
     "vite-plugin-windicss": "^1.8.8",
-    "vue-tsc": "^0.40.4"
+    "vue-tsc": "^0.40.4",
+    "windicss": "^3.5.6"
   }
 }

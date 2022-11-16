@@ -7,21 +7,19 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    ElButton: typeof import('element-plus/es')['ElButton']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     IEpAvatar: typeof import('~icons/ep/avatar')['default']
     IEpCirclePlus: typeof import('~icons/ep/circle-plus')['default']
     IEpCopyDocument: typeof import('~icons/ep/copy-document')['default']
+    IEpDelete: typeof import('~icons/ep/delete')['default']
     IEpEdit: typeof import('~icons/ep/edit')['default']
     IEpExpand: typeof import('~icons/ep/expand')['default']
     IEpFold: typeof import('~icons/ep/fold')['default']
     IEpLock: typeof import('~icons/ep/lock')['default']
     IEpMenu: typeof import('~icons/ep/menu')['default']
     IEpRefresh: typeof import('~icons/ep/refresh')['default']
+    IEpSetting: typeof import('~icons/ep/setting')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-  }
-  export interface ComponentCustomProperties {
-    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

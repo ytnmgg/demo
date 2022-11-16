@@ -91,7 +91,7 @@ defineExpose({
         <el-menu-item index="role">
           <icon-venetian-mask class="mr-2" />角色管理
         </el-menu-item>
-        <el-menu-item index="auth">
+        <el-menu-item index="permission">
           <icon-shield-icon class="mr-2" />权限管理
         </el-menu-item>
         <el-menu-item index="onlines">

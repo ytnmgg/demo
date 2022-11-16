@@ -16,4 +16,5 @@ public interface RolePermissionRelationMapper extends CrudMapper<RolePermissionR
 
     List<RolePermissionRelationDO> findByRoleIds(List<String> roleIds);
 
+    void deleteByRoleId(String roleId);
 }

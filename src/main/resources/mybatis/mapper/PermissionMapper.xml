@@ -98,4 +98,23 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="count" resultType="long">
+        SELECT
+        count(*)
+        FROM sys_permission
+    </select>
+    <select id="findByPage" resultType="com.hy.project.demo.mybatis.entity.PermissionDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_permission
+        ORDER BY permission_id DESC
+        LIMIT #{offset},#{pageSize}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM sys_permission
+        WHERE permission_id=#{id}
+    </delete>
+
 </mapper>

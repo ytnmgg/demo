@@ -33,3 +33,7 @@ declare type Nullable<T> = T | null
 
 declare type ComponentRef<T> = InstanceType<T>
 
+declare type PageRequest = {
+  pageSize: number
+  pageIndex: number
+}

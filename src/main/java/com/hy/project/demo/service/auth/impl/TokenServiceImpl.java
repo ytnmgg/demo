@@ -1,4 +1,4 @@
-package com.hy.project.demo.service.sso.impl;
+package com.hy.project.demo.service.auth.impl;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.hy.project.demo.exception.DemoExceptionEnum;
 import com.hy.project.demo.security.SysUser;
 import com.hy.project.demo.service.common.RedisService;
-import com.hy.project.demo.service.sso.RsaService;
-import com.hy.project.demo.service.sso.TokenService;
+import com.hy.project.demo.service.auth.RsaService;
+import com.hy.project.demo.service.auth.TokenService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.EnvUtil;

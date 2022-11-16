@@ -1,12 +1,9 @@
 package com.hy.project.demo;
 
-import java.io.IOException;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import com.hy.project.demo.service.common.RedisService;
-import com.hy.project.demo.service.sso.LoginService;
+import com.hy.project.demo.service.auth.LoginService;
 import org.apache.catalina.connector.Response;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,11 +32,6 @@ public class LoginServiceTest {
     @Test
     public void loginTest() throws Throwable {
         loginService.login("rick", "123",null, new ResponseWrapper());
-    }
-
-    @Test
-    public void refreshTest() {
-        loginService.refreshToken("891f490e5d7bdb06d90d56f8d7db405f_0d4b3bcf-002c-4a38-bf33-fb3ef2a6dc62");
     }
 
     private static class ResponseWrapper extends HttpServletResponseWrapper {

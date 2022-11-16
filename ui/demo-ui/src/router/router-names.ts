@@ -3,5 +3,7 @@ export const enum Names {
     HOME = 'HOME',
     INDEX = 'INDEX',
     USER='USER',
+    ROLE='ROLE',
     LOGIN_LOG='LOGIN-LOG',
+    PERMISSION='PERMISSION',
 }

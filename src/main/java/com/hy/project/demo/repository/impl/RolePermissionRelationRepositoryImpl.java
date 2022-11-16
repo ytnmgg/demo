@@ -12,6 +12,8 @@ import com.hy.project.demo.util.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import static com.hy.project.demo.constant.CommonConstants.USER_SYS;
+
 /**
  * @author rick.wl
  * @date 2022/10/18
@@ -28,19 +30,21 @@ public class RolePermissionRelationRepositoryImpl implements RolePermissionRelat
     public String insert(String roleId, String permissionId) {
         String relationId = idGenerator.generateId(SequenceNameEnum.SEQ_ROLE_PERMISSION_ID);
 
-        RolePermissionRelationDO relationDO = new RolePermissionRelationDO();
-        relationDO.setRolePermissionId(relationId);
-        relationDO.setPermissionId(permissionId);
-        relationDO.setRoleId(roleId);
-        relationDO.setCreateBy("admin");
-        relationDO.setCreateTime(new Date());
-        relationDO.setUpdateBy("admin");
-        relationDO.setUpdateTime(new Date());
-        relationDO.setRemark(null);
+        RolePermissionRelationDO relationDO = RolePermissionRelationDO.of(roleId, permissionId);
+        addCommonParam(relationDO, relationId);
 
         rolePermissionRelationMapper.insert(relationDO);
 
         return relationId;
+    }
+
+    @Override
+    public void insertAll(List<RolePermissionRelationDO> relations) {
+        relations.forEach(r -> {
+            String relationId = idGenerator.generateId(SequenceNameEnum.SEQ_ROLE_PERMISSION_ID);
+            addCommonParam(r, relationId);
+        });
+        rolePermissionRelationMapper.insertAll(relations);
     }
 
     @Override
@@ -53,12 +57,20 @@ public class RolePermissionRelationRepositoryImpl implements RolePermissionRelat
     }
 
     @Override
-    public List<String> findPermissionsByRoleIds(List<String> roleIds) {
-        List<RolePermissionRelationDO> relationDoList = rolePermissionRelationMapper.findByRoleIds(roleIds);
-        if (null == relationDoList) {
-            return null;
-        }
-        return relationDoList.stream().map(RolePermissionRelationDO::getPermissionId).distinct().collect(
-            Collectors.toList());
+    public List<RolePermissionRelationDO> findPermissionsByRoleIds(List<String> roleIds) {
+        return rolePermissionRelationMapper.findByRoleIds(roleIds);
+    }
+
+    @Override
+    public void deleteByRoleId(String roleId) {
+        rolePermissionRelationMapper.deleteByRoleId(roleId);
+    }
+
+    private void addCommonParam(RolePermissionRelationDO relation, String relationId) {
+        relation.setRolePermissionId(relationId);
+        relation.setCreateBy(USER_SYS);
+        relation.setCreateTime(new Date());
+        relation.setUpdateBy(USER_SYS);
+        relation.setUpdateTime(new Date());
     }
 }

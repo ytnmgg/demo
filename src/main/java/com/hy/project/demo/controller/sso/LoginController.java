@@ -5,19 +5,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.hy.project.demo.controller.request.LoginRequest;
 import com.hy.project.demo.model.AjaxResult;
-import com.hy.project.demo.service.sso.LoginService;
-import com.hy.project.demo.service.sso.RsaService;
+import com.hy.project.demo.service.auth.LoginService;
+import com.hy.project.demo.service.auth.RsaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import static com.hy.project.demo.constant.CommonConstants.LOGIN_PAGE_URL;
 import static com.hy.project.demo.constant.CommonConstants.LOGIN_REQUEST_URL;
 import static com.hy.project.demo.constant.CommonConstants.LOGOUT_REQUEST_URL;
 

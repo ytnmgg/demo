@@ -1,4 +1,4 @@
-package com.hy.project.demo.service.sso;
+package com.hy.project.demo.service.auth;
 
 import javax.servlet.http.HttpServletRequest;
 

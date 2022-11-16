@@ -1,16 +1,23 @@
 package com.hy.project.demo.service.user.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
 
-import com.google.common.collect.Lists;
 import com.hy.project.demo.exception.DemoExceptionEnum;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sso.User;
-import com.hy.project.demo.model.user.Permission;
-import com.hy.project.demo.model.user.Role;
+import com.hy.project.demo.model.user.RoleBase;
+import com.hy.project.demo.mybatis.entity.UserRoleRelationDO;
 import com.hy.project.demo.repository.PermissionRepository;
 import com.hy.project.demo.repository.RolePermissionRelationRepository;
 import com.hy.project.demo.repository.RoleRepository;
@@ -18,8 +25,8 @@ import com.hy.project.demo.repository.UserRepository;
 import com.hy.project.demo.repository.UserRoleRelationRepository;
 import com.hy.project.demo.security.LoginUser;
 import com.hy.project.demo.security.SysUser;
+import com.hy.project.demo.service.auth.RsaService;
 import com.hy.project.demo.service.common.RedisService;
-import com.hy.project.demo.service.sso.RsaService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.EnvUtil;
@@ -83,8 +90,8 @@ public class UserServiceImpl implements UserService {
     public SysUser loadSysUserByName(String name) {
         SysUser sysUser = userRepository.findByName(name);
 
-        // 补充role和permission信息
-        getRoleAndPermission(sysUser);
+        // 补充role信息
+        addRoles(sysUser);
 
         return sysUser;
     }
@@ -93,8 +100,8 @@ public class UserServiceImpl implements UserService {
     public SysUser loadSysUserByUserId(String userId) {
         SysUser sysUser = userRepository.findByUserId(userId);
 
-        // 补充role和permission信息
-        getRoleAndPermission(sysUser);
+        // 补充role信息
+        addRoles(sysUser);
 
         return sysUser;
     }
@@ -191,6 +198,19 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
+    public void updateUserRoles(String userId, List<String> roleIds) {
+        SysUser user = userRepository.lockByUserId(userId);
+        AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", userId);
+
+        userRoleRelationRepository.deleteByUserId(userId);
+
+        if (CollectionUtils.isNotEmpty(roleIds)) {
+            createUserRoleRelations(userId, roleIds);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
     public String createNewUser(String name, String password) {
         SysUser sysUser = new SysUser();
         sysUser.setUserType("00");
@@ -200,22 +220,59 @@ public class UserServiceImpl implements UserService {
         sysUser.setStatus("0");
         sysUser.setDelFlag("0");
 
-
         // TODO, 干掉，用uk行锁解决
         SysUser existed = userRepository.findByName(name);
         AssertUtil.isNull(existed, INVALID_PARAM_EXCEPTION, "用户已经存在: %s", name);
 
         String userId = userRepository.insert(sysUser);
 
-        // 保存用户角色关系 TODO mock
-        userRoleRelationRepository.insert(userId, "1120220909000001");
+        //// 保存用户角色关系 TODO mock
+        //userRoleRelationRepository.insert(userId, "1120220909000001");
 
         return userId;
     }
 
     @Override
     public PageResult<List<SysUser>> pageListUsers(int pageIndex, int pageSize) {
-        return userRepository.pageList(pageIndex, pageSize);
+        PageResult<List<SysUser>> result = userRepository.pageList(pageIndex, pageSize);
+        if (null == result || CollectionUtils.isEmpty(result.getData())) {
+            return result;
+        }
+
+        List<String> userIds = result.getData().stream().map(SysUser::getUserId).filter(Objects::nonNull).collect(
+            Collectors.toList());
+        List<UserRoleRelationDO> relations = userRoleRelationRepository.findByUserIds(userIds);
+        if (CollectionUtils.isEmpty(relations)) {
+            return result;
+        }
+
+        Map<String, Set<String>> relationMap = new HashMap<>();
+        Set<String> allRoleIds = new HashSet<>();
+        relations.forEach(relation -> {
+            String userId = relation.getUserId();
+            String roleId = relation.getRoleId();
+            Set<String> roleIds = relationMap.getOrDefault(userId, new HashSet<>());
+            roleIds.add(roleId);
+            relationMap.put(userId, roleIds);
+            allRoleIds.add(roleId);
+        });
+
+        List<RoleBase> allRoles = roleRepository.findByRoleIds(new ArrayList<>(allRoleIds));
+
+        Map<String, RoleBase> roleMap = allRoles.stream().collect(
+            Collectors.toMap(RoleBase::getRoleId, Function.identity(), (k1, k2) -> k2));
+
+        result.getData().forEach(user -> {
+            Set<String> roleIds = relationMap.get(user.getUserId());
+            if (CollectionUtils.isEmpty(roleIds)) {
+                return;
+            }
+            List<RoleBase> roles = roleIds.stream().map(roleMap::get).filter(
+                Objects::nonNull).collect(Collectors.toList());
+            user.setRoles(roles);
+        });
+
+        return result;
     }
 
     private void cacheUser(SysUser user) {
@@ -233,29 +290,30 @@ public class UserServiceImpl implements UserService {
         return Long.parseLong(userExpireTime);
     }
 
-    private void getRoleAndPermission(SysUser user) {
+    private void addRoles(SysUser user) {
         if (null == user) {
             return;
         }
 
-        // TODO 缓存起来
-
-        List<String> roleIds = userRoleRelationRepository.findRolesByUserId(user.getUserId());
-        if (CollectionUtils.isEmpty(roleIds)) {
+        List<UserRoleRelationDO> userRoleRelations = userRoleRelationRepository.findByUserId(user.getUserId());
+        if (CollectionUtils.isEmpty(userRoleRelations)) {
             return;
         }
 
-        List<Role> roles = roleRepository.findByRoleIds(roleIds);
+        List<String> roleIds = userRoleRelations.stream().map(UserRoleRelationDO::getRoleId).collect(
+            Collectors.toList());
 
+        List<RoleBase> roles = roleRepository.findByRoleIds(roleIds);
         user.setRoles(roles);
+    }
 
-        List<String> permissionIds = rolePermissionRelationRepository.findPermissionsByRoleIds(roleIds);
-        if (CollectionUtils.isEmpty(permissionIds)) {
-            return;
-        }
+    private void createUserRoleRelations(String userId, List<String> roleIds) {
+        // 验证传入的权限id是否真正的对应有角色信息
+        List<RoleBase> roles = roleRepository.findByRoleIds(roleIds);
+        AssertUtil.equals(roles.size(), roleIds.size(), INVALID_PARAM_EXCEPTION, "角色信息异常");
 
-        List<Permission> permissions = permissionRepository.findByPermissionIds(permissionIds);
-        user.setPermissions(permissions);
-
+        List<UserRoleRelationDO> relations = new ArrayList<>();
+        roleIds.forEach(roleId -> relations.add(UserRoleRelationDO.of(userId, roleId)));
+        userRoleRelationRepository.insertAll(relations);
     }
 }

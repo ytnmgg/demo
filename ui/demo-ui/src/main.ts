@@ -5,7 +5,7 @@ import App from '@/App.vue'
 import '@/styles/index.less'
 
 // 引入 windi css
-import '@/plugins/windi.css'
+import 'virtual:windi.css'
 
 // 引入状态管理
 import { setupStore } from '@/store'
@@ -21,7 +21,7 @@ const start = async () => {
   const app = createApp(App)
 
   setupStore(app)
-  
+
   setupRouter(app)
 
   setupElementPlus(app)

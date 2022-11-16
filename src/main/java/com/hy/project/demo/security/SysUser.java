@@ -8,8 +8,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import com.hy.project.demo.model.user.Permission;
-import com.hy.project.demo.model.user.Role;
+import com.hy.project.demo.model.user.RoleBase;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -88,14 +87,12 @@ public class SysUser implements Serializable {
     /**
      * 角色对象
      */
-    private List<Role> roles;
+    private List<RoleBase> roles;
 
     private String createTime;
     private String updateTime;
 
     private String token;
-
-    private List<Permission> permissions;
 
     public String getUserId() {
         return userId;
@@ -215,20 +212,12 @@ public class SysUser implements Serializable {
         this.loginDate = loginDate;
     }
 
-    public List<Role> getRoles() {
+    public List<RoleBase> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(List<RoleBase> roles) {
         this.roles = roles;
-    }
-
-    public List<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
     }
 
     public String getToken() {

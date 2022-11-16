@@ -100,4 +100,22 @@
             #{item}
         </foreach>
     </select>
+
+    <select id="count" resultType="long">
+        SELECT
+        count(*)
+        FROM sys_role
+    </select>
+    <select id="findByPage" resultType="com.hy.project.demo.mybatis.entity.RoleDO">
+        SELECT
+        <include refid="all_columns"/>
+        FROM sys_role
+        ORDER BY role_id DESC
+        LIMIT #{offset},#{pageSize}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM sys_role
+        WHERE role_id=#{id}
+    </delete>
 </mapper>

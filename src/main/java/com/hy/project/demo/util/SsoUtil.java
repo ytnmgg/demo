@@ -19,6 +19,8 @@ import org.springframework.web.util.WebUtils;
 import static com.hy.project.demo.constant.CommonConstants.LOGIN_PAGE_URL;
 import static com.hy.project.demo.constant.CommonConstants.LOGIN_REQUEST_URL;
 import static com.hy.project.demo.constant.CommonConstants.LOGOUT_REQUEST_URL;
+import static com.hy.project.demo.constant.RedisConstants.KEY_TOKEN_PREFIX;
+import static com.hy.project.demo.constant.RedisConstants.KEY_USER_INFO_PREFIX;
 
 /**
  * @author rick.wl
@@ -31,8 +33,6 @@ public class SsoUtil {
 
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
 
-    private static final String REDIS_USER_INFO_PREFIX = "USER";
-    private static final String REDIS_TOKEN_PREFIX = "TOKEN";
     private final static List<String> ESCAPE_PATH = new ArrayList<>();
 
     static {
@@ -89,10 +89,10 @@ public class SsoUtil {
     }
 
     public static String createRedisUserInfoKey(String userId) {
-        return String.format("%s_%s", REDIS_USER_INFO_PREFIX, userId);
+        return String.format("%s_%s", KEY_USER_INFO_PREFIX, userId);
     }
 
     public static String createRedisTokenKey(String token) {
-        return String.format("%s_%s", REDIS_TOKEN_PREFIX, token);
+        return String.format("%s_%s", KEY_TOKEN_PREFIX, token);
     }
 }

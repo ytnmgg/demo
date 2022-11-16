@@ -16,6 +16,13 @@ public class RolePermissionRelationDO {
     private Date updateTime;
     private String remark;
 
+    public static RolePermissionRelationDO of(String roleId, String permissionId) {
+        RolePermissionRelationDO r = new RolePermissionRelationDO();
+        r.setRoleId(roleId);
+        r.setPermissionId(permissionId);
+        return r;
+    }
+
     public String getRolePermissionId() {
         return rolePermissionId;
     }

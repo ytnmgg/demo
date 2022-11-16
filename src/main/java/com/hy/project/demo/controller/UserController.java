@@ -6,10 +6,11 @@ import javax.validation.Valid;
 
 import com.hy.project.demo.controller.request.LoginRequest;
 import com.hy.project.demo.controller.request.PageRequest;
+import com.hy.project.demo.controller.request.UserRoleUpdateRequest;
 import com.hy.project.demo.model.AjaxResult;
 import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.security.SysUser;
-import com.hy.project.demo.service.sso.LoginService;
+import com.hy.project.demo.service.auth.LoginService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.ResultUtil;
@@ -80,6 +81,13 @@ public class UserController {
     @PostMapping("/updatePwd.json")
     public AjaxResult updatePwd(@RequestBody SysUser user) {
         userService.updateUserPassword(user.getUserId(), user.getPassword());
+        return AjaxResult.success(null);
+    }
+
+    @PostMapping("/updateUserRoles.json")
+    public AjaxResult updateUserRoles(@RequestBody UserRoleUpdateRequest request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        userService.updateUserRoles(request.getUserId(), request.getRoleIds());
         return AjaxResult.success(null);
     }
 

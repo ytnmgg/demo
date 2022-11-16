@@ -13,6 +13,7 @@ public class Permission implements Serializable {
     private String permissionId;
     private String permissionName;
     private String permissionKey;
+    private String createTime;
 
     public String getPermissionId() {
         return permissionId;
@@ -36,5 +37,13 @@ public class Permission implements Serializable {
 
     public void setPermissionKey(String permissionKey) {
         this.permissionKey = permissionKey;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
     }
 }

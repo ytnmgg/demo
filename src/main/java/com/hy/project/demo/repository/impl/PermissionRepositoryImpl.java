@@ -3,15 +3,22 @@ package com.hy.project.demo.repository.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.hy.project.demo.model.PageResult;
 import com.hy.project.demo.model.sequence.SequenceNameEnum;
 import com.hy.project.demo.model.user.Permission;
 import com.hy.project.demo.mybatis.entity.PermissionDO;
 import com.hy.project.demo.mybatis.mapper.PermissionMapper;
 import com.hy.project.demo.repository.PermissionRepository;
+import com.hy.project.demo.util.DateUtil;
 import com.hy.project.demo.util.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
+
+import static com.hy.project.demo.util.DateUtil.STANDARD_STR;
 
 /**
  * @author rick.wl
@@ -59,6 +66,36 @@ public class PermissionRepositoryImpl implements PermissionRepository {
         return result;
     }
 
+    @Override
+    public PageResult<List<Permission>> pageList(int pageIndex, int pageSize) {
+        PageResult<List<Permission>> result = new PageResult<>();
+        result.setData(new ArrayList<>());
+        result.setPageIndex(pageIndex);
+        result.setPageSize(pageSize);
+
+        long total = permissionMapper.count();
+        result.setTotalCount(total);
+
+        if (total == 0) {
+            return result;
+        }
+
+        int offset = (pageIndex - 1) * pageSize;
+        List<PermissionDO> permissionDOS = permissionMapper.findByPage(offset, pageSize);
+
+        if (CollectionUtils.isEmpty(permissionDOS)) {
+            return result;
+        }
+
+        result.setData(permissionDOS.stream().map(this::toModel).filter(Objects::nonNull).collect(Collectors.toList()));
+        return result;
+    }
+
+    @Override
+    public void deleteById(String id) {
+        permissionMapper.deleteById(id);
+    }
+
     private PermissionDO toDo(Permission permission) {
         if (null == permission) {
             return null;
@@ -87,6 +124,9 @@ public class PermissionRepositoryImpl implements PermissionRepository {
         permission.setPermissionId(permissionDO.getPermissionId());
         permission.setPermissionName(permissionDO.getPermissionName());
         permission.setPermissionKey(permissionDO.getPermissionKey());
+        if (null != permissionDO.getCreateTime()) {
+            permission.setCreateTime(DateUtil.format(permissionDO.getCreateTime(), STANDARD_STR));
+        }
         return permission;
     }
 }

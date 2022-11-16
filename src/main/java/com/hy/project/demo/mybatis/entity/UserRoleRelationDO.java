@@ -16,6 +16,13 @@ public class UserRoleRelationDO {
     private Date updateTime;
     private String remark;
 
+    public static UserRoleRelationDO of(String userId, String roleId) {
+        UserRoleRelationDO r = new UserRoleRelationDO();
+        r.setUserId(userId);
+        r.setRoleId(roleId);
+        return r;
+    }
+
     public String getUserRoleId() {
         return userRoleId;
     }

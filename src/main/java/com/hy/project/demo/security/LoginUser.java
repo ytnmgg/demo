@@ -1,10 +1,7 @@
 package com.hy.project.demo.security;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.hy.project.demo.model.user.Permission;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -29,20 +26,6 @@ public class LoginUser implements UserDetails {
      * 权限列表
      */
     private List<SysAuthority> authorities;
-
-    public LoginUser() {
-        super();
-    }
-
-    public LoginUser(SysUser user) {
-        this.user = user;
-        authorities = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(user.getPermissions())) {
-            for (Permission permission : user.getPermissions()) {
-                authorities.add(new SysAuthority(permission.getPermissionKey()));
-            }
-        }
-    }
 
     public SysUser getUser() {
         return user;

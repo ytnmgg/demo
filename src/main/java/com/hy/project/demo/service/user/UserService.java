@@ -40,6 +40,7 @@ public interface UserService {
 
     void updateUserPassword(String userId, String newPwd);
 
+    void updateUserRoles(String userId, List<String>roleIds);
 
     /**
      * 创建新用户
