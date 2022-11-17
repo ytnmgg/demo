@@ -18,6 +18,11 @@ public class RedisConstants {
 
     public static final String KEY_TOKEN_PREFIX = "TOKEN";
 
+    public final static String KEY_LOGIN_HASH = "LOGIN_H";
+
+    public final static String KEY_LOGIN_SET = "LOGIN_S";
+
+
     /**
      * 分布式锁持续时间
      */

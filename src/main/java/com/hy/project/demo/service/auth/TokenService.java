@@ -1,7 +1,12 @@
 package com.hy.project.demo.service.auth;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import com.hy.project.demo.controller.request.PageRequest;
+import com.hy.project.demo.model.PageResult;
+import com.hy.project.demo.model.sso.LoginInfo;
 import com.hy.project.demo.security.SysUser;
 
 /**
@@ -14,7 +19,13 @@ public interface TokenService {
 
     String createToken(String userId);
 
-    void cacheToken(String token);
+    void removeToken(String token);
 
-    void cleanToken(String token);
+    void saveToken(LoginInfo loginInfo);
+
+    void expireTokens();
+
+    void touchToken(String token);
+
+    PageResult<List<LoginInfo>> pageQueryLoginInfo(PageRequest request);
 }

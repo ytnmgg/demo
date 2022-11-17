@@ -43,6 +43,12 @@ export const updateUserRoles = (data: object) => {
     return request.post({ url: '/user/updateUserRoles.json', data })
 }
 
+// 查询在线用户管理列表
+export const getLoginUserPageApi = (params: PageRequest) => {
+    return request.get({ url: '/user/list_logins.json', params })
+}
+
+
 // // 新增用户
 // export const createUserApi = (data: UserVO) => {
 //   return request.post({ url: '/system/user/create', data })

@@ -94,7 +94,7 @@ defineExpose({
         <el-menu-item index="permission">
           <icon-shield-icon class="mr-2" />权限管理
         </el-menu-item>
-        <el-menu-item index="onlines">
+        <el-menu-item index="logins">
           <icon-users-icon class="mr-2" />在线用户
         </el-menu-item>
         <el-sub-menu index="log">

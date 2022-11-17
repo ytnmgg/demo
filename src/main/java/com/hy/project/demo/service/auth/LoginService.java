@@ -25,7 +25,7 @@ public interface LoginService {
      * @param callback callback
      * @param response response
      */
-    String login(String name, String password, String callback, HttpServletResponse response) throws Throwable;
+    String login(String name, String password, String callback, HttpServletRequest request, HttpServletResponse response) throws Throwable;
 
     /**
      * 登出

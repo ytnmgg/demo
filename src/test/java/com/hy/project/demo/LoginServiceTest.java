@@ -31,7 +31,7 @@ public class LoginServiceTest {
 
     @Test
     public void loginTest() throws Throwable {
-        loginService.login("rick", "123",null, new ResponseWrapper());
+        loginService.login("rick", "123",null, null, new ResponseWrapper());
     }
 
     private static class ResponseWrapper extends HttpServletResponseWrapper {

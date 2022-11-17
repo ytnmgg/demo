@@ -1,8 +1,11 @@
 package com.hy.project.demo.service.auth.impl;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hy.project.demo.model.sso.LoginInfo;
 import com.hy.project.demo.security.SysUser;
 import com.hy.project.demo.service.auth.LoginService;
 import com.hy.project.demo.service.auth.RsaService;
@@ -10,6 +13,8 @@ import com.hy.project.demo.service.auth.TokenService;
 import com.hy.project.demo.service.common.RedisService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
+import com.hy.project.demo.util.DateUtil;
+import com.hy.project.demo.util.ServletUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +24,7 @@ import org.springframework.stereotype.Service;
 import static com.hy.project.demo.exception.DemoExceptionEnum.INVALID_PARAM_EXCEPTION;
 import static com.hy.project.demo.exception.DemoExceptionEnum.USER_NAME_LENGTH_INVALID;
 import static com.hy.project.demo.exception.DemoExceptionEnum.USER_PASSWORD_LENGTH_INVALID;
+import static com.hy.project.demo.util.DateUtil.STANDARD_STR;
 
 /**
  * @author rick.wl
@@ -66,7 +72,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public String login(String name, String password, String callback, HttpServletResponse response)
+    public String login(String name, String password, String callback, HttpServletRequest request, HttpServletResponse response)
         throws Throwable {
 
         // 用RSA私钥解密前端加密后的用户登录密码
@@ -79,7 +85,8 @@ public class LoginServiceImpl implements LoginService {
         String token = tokenService.createToken(user.getUserId());
 
         // 缓存token
-        tokenService.cacheToken(token);
+        LoginInfo loginInfo = buildLoginInfo(token, user, request);
+        tokenService.saveToken(loginInfo);
 
         // 把用户信息存入redis（或者更新）
         userService.touchUser(user);
@@ -96,7 +103,7 @@ public class LoginServiceImpl implements LoginService {
         SysUser sysUser = userService.getMe();
 
         if (null != sysUser) {
-            tokenService.cleanToken(sysUser.getToken());
+            tokenService.removeToken(sysUser.getToken());
 
             userService.clearUser(sysUser.getUserId());
         }
@@ -124,4 +131,18 @@ public class LoginServiceImpl implements LoginService {
 
         return user;
     }
+
+    private LoginInfo buildLoginInfo(String token, SysUser user, HttpServletRequest request) {
+        LoginInfo loginInfo = new LoginInfo();
+        loginInfo.setToken(token);
+        loginInfo.setUserId(user.getUserId());
+        loginInfo.setUserName(user.getUserName());
+        loginInfo.setLoginIp(ServletUtil.getClientIP(request));
+        loginInfo.setLoginTime(DateUtil.format(new Date(), STANDARD_STR));
+        loginInfo.setUserAgent(ServletUtil.getUserAgent(request));
+
+        return loginInfo;
+    }
+
+
 }

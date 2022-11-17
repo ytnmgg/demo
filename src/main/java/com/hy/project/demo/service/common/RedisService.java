@@ -1,8 +1,10 @@
 package com.hy.project.demo.service.common;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.hy.project.demo.model.DemoResult;
@@ -16,7 +18,7 @@ public interface RedisService {
     /**
      * 设置值
      *
-     * @param key key
+     * @param key   key
      * @param value value
      * @return 结果
      */
@@ -25,10 +27,10 @@ public interface RedisService {
     /**
      * 设置值
      *
-     * @param key key
-     * @param value value
+     * @param key        key
+     * @param value      value
      * @param expireTime 超时时间
-     * @param timeUnit 时间单位
+     * @param timeUnit   时间单位
      * @return 结果
      */
     boolean set(final String key, Object value, Long expireTime, TimeUnit timeUnit);
@@ -59,9 +61,9 @@ public interface RedisService {
     /**
      * 重新设置超时时间
      *
-     * @param key key
+     * @param key        key
      * @param expireTime expireTime
-     * @param timeUnit timeUnit
+     * @param timeUnit   timeUnit
      */
     void expire(final String key, final Long expireTime, final TimeUnit timeUnit);
 
@@ -81,8 +83,24 @@ public interface RedisService {
 
     Map<String, Object> getHash(final String hashName);
 
-    void removeHash(final String hashName, final String key);
+    List<Object> multiGetHash(String hashName, Collection<String> keys);
+
+    void removeHash(final String hashName, final String... keys);
 
     <R> R runWithLock(Supplier<R> supplier);
 
+    Boolean addToZSet(final String zSetName, final String key, final double score);
+
+    Double incrementZSetScore(final String zSetName, final String key, final double scoreDelta);
+
+    Long rankZSet(final String zSetName, final String key);
+
+    Set<String> reverseRangeZSet(final String zSetName, final long start, final long end);
+
+    Set<String> rangeZSetByScore(final String zSetName, final double min, final double max, final long offset,
+        final long count);
+
+    Long sizeZSet(final String zSetName);
+
+    Long removeZSet(final String zSetName, final String... keys);
 }

@@ -1,20 +1,27 @@
 package com.hy.project.demo.service.auth.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.hy.project.demo.exception.DemoExceptionEnum;
+import com.alibaba.fastjson.JSON;
+
+import com.hy.project.demo.controller.request.PageRequest;
+import com.hy.project.demo.model.PageResult;
+import com.hy.project.demo.model.sso.LoginInfo;
 import com.hy.project.demo.security.SysUser;
-import com.hy.project.demo.service.common.RedisService;
 import com.hy.project.demo.service.auth.RsaService;
 import com.hy.project.demo.service.auth.TokenService;
+import com.hy.project.demo.service.common.RedisService;
 import com.hy.project.demo.service.user.UserService;
-import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.EnvUtil;
 import com.hy.project.demo.util.SsoUtil;
 import io.jsonwebtoken.Claims;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import static com.hy.project.demo.util.SsoUtil.createRedisTokenKey;
+import static com.hy.project.demo.constant.RedisConstants.KEY_LOGIN_HASH;
+import static com.hy.project.demo.constant.RedisConstants.KEY_LOGIN_SET;
 import static com.hy.project.demo.util.SsoUtil.getTokenFromHeader;
 import static com.hy.project.demo.util.SsoUtil.getUid;
 import static com.hy.project.demo.util.SsoUtil.parseToken;
@@ -36,6 +44,7 @@ public class TokenServiceImpl implements TokenService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenServiceImpl.class);
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String DEFAULT_REDIS_TOKEN_TIMEOUT_MINUTES = "30";
+    private static final String DEFAULT_REDIS_MAX_EXPIRE_TOKEN_COUNT = "100";
 
     @Value("${sso.token.header}")
     private String tokenHeader;
@@ -67,7 +76,7 @@ public class TokenServiceImpl implements TokenService {
         }
 
         // 验证token是否在缓存中
-        if (!checkTokenInCache(createRedisTokenKey(token))) {
+        if (!checkTokenInCache(token)) {
             // 伪造的token或者token过期
             return null;
         }
@@ -98,32 +107,101 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void cacheToken(String token) {
-        String key = createRedisTokenKey(token);
-        boolean result = redisService.set(key, "", getTokenExpireTime(), TimeUnit.MINUTES);
-        AssertUtil.isTrue(result, DemoExceptionEnum.REDIS_EXCEPTION, "cache token error");
+    public void removeToken(String token) {
+        redisService.removeHash(KEY_LOGIN_HASH, token);
+        redisService.removeZSet(KEY_LOGIN_SET, token);
     }
 
     @Override
-    public void cleanToken(String token) {
-        String key = createRedisTokenKey(token);
-        redisService.remove(key);
+    public void saveToken(LoginInfo loginInfo) {
+        redisService.setHash(KEY_LOGIN_HASH, loginInfo.getToken(), JSON.toJSONString(loginInfo));
+        redisService.addToZSet(KEY_LOGIN_SET, loginInfo.getToken(), System.currentTimeMillis());
     }
 
-    private boolean checkTokenInCache(String tokenKey) {
-        return redisService.exists(tokenKey);
+    @Override
+    public void expireTokens() {
+        // 捞取的token最大score（登录时间毫秒数），小于这些登录时间的，都会被捞起来踢掉
+        long maxScore = System.currentTimeMillis() - getTokenExpireTimeMillis();
+        // 定时任务每次捞取的token最大数量
+        long maxTokenCount = getMaxExpireTokenCount();
+
+        Set<String> tokens = redisService.rangeZSetByScore(KEY_LOGIN_SET, 0, maxScore, 0, maxTokenCount);
+
+        if (CollectionUtils.isNotEmpty(tokens)) {
+
+            String[] tokenArray = new String[tokens.size()];
+            tokens.toArray(tokenArray);
+
+            redisService.removeHash(KEY_LOGIN_HASH, tokenArray);
+            redisService.removeZSet(KEY_LOGIN_SET, tokenArray);
+
+            LOGGER.info("{} tokens expired", tokens.size());
+        }
     }
 
-    private Long getTokenExpireTime() {
+    @Override
+    public void touchToken(String token) {
+        redisService.incrementZSetScore(KEY_LOGIN_SET, token, getTokenExpireTimeMillis());
+    }
+
+    @Override
+    public PageResult<List<LoginInfo>> pageQueryLoginInfo(PageRequest request) {
+        PageResult<List<LoginInfo>> result = new PageResult<>();
+        result.setPageIndex(request.getPageIndex());
+        result.setPageSize(request.getPageSize());
+
+        Long size = redisService.sizeZSet(KEY_LOGIN_SET);
+
+        if (null == size || size == 0L) {
+            result.setTotalCount(0L);
+            return result;
+        }
+
+        result.setTotalCount(size);
+
+        long start = request.getPageSize() * (request.getPageIndex() - 1L);
+        long end = request.getPageSize() * request.getPageIndex() - 1L;
+        Set<String> tokens = redisService.reverseRangeZSet(KEY_LOGIN_SET, start, end);
+
+        if (CollectionUtils.isNotEmpty(tokens)) {
+            List<Object> logins = redisService.multiGetHash(KEY_LOGIN_HASH, tokens);
+
+            if (CollectionUtils.isNotEmpty(logins)) {
+                List<LoginInfo> loginInfoList = new ArrayList<>();
+                logins.forEach(str -> {
+                    LoginInfo loginInfo = JSON.parseObject((String)str, LoginInfo.class);
+                    String token = loginInfo.getToken();
+                    loginInfo.setToken(String.format("***%s",StringUtils.substring(token, 88)));
+                    loginInfoList.add(loginInfo);
+                });
+                result.setData(loginInfoList);
+            }
+        }
+
+        return result;
+    }
+
+    private boolean checkTokenInCache(String token) {
+        Long rank = redisService.rankZSet(KEY_LOGIN_SET, token);
+        return rank != null && rank >= 0L;
+    }
+
+    private Long getTokenExpireTimeMillis() {
         String expireTime = EnvUtil.getEnvValue("sso.token.expireTime");
         if (StringUtils.isBlank(expireTime)) {
             LOGGER.error("failed to get config: sso.token.expireTime, use default value");
             expireTime = DEFAULT_REDIS_TOKEN_TIMEOUT_MINUTES;
         }
-        return Long.parseLong(expireTime);
+        return Long.parseLong(expireTime) * 60 * 1000;
     }
 
-    private void touchToken(String token) {
-        redisService.expire(createRedisTokenKey(token), getTokenExpireTime(), TimeUnit.MINUTES);
+    private Long getMaxExpireTokenCount() {
+        String maxCount = EnvUtil.getEnvValue("sso.token.maxExpireCount");
+        if (StringUtils.isBlank(maxCount)) {
+            LOGGER.error("failed to get config: sso.token.maxExpireCount, use default value");
+            maxCount = DEFAULT_REDIS_MAX_EXPIRE_TOKEN_COUNT;
+        }
+        return Long.parseLong(maxCount);
     }
+
 }

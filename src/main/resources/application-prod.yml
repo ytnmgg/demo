@@ -112,6 +112,8 @@ sso:
     header: Authorization
     # 失效时间（分钟）
     expireTime: 30
+    # 每次处理的最大token个数
+    maxExpireCount: 100
   user:
     # 失效时间（分钟）(24小时）
     expireTime: 1440

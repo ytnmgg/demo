@@ -16,3 +16,12 @@ export type UserRegisterVO = {
     username: string
     password: string
 }
+
+export type LoginInfo = {
+    token?: string
+    userId?: string
+    userName?: string
+    loginIp?: string
+    loginTime?: string
+    userAgent?: string
+}

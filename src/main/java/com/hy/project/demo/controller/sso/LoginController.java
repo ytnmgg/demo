@@ -42,9 +42,9 @@ public class LoginController {
 
     @PostMapping(LOGIN_REQUEST_URL)
     public @ResponseBody
-    AjaxResult login(@RequestBody LoginRequest request, HttpServletResponse response) throws Throwable {
-        String token = loginService.login(request.getUsername(), request.getPassword(), request.getCallback(),
-            response);
+    AjaxResult login(@RequestBody LoginRequest req, HttpServletRequest request, HttpServletResponse response) throws Throwable {
+        String token = loginService.login(req.getUsername(), req.getPassword(), req.getCallback(),
+            request, response);
         return AjaxResult.success(token);
     }
 
@@ -61,5 +61,4 @@ public class LoginController {
         loginService.logout(httpReq);
         return AjaxResult.success(null);
     }
-
 }

@@ -67,8 +67,19 @@ export const routes: Array<RouteRecordRaw> = [
         }
       },
       {
+        path: 'logins',
+        component: () => import('@/views/Logins/Logins.vue'),
+        name: Names.LOGINS,
+        meta: {
+          title: "在线用户管理",
+          noCache: true,
+          affix: true,
+          activeMenu: "user",
+        }
+      },
+      {
         path: 'log-login',
-        component: () => import('@/views/log/LOGIN/LOGIN-LOG.vue'),
+        component: () => import('@/views/Log/LOGIN/LOGIN-LOG.vue'),
         name: Names.LOGIN_LOG,
         meta: {
           title: "登录日志管理",

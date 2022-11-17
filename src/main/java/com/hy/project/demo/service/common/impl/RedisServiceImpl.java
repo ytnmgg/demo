@@ -3,6 +3,7 @@ package com.hy.project.demo.service.common.impl;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -137,8 +138,13 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void removeHash(String hashName, String key) {
-        redisTemplate.opsForHash().delete(hashName, key);
+    public List<Object> multiGetHash(String hashName, Collection<String> keys) {
+        return redisTemplate.opsForHash().multiGet(hashName, keys);
+    }
+
+    @Override
+    public void removeHash(String hashName, final String... keys) {
+        redisTemplate.opsForHash().delete(hashName, keys);
     }
 
     @Override
@@ -162,6 +168,42 @@ public class RedisServiceImpl implements RedisService {
         } else {
             throw new DemoException(REDIS_LOCK_EXCEPTION, "获取redis锁失败");
         }
+    }
+
+    @Override
+    public Boolean addToZSet(String zSetName, String key, double score) {
+        return redisTemplate.opsForZSet().add(zSetName, key, score);
+    }
+
+    @Override
+    public Double incrementZSetScore(String zSetName, String key, double scoreDelta) {
+        return redisTemplate.opsForZSet().incrementScore(zSetName, key, scoreDelta);
+    }
+
+    @Override
+    public Long rankZSet(String zSetName, String key) {
+        return redisTemplate.opsForZSet().rank(zSetName, key);
+    }
+
+    @Override
+    public Set<String> reverseRangeZSet(String zSetName, long start, long end) {
+        return redisTemplate.opsForZSet().reverseRange(zSetName, start, end);
+    }
+
+    @Override
+    public Set<String> rangeZSetByScore(String zSetName, double min, double max, long offset,
+        long count) {
+        return redisTemplate.opsForZSet().rangeByScore(zSetName, min, max, offset, count);
+    }
+
+    @Override
+    public Long sizeZSet(String zSetName) {
+        return redisTemplate.opsForZSet().size(zSetName);
+    }
+
+    @Override
+    public Long removeZSet(String zSetName, String... keys) {
+        return redisTemplate.opsForZSet().remove(zSetName, keys);
     }
 
     private boolean tryLock(String uniqueValue) {

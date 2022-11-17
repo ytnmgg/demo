@@ -9,8 +9,10 @@ import com.hy.project.demo.controller.request.PageRequest;
 import com.hy.project.demo.controller.request.UserRoleUpdateRequest;
 import com.hy.project.demo.model.AjaxResult;
 import com.hy.project.demo.model.PageResult;
+import com.hy.project.demo.model.sso.LoginInfo;
 import com.hy.project.demo.security.SysUser;
 import com.hy.project.demo.service.auth.LoginService;
+import com.hy.project.demo.service.auth.TokenService;
 import com.hy.project.demo.service.user.UserService;
 import com.hy.project.demo.util.AssertUtil;
 import com.hy.project.demo.util.ResultUtil;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.hy.project.demo.exception.DemoExceptionEnum.INVALID_PARAM_EXCEPTION;
@@ -36,6 +39,9 @@ public class UserController {
 
     @Autowired
     LoginService loginService;
+
+    @Autowired
+    TokenService tokenService;
 
     @GetMapping("/list.json")
     public AjaxResult listUsers(@Valid PageRequest request) {
@@ -91,4 +97,11 @@ public class UserController {
         return AjaxResult.success(null);
     }
 
+    @GetMapping("/list_logins.json")
+    public @ResponseBody
+    AjaxResult getEncryptKey(@Valid PageRequest request) throws Throwable {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        PageResult<List<LoginInfo>> logins = tokenService.pageQueryLoginInfo(request);
+        return AjaxResult.success(logins);
+    }
 }
