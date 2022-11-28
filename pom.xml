@@ -183,6 +183,12 @@
 			<version>0.9.1</version>
 		</dependency>
 
+		<!-- Quartz -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-quartz</artifactId>
+		</dependency>
+
     </dependencies>
 
 	<build>

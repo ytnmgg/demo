@@ -97,6 +97,9 @@ defineExpose({
         <el-menu-item index="logins">
           <icon-users-icon class="mr-2" />在线用户
         </el-menu-item>
+        <el-menu-item index="task">
+          <i-ep-timer class="mr-2" />任务管理
+        </el-menu-item>
         <el-sub-menu index="log">
           <template #title>
             <icon-clipboard-icon class="mr-2" />

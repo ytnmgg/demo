@@ -126,6 +126,7 @@ public class TokenServiceImpl implements TokenService {
         long maxTokenCount = getMaxExpireTokenCount();
 
         Set<String> tokens = redisService.rangeZSetByScore(KEY_LOGIN_SET, 0, maxScore, 0, maxTokenCount);
+        LOGGER.info("{} tokens will be expired", tokens.size());
 
         if (CollectionUtils.isNotEmpty(tokens)) {
 

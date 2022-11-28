@@ -7,4 +7,5 @@ export const enum Names {
     LOGIN_LOG='LOGIN-LOG',
     PERMISSION='PERMISSION',
     LOGINS='LOGINS',
+    TASK='TASK',
 }

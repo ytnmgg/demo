@@ -76,6 +76,11 @@ spring:
     #超时时间，毫秒
     timeout: 5000
 
+  # quartz
+  quartz:
+    jdbc:
+      initialize-schema: never
+
 #mybatis的相关配置
 mybatis:
   #mapper配置文件

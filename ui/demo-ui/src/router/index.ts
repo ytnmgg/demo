@@ -74,7 +74,18 @@ export const routes: Array<RouteRecordRaw> = [
           title: "在线用户管理",
           noCache: true,
           affix: true,
-          activeMenu: "user",
+          activeMenu: "logins",
+        }
+      },
+      {
+        path: 'task',
+        component: () => import('@/views/Task/Task.vue'),
+        name: Names.TASK,
+        meta: {
+          title: "任务管理",
+          noCache: true,
+          affix: true,
+          activeMenu: "task",
         }
       },
       {
