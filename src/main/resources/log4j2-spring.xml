@@ -28,9 +28,22 @@
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </File>
 
+        <!-- http日志 -->
+        <RollingFile name="RollingFileHttp" fileName="${FILE_PATH}/http.log" filePattern="${FILE_PATH}/${FILE_NAME}-HTTP-%d{yyyy-MM-dd}_%i.log.gz">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%msg%n"/>
+            <Policies>
+                <!--interval属性用来指定多久滚动一次，默认是1 hour-->
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件开始覆盖-->
+            <DefaultRolloverStrategy max="15"/>
+        </RollingFile>
+
         <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
         <RollingFile name="RollingFileInfo" fileName="${FILE_PATH}/info.log" filePattern="${FILE_PATH}/${FILE_NAME}-INFO-%d{yyyy-MM-dd}_%i.log.gz">
-            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <!--只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${LOG_PATTERN}"/>
             <Policies>
@@ -76,10 +89,17 @@
     <!--然后定义loggers，只有定义了logger并引入的appender，appender才会生效-->
     <loggers>
 
+        <!--打印HTTP Log-->
+        <logger name="httpLogger" level="info" additivity="false">
+            <appender-ref ref="RollingFileHttp"/>
+            <appender-ref ref="Console"/>
+        </logger>
+
         <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
         <logger name="org.mybatis" level="info" additivity="false">
             <AppenderRef ref="Console"/>
         </logger>
+
         <!--监控系统信息-->
         <!--若是additivity设为false，则 子Logger 只会在自己的appender里输出，而不会在 父Logger 的appender里输出。-->
         <Logger name="org.springframework" level="info" additivity="false">

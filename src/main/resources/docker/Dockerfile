@@ -11,7 +11,7 @@ LABEL type=demoapp
 ADD demo-0.0.1-SNAPSHOT.jar app.jar
 # 环境变量
 ENV profile.active prod
-ENV mysql.host mysql01
+ENV mysql.host @DOCKER_CONF_MYSQL_HOST@
 ENV mysql.user root
 ENV mysql.pwd 1234Qweh
 # 宿主机docker网卡ip，以及docker remote api的映射端口
@@ -26,7 +26,7 @@ ENV front.sso.version v0.0.1
 # 动态配置文件
 ENV dynamic.config.path /var/config/config.properties
 # redis host
-ENV redis.host redis01
+ENV redis.host @DOCKER_CONF_REDIS_HOST@
 # 运行jar包
 RUN bash -c 'touch /app.jar'
 # 创建app日志文件夹

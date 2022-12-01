@@ -1,24 +1,32 @@
 #!/bin/bash
 
-set -e
+. src/main/resources/common.sh
 
-pem=/Users/rick.wl/work/one_console_2.pem
 remote_path=/data/app/front
 
+# 清理项目构建目录
+pf "clean up project files"
+cd ui/demo-ui
+rm -rf dist/*
 
-echo "delete files"
-rm -rf ./dist/*
-
-echo "start to build project..."
+# 构建前端项目
+pf "build project"
 pnpm run build-f
 
-echo "clean up app front folder"
-ssh root@139.224.72.37 -i $pem & rm -rf $remote_path/*
+# host循环，安装ng
+for host in ${cluster_hosts_pub_array[@]}
+do
+  # 清理远程目录
+  pf "clean up app front folder"
+  run $host "rm -rf "$remote_path"/*"
 
-echo "start to deploy files to app..."
-scp -i $pem -r ./dist/* root@139.224.72.37:$remote_path
+  # 拷贝到远程目录
+  pf "deploy files to app"
+  copy $host "dist/*" $remote_path
 
-echo "copy to local folder"
-cp -r ./dist/* /var/front/static
+  # 拷贝到本机目录
+  echo "copy to local folder"
+  cp -r dist/* /var/front/static
 
-echo "done!"
+  echo "done!"
+done

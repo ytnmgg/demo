@@ -7,6 +7,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.quartz.Job;
+import org.quartz.Scheduler;
 
 /**
  * @author rick.wl
@@ -26,4 +27,6 @@ public interface QuartzService {
     boolean checkTriggerExists(String schedulerName, String triggerId, String triggerGroup) throws Throwable;
 
     List<JobInfo> listJobs() throws Throwable;
+
+    Scheduler getScheduler(String schedulerName);
 }

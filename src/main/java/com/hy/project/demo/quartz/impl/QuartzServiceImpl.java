@@ -31,6 +31,7 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 import static com.hy.project.demo.exception.DemoExceptionEnum.CONFIGURATION_EXCEPTION;
 import static com.hy.project.demo.quartz.TaskConstants.DEFAULT_QUARTZ_CONF_FILE;
 import static com.hy.project.demo.util.DateUtil.STANDARD_STR;
+import static com.hy.project.demo.util.EnvUtil.isDevEnv;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
@@ -47,6 +49,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * @date 2022/11/22
  */
 @Service
+@DependsOn(value = {"envUtil"})
 public class QuartzServiceImpl implements QuartzService {
     private final static Logger LOGGER = LoggerFactory.getLogger(QuartzServiceImpl.class);
 
@@ -58,6 +61,11 @@ public class QuartzServiceImpl implements QuartzService {
     @PostConstruct
     public void init() throws Throwable {
         LOGGER.info("QuartzService init...");
+
+        if (isDevEnv()) {
+            LOGGER.info("will not init quartz at env of dev...");
+            return;
+        }
 
         initDefaultScheduler();
     }
@@ -149,6 +157,15 @@ public class QuartzServiceImpl implements QuartzService {
         return jobs;
     }
 
+    @Override
+    public Scheduler getScheduler(String schedulerName) {
+        SchedulerFactoryBean schedulerFactoryBean = schedulerFactoryBeans.get(schedulerName);
+        if (null == schedulerFactoryBean) {
+            return null;
+        }
+        return schedulerFactoryBean.getScheduler();
+    }
+
     public void initDefaultScheduler() throws Throwable {
         initDefaultSchedulerFactoryBean();
         startScheduler(Schedulers.DEFAULT_SCHEDULER.getName());
@@ -162,8 +179,4 @@ public class QuartzServiceImpl implements QuartzService {
         initSchedulerFactoryBean(Schedulers.DEFAULT_SCHEDULER.getName(), properties, dataSource);
     }
 
-    private Scheduler getScheduler(String schedulerName) {
-        SchedulerFactoryBean schedulerFactoryBean = schedulerFactoryBeans.get(schedulerName);
-        return schedulerFactoryBean.getScheduler();
-    }
 }

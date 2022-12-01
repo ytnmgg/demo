@@ -1,8 +1,8 @@
 package com.hy.project.demo.aop;
 
-import com.hy.project.demo.controller.HostLogController;
 import com.hy.project.demo.exception.DemoException;
-import com.hy.project.demo.model.DemoResult;
+import com.hy.project.demo.model.AjaxResult;
+import com.hy.project.demo.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
+
+import static com.hy.project.demo.exception.DemoExceptionEnum.UNKNOWN_EXCEPTION;
 
 /**
  * @author rick.wl
@@ -27,13 +29,16 @@ public class HttpExceptionHandler {
     @ExceptionHandler(value = {Throwable.class})
     public ResponseEntity handleException(final Exception ex, final WebRequest req) {
         LOGGER.error("request error", ex);
-        DemoResult<Object> result;
+        AjaxResult result;
         if (ex instanceof DemoException) {
-            result = DemoResult.buildErrorResult(null, ((DemoException)ex).getCode().getCode(), ex.getMessage());
+            result = AjaxResult.fail(((DemoException)ex).getCode().getCode(), ex.getMessage());
         } else {
             //其他错误
-            result = DemoResult.buildErrorResult(null, "001", "系统错误,请稍后再试");
+            result = AjaxResult.fail(UNKNOWN_EXCEPTION.getCode(), UNKNOWN_EXCEPTION.getDescription());
         }
+
+        LogUtil.logHttp(result.getCode(), String.valueOf(result.getData()), ex);
+
         return new ResponseEntity<Object>(result, HttpStatus.OK);
     }
 }

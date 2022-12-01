@@ -1,5 +1,6 @@
 package com.hy.project.demo.util;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -31,5 +32,10 @@ public class EnvUtil implements InitializingBean {
 
     public static String getEnvValue(String key) {
         return getInstance().getEnv().getProperty(key);
+    }
+
+    public static boolean isDevEnv() {
+        String profile = getEnvValue("spring.profiles.active");
+        return StringUtils.isNotBlank(profile) && StringUtils.equals(profile, "dev");
     }
 }

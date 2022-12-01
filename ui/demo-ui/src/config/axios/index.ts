@@ -5,6 +5,7 @@ import { config, errorCode } from '@/config/axios/config'
 import { getAccessToken, removeToken, setToken, getRefreshToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import { useCache } from '@/hooks/web/useCache'
+import { v4 as uuidv4 } from 'uuid';
 
 // const tenantEnable = import.meta.env.VITE_APP_TENANT_ENABLE
 const { result_code, base_url, request_timeout } = config
@@ -47,6 +48,9 @@ service.interceptors.request.use(
     if (getAccessToken() && needToken) {
       (config as Recordable).headers.Authorization = 'Bearer ' + getAccessToken() // 让每个请求携带自定义token
     }
+
+    // 添加requestId
+    (config as Recordable).headers['request-id'] = uuidv4();
 
     // 设置租户
     // if (tenantEnable) {

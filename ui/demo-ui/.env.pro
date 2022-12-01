@@ -2,7 +2,7 @@
 NODE_ENV=production
 
 # 请求路径
-VITE_BASE_URL='http://localhost:48080'
+VITE_BASE_URL='http://localhost:8080'
 
 # 上传路径
 VITE_UPLOAD_URL='http://localhost:48080/admin-api/infra/file/upload'

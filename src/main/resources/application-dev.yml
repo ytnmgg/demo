@@ -90,7 +90,7 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
     #sql日志，dev调试用
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # actuator 监控配置
 management:

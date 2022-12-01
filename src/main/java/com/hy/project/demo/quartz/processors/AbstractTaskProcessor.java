@@ -31,7 +31,6 @@ public abstract class AbstractTaskProcessor implements TaskProcessor {
     @PostConstruct
     public void init() throws Throwable {
         LOGGER.info("processor init...");
-
         registerMe();
     }
 
@@ -41,9 +40,15 @@ public abstract class AbstractTaskProcessor implements TaskProcessor {
      * @throws Throwable
      */
     private void registerMe() throws Throwable {
+        String schedulerName = getSchedulerName();
 
-        if (!quartzService.checkJobExists(getSchedulerName(), getJobId(), getJobGroup()) && !quartzService
-            .checkTriggerExists(getSchedulerName(), getTriggerId(), getTriggerGroup())) {
+        if (null == quartzService.getScheduler(schedulerName)) {
+            LOGGER.info("will not register quartz processor since no scheduler find.");
+            return;
+        }
+
+        if (!quartzService.checkJobExists(schedulerName, getJobId(), getJobGroup()) && !quartzService
+            .checkTriggerExists(schedulerName, getTriggerId(), getTriggerGroup())) {
 
             Map<String, Object> jobData = buildSystemJobData();
             Map<String, Object> bizJobData = getJobData();
@@ -51,7 +56,7 @@ public abstract class AbstractTaskProcessor implements TaskProcessor {
                 jobData.putAll(bizJobData);
             }
 
-            quartzService.addJob(getSchedulerName(), Task.class, jobData, getJobId(), getJobGroup(), getTriggerId(),
+            quartzService.addJob(schedulerName, Task.class, jobData, getJobId(), getJobGroup(), getTriggerId(),
                 getTriggerGroup(), getCronExpression());
         }
 

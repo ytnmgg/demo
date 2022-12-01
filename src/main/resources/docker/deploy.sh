@@ -1,61 +1,61 @@
 #!/bin/bash
 
-# 任何一条指令有错则退出，不再继续执行
-set -e
+. src/main/resources/common.sh
 
-date_format="+%Y-%m-%d %H:%M:%S"
-pem=/Users/rick.wl/work/one_console_2.pem
 container_name=demoapp
 image_name=demoapp:0.0.1
 image_label_type=demoapp
-hostName=139.224.72.37
 
-
-function pf() {
-    echo -e "\033[33m$(printf %.s= {1..80})\033[0m"
-    echo -e "\033[33m$(date "$date_format") [line:$LINENO] [$1]\033[0m"
-}
-
-
-pf "#1 start to build jar..."
+# mvn编译
+pf "build jar..."
 mvn clean && mvn package -DskipTests=true
 
-pf "#2 copy jar to host"
-scp -i $pem ./target/demo-0.0.1-SNAPSHOT.jar root@$hostName:/data/app/
+# host循环，安装ng
+for host in ${cluster_hosts_pub_array[@]}
+do
+  # 把jar包和配置文件拷贝至host
+  pf "prepare host"
+  p "copy jar to host"
+  copy $host "./target/demo-0.0.1-SNAPSHOT.jar" "/data/app/"
 
-pf "#3 copy config files to host"
-scp -i $pem ./src/main/resources/docker/Dockerfile root@$hostName:/data/app/
-scp -i $pem ./src/main/resources/docker/config.properties root@$hostName:/data/app/config/
+  p "copy config files to host"
+  run $host "mkdir -p /data/app/config"
+  copy $host "./src/main/resources/docker/Dockerfile" "/data/app/"
+  copy $host "./src/main/resources/docker/config.properties" "/data/app/config/"
 
-pf "#4 inspect container <"$container_name">..."
-if ssh -i $pem root@$hostName docker container inspect $container_name >/dev/null 2>&1;
-then
-  echo "container exists, remove it"
-  ssh -i $pem root@$hostName docker rm -f $container_name
-else
-  echo "container does not exit"
-fi
+  # 替换配置文件中的占位符为真实内容
+  replace $host "/data/app/Dockerfile" "@DOCKER_CONF_MYSQL_HOST@" $mysql_host_inner
+  replace $host "/data/app/Dockerfile" "@DOCKER_CONF_REDIS_HOST@" $redis_host_inner
 
-pf "#5 inspect image <"$image_name">..."
-if ssh -i $pem root@$hostName docker image inspect $image_name >/dev/null 2>&1;
-then
-  echo "image exists, remove it"
-  ssh -i $pem root@$hostName "docker images -f label=type="$image_label_type" -q | xargs docker rmi"
-else
-  echo "image does not exit"
-fi
+  # 查看已有的demoapp进程是否存在，存在就先清理掉
+  p "check if container already exists"
+  if run $host "docker container inspect "$container_name" >/dev/null 2>&1";
+  then
+    echo "container already exists, remove it"
+    run $host "docker rm -f "$container_name
+  else
+    echo "container does not exit"
+  fi
 
-pf "#6 clean up images"
-ssh -i $pem root@$hostName docker image prune -f
+  p "check if image already exists"
+  if run $host "docker image inspect "$image_name" >/dev/null 2>&1";
+  then
+    echo "image already exists, remove it"
+    run $host "docker images -f label=type="$image_label_type" -q | xargs docker rmi"
+  else
+    echo "image does not exit"
+  fi
 
-pf "#7 start to build docker image <"$image_name">..."
-build_cmd="cd /data/app/ ; docker build -t "$image_name" ."
-echo "command is: "$build_cmd
-ssh -i $pem root@$hostName $build_cmd
+  run $host "docker image prune -f"
 
-pf "#8 start to run container <"$container_name">..."
-run_cmd="docker run -d -p 8080:8080 -v /var/log/app:/var/log/app -v /var/log/nginx:/var/log/nginx -v /data/app/front:/var/front -v /data/app/config:/var/config  --name "$container_name" --network mynet --network-alias "$container_name" "$image_name
-echo "command is: "$run_cmd
-ssh -i $pem root@$hostName $run_cmd
+  # build docker image and run container
+  pf "build docker image <"$image_name">..."
+  build_cmd="cd /data/app/ ; docker build -t "$image_name" ."
+  run $host $build_cmd
 
-pf "done!"
+  pf "run container <"$container_name">..."
+  run_cmd="docker run -d -p 8080:8080 -v /var/log/app:/var/log/app -v /var/log/nginx:/var/log/nginx -v /data/app/front:/var/front -v /data/app/config:/var/config  --name "$container_name" --network mynet --network-alias "$container_name" "$image_name
+  run $host $run_cmd
+
+  pf "done!"
+done
