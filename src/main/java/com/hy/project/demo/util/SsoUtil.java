@@ -42,6 +42,9 @@ public class SsoUtil {
         ESCAPE_PATH.add("/get_encrypt_key.json");
         ESCAPE_PATH.add("/manifest.json");
         ESCAPE_PATH.add("/user/register.json");
+
+        // grafana内部调用，单独的鉴权逻辑
+        ESCAPE_PATH.add("/grafana-auth/token.json");
     }
 
     public static boolean isEscapeUri(String uri) {
@@ -77,6 +80,11 @@ public class SsoUtil {
     public static String getTokenFromHeader(HttpServletRequest request, String tokenHeader) {
         String token = request.getHeader(tokenHeader);
         return token;
+    }
+
+    public static String getTokenFromCookie(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, "ACCESS_TOKEN");
+        return null != cookie ? cookie.getValue() : null;
     }
 
     private String getTokenKey(String uuid) {

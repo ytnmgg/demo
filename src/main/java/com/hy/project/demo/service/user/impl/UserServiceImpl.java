@@ -40,7 +40,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static com.hy.project.demo.exception.DemoExceptionEnum.INVALID_PARAM_EXCEPTION;
 import static com.hy.project.demo.exception.DemoExceptionEnum.UNEXPECTED;
@@ -81,6 +84,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    TransactionTemplate transactionTemplate;
+
     @Override
     public User getUserById(String uid) {
         return userRepository.getById(uid);
@@ -106,13 +112,21 @@ public class UserServiceImpl implements UserService {
         return sysUser;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     @Override
     public void updateSysUser(SysUser sysUser) {
-        SysUser user = userRepository.lockByUserId(sysUser.getUserId());
-        AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", sysUser.getUserId());
+        transactionTemplate.execute(
+            new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                    SysUser user = userRepository.lockByUserId(sysUser.getUserId());
+                    AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s"
+                        , sysUser.getUserId());
 
-        userRepository.updateUser(sysUser);
+                    userRepository.updateUser(sysUser);
+                }
+            }
+        );
     }
 
     @Override
@@ -174,42 +188,63 @@ public class UserServiceImpl implements UserService {
         redisService.remove(key);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteUser(String userId) {
-        userRepository.deleteByUserId(userId);
-        userRoleRelationRepository.deleteByUserId(userId);
+        transactionTemplate.execute(
+            new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                    userRepository.deleteByUserId(userId);
+                    userRoleRelationRepository.deleteByUserId(userId);
+                }
+            }
+        );
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUserPassword(String userId, String newPwd) {
-        SysUser user = userRepository.lockByUserId(userId);
-        AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", userId);
+        transactionTemplate.execute(
+            new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                    SysUser user = userRepository.lockByUserId(userId);
+                    AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", userId);
 
-        // 用RSA私钥解密前端加密后的用户登录密码
-        String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(newPwd));
-        // 加密用户密码
-        String encoded = bCryptPasswordEncoder.encode(pwd);
+                    // 用RSA私钥解密前端加密后的用户登录密码
+                    String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(newPwd));
+                    // 加密用户密码
+                    String encoded = bCryptPasswordEncoder.encode(pwd);
 
-        user.setPassword(encoded);
-        userRepository.updateUser(user);
+                    user.setPassword(encoded);
+                    userRepository.updateUser(user);
+                }
+            }
+        );
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     @Override
     public void updateUserRoles(String userId, List<String> roleIds) {
-        SysUser user = userRepository.lockByUserId(userId);
-        AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", userId);
+        transactionTemplate.execute(
+            new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                    SysUser user = userRepository.lockByUserId(userId);
+                    AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", userId);
 
-        userRoleRelationRepository.deleteByUserId(userId);
+                    userRoleRelationRepository.deleteByUserId(userId);
 
-        if (CollectionUtils.isNotEmpty(roleIds)) {
-            createUserRoleRelations(userId, roleIds);
-        }
+                    if (CollectionUtils.isNotEmpty(roleIds)) {
+                        createUserRoleRelations(userId, roleIds);
+                    }
+                }
+            }
+        );
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     @Override
     public String createNewUser(String name, String password) {
         SysUser sysUser = new SysUser();
@@ -220,16 +255,23 @@ public class UserServiceImpl implements UserService {
         sysUser.setStatus("0");
         sysUser.setDelFlag("0");
 
-        // TODO, 干掉，用uk行锁解决
-        SysUser existed = userRepository.findByName(name);
-        AssertUtil.isNull(existed, INVALID_PARAM_EXCEPTION, "用户已经存在: %s", name);
+        return transactionTemplate.execute(
+            new TransactionCallback<String>() {
+                @Override
+                public String doInTransaction(TransactionStatus status) {
+                    // TODO, 干掉，用uk行锁解决
+                    SysUser existed = userRepository.findByName(name);
+                    AssertUtil.isNull(existed, INVALID_PARAM_EXCEPTION, "用户已经存在: %s", name);
 
-        String userId = userRepository.insert(sysUser);
+                    String userId = userRepository.insert(sysUser);
 
-        //// 保存用户角色关系 TODO mock
-        //userRoleRelationRepository.insert(userId, "1120220909000001");
+                    //// 保存用户角色关系 TODO mock
+                    //userRoleRelationRepository.insert(userId, "1120220909000001");
 
-        return userId;
+                    return userId;
+                }
+            }
+        );
     }
 
     @Override

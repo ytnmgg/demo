@@ -16,6 +16,7 @@ import IconClipboardIcon from "~icons/lucide/clipboard";
 import IconClipboardCopyIcon from "~icons/lucide/clipboard-copy";
 import IconClipboardEditIcon from "~icons/lucide/clipboard-edit";
 import IconClapperboardIcon from "~icons/lucide/clapperboard";
+import IconNginxIcon from "~icons/simple-icons/nginx";
 
 const openSubMenuIndex = "sys";
 
@@ -60,25 +61,14 @@ defineExpose({
 
 <template>
   <el-scrollbar>
-    <el-menu
-      :default-active="activeMenu"
-      @select="handleSelect"
-      background-color="#1f2937"
-      text-color="#bfcbd9"
-      :default-openeds="openItems"
-      :collapse="isCollapse"
-      class="h-[100vh]"
-      ref="leftMenu"
-    >
-      <div
-        class="flex items-center text-[#4d7c0f] pt-10px pl-10px !h-[50px] bg-[#1f2937]"
-      >
+    <el-menu :default-active="activeMenu" @select="handleSelect" background-color="#1f2937" text-color="#bfcbd9"
+      :default-openeds="openItems" :collapse="isCollapse" class="h-[100vh]" ref="leftMenu">
+      <div class="flex items-center text-[#4d7c0f] pt-10px pl-10px !h-[50px] bg-[#1f2937]">
         <img src="@/assets/images/logo.png" alt="" class="w-32px h-32px mr-10px" />
         <span class="text-20px font-bold">{{ logoText }}</span>
       </div>
       <el-menu-item index="index">
-        <icon-grid-icon class="mr-2" /><span>首页</span></el-menu-item
-      >
+        <icon-grid-icon class="mr-2" /><span>首页</span></el-menu-item>
       <el-sub-menu index="sys">
         <template #title>
           <icon-settings-icon class="mr-2" />
@@ -97,14 +87,15 @@ defineExpose({
         <el-menu-item index="logins">
           <icon-users-icon class="mr-2" />在线用户
         </el-menu-item>
-        <el-menu-item index="task">
-          <i-ep-timer class="mr-2" />任务管理
-        </el-menu-item>
+        <el-menu-item index="task"> <i-ep-timer class="mr-2" />任务管理 </el-menu-item>
         <el-sub-menu index="log">
           <template #title>
             <icon-clipboard-icon class="mr-2" />
             <span>日志管理</span>
           </template>
+          <el-menu-item index="log-access">
+            <icon-nginx-icon class="mr-2" />access日志
+          </el-menu-item>
           <el-menu-item index="log-login">
             <icon-clipboard-copy-icon class="mr-2" />登陆日志
           </el-menu-item>
@@ -114,10 +105,11 @@ defineExpose({
         </el-sub-menu>
       </el-sub-menu>
       <el-menu-item index="process" disabled>
-        <icon-clapperboard-icon class="mr-2" /><span>工作流程</span></el-menu-item
-      >
+        <icon-clapperboard-icon class="mr-2" /><span>工作流程</span></el-menu-item>
     </el-menu>
   </el-scrollbar>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+
+</style>

@@ -10,6 +10,8 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,8 @@ import static com.hy.project.demo.constant.CommonConstants.LOGIN_PAGE_URL;
 //@WebFilter(urlPatterns = "/*", filterName = "IndexPathFilter")
 //@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 public class IndexPathFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(IndexPathFilter.class);
+
     private final static Set<String> ESCAPE_PATH = new HashSet<>();
 
     static {
@@ -34,7 +38,7 @@ public class IndexPathFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         FilterChain filterChain) throws ServletException, IOException {
-
+        LOGGER.info("in IndexPathFilter");
         String path = httpServletRequest.getRequestURI();
 
         if (redirectToIndex(path)) {

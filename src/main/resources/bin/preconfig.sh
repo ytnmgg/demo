@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. src/main/resources/common.sh
+. src/main/resources/bin/common.sh
 
 # 组装ng配置里面的demoapp upstream配置
 demoapp_upstream=''
@@ -69,9 +69,29 @@ do
   fi
 
   run $host "docker pull nginx:1.23.2"
-  run $host "docker run -d -p 80:80 -p 443:443 -v /data/nginx/nginx.conf:/etc/nginx/nginx.conf -v /var/log/nginx:/var/log/nginx -v /data/app/front:/usr/share/nginx/html --name ng01 --network mynet --network-alias ng01 nginx:1.23.2"
+  run $host "docker run -d -e TZ=Asia/Shanghai -p 80:80 -p 443:443 -p 81:81 -v /data/nginx/nginx.conf:/etc/nginx/nginx.conf -v /var/log/nginx:/var/log/nginx -v /data/app/front:/usr/share/nginx/html --name ng01 --network mynet --network-alias ng01 nginx:1.23.2"
 
   # 检查 nginx docker container 是否运行正常
   check_d $host $container_name
+
+  # 配置logrotate
+  run $host "touch /etc/logrotate.d/nginx"
+  run $host "cat <<EOF > /etc/logrotate.d/nginx
+/var/log/nginx/*.log {
+  daily
+  missingok
+  rotate 52
+  compress
+  delaycompress
+  notifempty
+  #create 640 nginx adm
+  sharedscripts
+  postrotate
+    docker restart ng01
+  endscript
+}
+EOF"
+  # 强制执行一次切分
+  run $host "logrotate -vf /etc/logrotate.d/nginx"
 
 done

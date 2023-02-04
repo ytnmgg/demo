@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import static com.hy.project.demo.constant.RedisConstants.KEY_LOGIN_HASH;
 import static com.hy.project.demo.constant.RedisConstants.KEY_LOGIN_SET;
+import static com.hy.project.demo.util.SsoUtil.getTokenFromCookie;
 import static com.hy.project.demo.util.SsoUtil.getTokenFromHeader;
 import static com.hy.project.demo.util.SsoUtil.getUid;
 import static com.hy.project.demo.util.SsoUtil.parseToken;
@@ -66,6 +67,10 @@ public class TokenServiceImpl implements TokenService {
 
         // 获取请求携带的令牌
         String token = getTokenFromHeader(request, tokenHeader);
+
+        if (StringUtils.isBlank(token)) {
+            token = getTokenFromCookie(request);
+        }
 
         if (StringUtils.isBlank(token)) {
             return null;

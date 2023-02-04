@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.hy.project.demo.model.RequestContext;
 import com.hy.project.demo.model.RequestContextHolder;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -25,12 +27,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @WebFilter(urlPatterns = "/*", filterName = "RequestContextInitialFilter")
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class RequestContextInitialFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RequestContextInitialFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         FilterChain filterChain)
         throws ServletException, IOException {
-
+        LOGGER.info("in RequestContextInitialFilter");
         RequestContext context = RequestContextHolder.getCurrentRequestContext();
         context.setEnterTime(System.currentTimeMillis());
         context.setRequest(httpServletRequest);

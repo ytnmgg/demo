@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. src/main/resources/common.sh
+. src/main/resources/bin/common.sh
 
 remote_path=/data/app/front
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. src/main/resources/common.sh
+. src/main/resources/bin/common.sh
 
 container_name=demoapp
 image_name=demoapp:0.0.1
@@ -54,7 +54,7 @@ do
   run $host $build_cmd
 
   pf "run container <"$container_name">..."
-  run_cmd="docker run -d -p 8080:8080 -v /var/log/app:/var/log/app -v /var/log/nginx:/var/log/nginx -v /data/app/front:/var/front -v /data/app/config:/var/config  --name "$container_name" --network mynet --network-alias "$container_name" "$image_name
+  run_cmd="docker run -d -e TZ=Asia/Shanghai -p 8080:8080 -v /var/log/app:/var/log/app -v /var/log/nginx:/var/log/nginx -v /data/app/front:/var/front -v /data/app/config:/var/config  --name "$container_name" --network mynet --network-alias "$container_name" "$image_name
   run $host $run_cmd
 
   pf "done!"

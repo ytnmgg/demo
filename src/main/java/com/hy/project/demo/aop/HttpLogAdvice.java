@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hy.project.demo.controller.GrafanaAuthController;
 import com.hy.project.demo.model.RequestContext;
 import com.hy.project.demo.model.RequestContextHolder;
 import com.hy.project.demo.util.LogUtil;
@@ -13,6 +14,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import static com.hy.project.demo.constant.CommonConstants.HTTP_LOG_CODE_SUCCESS;
@@ -24,6 +27,7 @@ import static com.hy.project.demo.constant.CommonConstants.HTTP_LOG_CODE_SUCCESS
 @Component
 @Aspect
 public class HttpLogAdvice {
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpLogAdvice.class);
 
     @Pointcut("execution(public * com.hy.project.demo.controller..*.*(..))")
     public void httpLog() {
@@ -31,6 +35,9 @@ public class HttpLogAdvice {
 
     @Around("httpLog()")
     public Object httpLog(ProceedingJoinPoint point) throws Throwable {
+
+        LOGGER.info("in httpLogAdvice");
+
         RequestContext context = RequestContextHolder.getCurrentRequestContext();
 
         List<Object> requestArgs = new ArrayList<>();

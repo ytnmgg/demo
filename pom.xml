@@ -195,6 +195,14 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
+		<!-- kafka -->
+		<!-- https://kafka.apache.org/documentation/#producerapi -->
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+
     </dependencies>
 
 	<build>

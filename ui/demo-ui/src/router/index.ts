@@ -89,6 +89,18 @@ export const routes: Array<RouteRecordRaw> = [
         }
       },
       {
+        path: 'log-access',
+        component: () => import('@/views/Log/ACCESS/ACCESS-LOG.vue'),
+        name: Names.ACCESS_LOG,
+        meta: {
+          title: "access日志",
+          icon: 'ep:home-filled',
+          noCache: true,
+          affix: true,
+          activeMenu: "log-access",
+        }
+      },
+      {
         path: 'log-login',
         component: () => import('@/views/Log/LOGIN/LOGIN-LOG.vue'),
         name: Names.LOGIN_LOG,

@@ -1,0 +1,27 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: false
+
+name: @FILEBEAT_NAME@
+tags: ["ng-access-log"]
+
+processors:
+  - add_cloud_metadata: ~
+
+filebeat.inputs:
+  - type: filestream
+    id: ng-log-fs
+    paths:
+      - /var/log/nginx/access.log
+    parsers:
+      - ndjson:
+          target: "content"
+          add_error_key: true
+
+output.elasticsearch:
+  hosts: ["https://@ES_HOST_MAIN@:9200"]
+  username: "elastic"
+  password: "@ELASTIC_PASSWORD@"
+  ssl.certificate_authorities: "/usr/share/filebeat/ca.crt"
+

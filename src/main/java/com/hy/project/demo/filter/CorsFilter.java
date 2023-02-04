@@ -8,7 +8,10 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hy.project.demo.aop.HttpLogAdvice;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -26,6 +29,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @WebFilter(urlPatterns = "/*", filterName = "CorsFilter")
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter extends OncePerRequestFilter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CorsFilter.class);
 
     @Autowired
     private Environment env;
@@ -34,7 +38,7 @@ public class CorsFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         FilterChain filterChain)
         throws ServletException, IOException {
-
+        LOGGER.info("in CorsFilter");
         String profile = env.getProperty("spring.profiles.active");
         if (StringUtils.isNotBlank(profile) && StringUtils.equals(profile, "dev")) {
             HttpServletResponse response = (HttpServletResponse)httpServletResponse;

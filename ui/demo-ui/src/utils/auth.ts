@@ -1,10 +1,12 @@
 import { useCache } from '@/hooks/web/useCache'
 import { TokenType } from '@/api/login/types'
-
+import { useCookies } from '@vueuse/integrations/useCookies'
 
 const { wsCache } = useCache()
 const AccessTokenKey = 'ACCESS_TOKEN'
 const RefreshTokenKey = 'REFRESH_TOKEN'
+const cookies = useCookies([AccessTokenKey])
+const grafanaKey = 'grafana_session'
 
 // 获取token
 export const getAccessToken = () => {
@@ -15,12 +17,15 @@ export const getAccessToken = () => {
 export const setToken = (token: TokenType) => {
   wsCache.set(RefreshTokenKey, token.refreshToken, { exp: token.expiresTime })
   wsCache.set(AccessTokenKey, token.accessToken)
+  cookies.set(AccessTokenKey, token.accessToken)
 }
 
 // 删除token
 export const removeToken = () => {
   wsCache.delete(RefreshTokenKey)
   wsCache.delete(AccessTokenKey)
+  cookies.remove(AccessTokenKey)
+  cookies.remove(grafanaKey)
 }
 
 // 刷新token

@@ -51,7 +51,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         FilterChain filterChain) throws ServletException, IOException {
-
+        LOGGER.info("in JwtAuthenticationTokenFilter");
         if (needHandle(httpServletRequest)) {
 
             SysUser user = tokenService.getUserByToken(httpServletRequest);
