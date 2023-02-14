@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     #url: jdbc:mysql://139.224.72.37:3306/demo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
     #username: root
-    #password: 1234Qweh
+    #password:
     type: com.alibaba.druid.pool.DruidDataSource
     # DRUID连接池配置
     druid:
@@ -14,7 +14,7 @@ spring:
       master:
         url: jdbc:mysql://139.224.72.37:3306/demo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
         username: root
-        password: 1234Qweh
+        password:
         # 初始连接数
         initial-size: 5
         # 最小连接池数量
@@ -44,7 +44,7 @@ spring:
           url-pattern: /druid/*
           # 控制台管理用户名和密码
           login-username: admin
-          login-password: 1234Qweh
+          login-password:
         filter:
           stat:
             enabled: true

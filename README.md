@@ -10,7 +10,7 @@ sh src/main/resources/bin/preconfig.sh
 mkdir -p /data/mysql/conf/conf.d
 mkdir -p /data/mysql/conf/mysql.conf.d
 docker pull mysql:latest
-docker run -d -e TZ=Asia/Shanghai -p 3306:3306 -v /data/mysql/conf:/etc/mysql -v /data/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=1234Qweh --name mysql01 --network mynet --network-alias mysql01 mysql:latest
+docker run -d -e TZ=Asia/Shanghai -p 3306:3306 -v /data/mysql/conf:/etc/mysql -v /data/mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD= --name mysql01 --network mynet --network-alias mysql01 mysql:latest
 ```
 
 ### 设置mysql

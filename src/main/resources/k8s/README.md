@@ -96,9 +96,9 @@
 - Enter a primary username.
   - rick
 - Enter a password for your user.
-  - rick1234
+  - 
 - Confirm your password by entering it again.
-  - rick1234
+  - 
 - Enter a name for your primary organization.
   - rick
 - Enter a name for your primary bucket.

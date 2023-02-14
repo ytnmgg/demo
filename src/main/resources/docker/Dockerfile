@@ -1,7 +1,7 @@
 # 基础镜像使用java
 FROM openjdk:8
 # 作者
-LABEL author=rick<rick.wl@antfin.com>
+LABEL author=rick<rick.wl@xxx.com>
 # 自定义标签，用于查询image的时候过滤：docker images -f label=type=demoapp -q
 LABEL type=demoapp
 # VOLUME 指定了临时文件目录为/tmp。
@@ -13,7 +13,7 @@ ADD demo-0.0.1-SNAPSHOT.jar app.jar
 ENV profile.active prod
 ENV mysql.host @DOCKER_CONF_MYSQL_HOST@
 ENV mysql.user root
-ENV mysql.pwd 1234Qweh
+ENV mysql.pwd
 # 宿主机docker网卡ip，以及docker remote api的映射端口
 ENV docker.remote.host http://172.17.0.1:8989
 # 宿主机docker remote api 版本
