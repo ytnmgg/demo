@@ -1,7 +1,7 @@
 # 基础镜像使用java
 FROM openjdk:8
 # 作者
-LABEL author=rick<rick.wl@antfin.com>
+LABEL author=rick<rick.wl@demo.com>
 # 解压kafka
 ADD ./kafka_2.13-3.3.1 kafka
 WORKDIR kafka
