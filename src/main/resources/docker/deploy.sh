@@ -10,7 +10,7 @@ image_label_type=demoapp
 pf "build jar..."
 mvn clean && mvn package -DskipTests=true
 
-# host循环，安装ng
+# host循环，安装
 for host in ${cluster_hosts_pub_array[@]}
 do
   # 把jar包和配置文件拷贝至host
@@ -23,9 +23,25 @@ do
   copy $host "./src/main/resources/docker/Dockerfile" "/data/app/"
   copy $host "./src/main/resources/docker/config.properties" "/data/app/config/"
 
+  # 查询host-info
+  run $host "cat /data/host-info.config" host_info
+  mysql_user=`echo ${host_info} | sed '/^mysql_user=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'`
+  if [ -z "$mysql_user" ];then
+    echo "ERROR: invalid mysql_user in host-info.config"
+    exit 1
+  fi
+
+  mysql_pwd=`echo ${host_info} | sed '/^mysql_pwd=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'`
+  if [ -z "$mysql_pwd" ];then
+    echo "ERROR: invalid mysql_pwd in host-info.config"
+    exit 1
+  fi
+
   # 替换配置文件中的占位符为真实内容
   replace $host "/data/app/Dockerfile" "@DOCKER_CONF_MYSQL_HOST@" $mysql_host_inner
   replace $host "/data/app/Dockerfile" "@DOCKER_CONF_REDIS_HOST@" $redis_host_inner
+  replace $host "/data/app/Dockerfile" "@DOCKER_CONF_MYSQL_USER@" $mysql_user
+  replace $host "/data/app/Dockerfile" "@DOCKER_CONF_MYSQL_PWD@" $mysql_pwd
 
   # 查看已有的demoapp进程是否存在，存在就先清理掉
   p "check if container already exists"
