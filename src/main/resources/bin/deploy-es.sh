@@ -74,7 +74,8 @@ function install_filebeat() {
 
   # https://www.elastic.co/guide/en/beats/filebeat/8.5/filebeat-installation-configuration.html
   p "copy template filebeat config file to host"
-  copy $host "src/main/resources/filebeat.docker.yml" "/data/es/config/filebeat.docker.yml"
+  copy $host "src/main/resources/config/filebeat.docker.yml" "/data/es/config/filebeat.docker.yml"
+  copy $host "src/main/resources/config/filebeat-fields.yml" "/data/es/config/filebeat-fields.yml"
 
   # 模板文件内容变量处理
   filebeatName="fb${i}"
@@ -90,7 +91,9 @@ function install_filebeat() {
   --name ${filebeatName} --network mynet --network-alias ${filebeatName} \
   --user=root \
   --volume=/var/log/nginx:/var/log/nginx:ro \
+  --volume=/var/log/app:/var/log/app:ro \
   --volume=/data/es/config/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro \
+  --volume=/data/es/config/filebeat-fields.yml:/usr/share/filebeat/filebeat-fields.yml:ro \
   --volume=/data/es/certs/ca/ca.crt:/usr/share/filebeat/ca.crt:ro \
   --volume=/etc/localtime:/etc/localtime:ro \
   docker.elastic.co/beats/filebeat:8.5.3 filebeat -e --strict.perms=false"

@@ -96,9 +96,9 @@ const searchParam = reactive<any>({
     from: "1677067750",
     to: "1677067751",
     query: searchText,
-    fieldKey: "content",
-    timestampKey: "content.msec.keyword",
-    logType: "ng-log-fs"
+    fieldKey: "info",
+    timestampKey: "info.msec.keyword",
+    logType: "info-log-fs"
   }
 });
 
@@ -240,7 +240,7 @@ const refreshList = () => {
             </el-table-column>
             <el-table-column prop="" label="">
               <template #default="scope">
-                <el-tag disable-transitions>{{ scope.row.host }}</el-tag>
+                <el-tag disable-transitions>{{ scope.row.hostAddress }}</el-tag>
                 <div v-for="(value, key) in scope.row">
                   <span class="text-small font-mono">{{ key }}: {{ value }}</span>
                 </div>

@@ -1,6 +1,7 @@
 package com.hy.project.demo.filter;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.FilterChain;
@@ -14,6 +15,7 @@ import com.hy.project.demo.model.RequestContextHolder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -45,6 +47,21 @@ public class RequestContextInitialFilter extends OncePerRequestFilter {
 
         context.setRequestId(requestId);
 
+        initMdc(httpServletRequest, requestId);
+
         filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
+
+    private void initMdc(HttpServletRequest request, String requestId) {
+        MDC.put("requestId", requestId);
+        MDC.put("requestUri", request.getRequestURI());
+        MDC.put("host", request.getHeader("Host"));
+
+        MDC.put("realIp", request.getHeader("x-real-ip"));
+        MDC.put("forwardedIp", request.getHeader("x-forwarded-for"));
+        MDC.put("hostAddress", request.getHeader("x-host-address"));
+
+        Date now = new Date();
+        MDC.put("msec", String.format("%.3f", now.getTime()/1000.0));
     }
 }

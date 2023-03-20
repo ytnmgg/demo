@@ -8,7 +8,7 @@
     <Properties>
         <!-- 格式化输出：%date表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度 %msg：日志消息，%n是换行符-->
         <!-- %logger{36} 表示 Logger 名字最长36个字符 -->
-        <property name="LOG_PATTERN" value="%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n" />
+        <property name="LOG_PATTERN" value="%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %X{requestUri} - %X{requestId} - %msg%n" />
         <!-- 定义日志存储的路径 -->
         <property name="FILE_PATH" value="/var/log/app" />
         <property name="FILE_NAME" value="demo" />
@@ -43,6 +43,16 @@
 
         <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
         <RollingFile name="RollingFileInfo" fileName="${FILE_PATH}/info.log" filePattern="${FILE_PATH}/${FILE_NAME}-INFO-%d{yyyy-MM-dd}_%i.log.gz">
+            <!-- 输出json格式 -->
+            <!-- https://logging.apache.org/log4j/2.x/manual/layouts.html#JSONLayout -->
+            <JsonLayout compact="true" eventEol="true">
+                <KeyValuePair key="requestId" value="${ctx:requestId}"/>
+                <KeyValuePair key="requestUri" value="${ctx:requestUri}"/>
+                <KeyValuePair key="msec" value="${ctx:msec}" />
+                <KeyValuePair key="host" value="${ctx:host}" />
+                <KeyValuePair key="hostAddress" value="${ctx:hostAddress}" />
+                <KeyValuePair key="realIp" value="${ctx:realIp}" />
+            </JsonLayout>
             <!--只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout pattern="${LOG_PATTERN}"/>

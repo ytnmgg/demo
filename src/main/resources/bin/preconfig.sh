@@ -54,6 +54,7 @@ do
   # 替换ng配置文件中的ip占位符为真实ip地址
   p "replace @PRE_CONF_DEMO_APP_UPSTREAM@ by real value"
   replace $host "/data/nginx/nginx.conf" "@PRE_CONF_DEMO_APP_UPSTREAM@" $demoapp_upstream
+  replace $host "/data/nginx/nginx.conf" "@DOCKER_HOST_ADDRESS@" $host
 
   # 安装ng
   pf "install nginx"

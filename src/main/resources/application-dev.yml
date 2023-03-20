@@ -124,3 +124,11 @@ sso:
   user:
     # 失效时间（分钟）(24小时）
     expireTime: 1440
+
+# ES 相关
+es:
+  cert:
+    filePath: /Users/rick.wl/es_ca.crt
+  user:
+    name: elastic
+    pwdPath: /Users/rick.wl/pwd_elastic

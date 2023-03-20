@@ -4,7 +4,7 @@ filebeat.config:
     reload.enabled: false
 
 name: @FILEBEAT_NAME@
-tags: ["ng-access-log"]
+tags: ["ng-access-log", "info-log"]
 
 processors:
   - add_cloud_metadata: ~
@@ -12,11 +12,23 @@ processors:
 filebeat.inputs:
   - type: filestream
     id: ng-log-fs
+    fields:
+      fb_id: ng-log-fs
     paths:
       - /var/log/nginx/access.log
     parsers:
       - ndjson:
           target: "content"
+          add_error_key: true
+  - type: filestream
+    id: info-log-fs
+    fields:
+      fb_id: info-log-fs
+    paths:
+      - /var/log/app/info.log
+    parsers:
+      - ndjson:
+          target: "info"
           add_error_key: true
 
 output.elasticsearch:
@@ -24,4 +36,10 @@ output.elasticsearch:
   username: "elastic"
   password: "@ELASTIC_PASSWORD@"
   ssl.certificate_authorities: "/usr/share/filebeat/ca.crt"
+  index: "demo-log-%{[agent.version]}"
+
+setup.template:
+  name: "demo-log"
+  pattern: "demo-log"
+  fields: "filebeat-fields.yml"
 

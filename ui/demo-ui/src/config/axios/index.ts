@@ -40,7 +40,6 @@ const whiteList = [
 // request拦截器
 service.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-
     // 是否需要设置 token
     const needToken = whiteList.indexOf(config.url!) == -1 ? true : false;
 

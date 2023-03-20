@@ -9,4 +9,5 @@ export const enum Names {
     LOGINS='LOGINS',
     TASK='TASK',
     ACCESS_LOG='ACCESS_LOG',
+    OP_LOG='OP_LOG',
 }

@@ -8,7 +8,6 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hy.project.demo.aop.HttpLogAdvice;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,30 +29,36 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorsFilter.class);
-
+    private static final String HEADER_ORIGIN = "Origin";
+    private static final String HEADER_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    private static final String HEADER_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    private static final String HEADER_ALLOW_METHODS = "Access-Control-Allow-Methods";
+    private static final String HEADER_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    private static final String HEADER_REQUEST_HEADERS = "Access-Control-Request-Headers";
     @Autowired
     private Environment env;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-        FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
         LOGGER.info("in CorsFilter");
-        String profile = env.getProperty("spring.profiles.active");
-        if (StringUtils.isNotBlank(profile) && StringUtils.equals(profile, "dev")) {
-            HttpServletResponse response = (HttpServletResponse)httpServletResponse;
-            HttpServletRequest request = (HttpServletRequest)httpServletRequest;
-            String curOrigin = request.getHeader("Origin");
-            response.setHeader("Access-Control-Allow-Origin", curOrigin == null ? "true" : curOrigin);
-            response.setHeader("Access-Control-Allow-Credentials", "true");
-            response.setHeader("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE, PUT");
-            response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-            filterChain.doFilter(request, response);
 
-        } else {
+        try {
+            String origin = request.getHeader(HEADER_ORIGIN);
 
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            // TODO @RICK 先全部允许，后面走配置
+            if (StringUtils.isNotBlank(origin)) {
+                response.setHeader(HEADER_ALLOW_ORIGIN, request.getHeader(HEADER_ORIGIN));
+                response.setHeader(HEADER_ALLOW_CREDENTIALS, "true");
+                response.setHeader(HEADER_ALLOW_HEADERS, request.getHeader(HEADER_REQUEST_HEADERS));
+                response.setHeader(HEADER_ALLOW_METHODS, "GET,POST");
+            }
+
+        } catch (Throwable e) {
+            // CORS处理异常不影响后续业务，只记录日志
+            LOGGER.error("cors filter error", e);
         }
 
+        filterChain.doFilter(request, response);
     }
 }

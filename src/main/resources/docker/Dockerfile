@@ -33,5 +33,5 @@ RUN bash -c 'touch /app.jar'
 RUN bash -c 'mkdir -p /var/log/app'
 # 创建nginx日志文件夹
 RUN bash -c 'mkdir -p /var/log/nginx'
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-Duser.timezone=GMT+08","-Dfile.encoding=UTF8","-jar","/app.jar"]
+ENTRYPOINT ["java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8088","-Djava.security.egd=file:/dev/./urandom","-Duser.timezone=GMT+08","-Dfile.encoding=UTF8","-jar","/app.jar"]
 

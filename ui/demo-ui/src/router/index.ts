@@ -111,6 +111,18 @@ export const routes: Array<RouteRecordRaw> = [
           affix: true,
           activeMenu: "log-login",
         }
+      },
+      {
+        path: 'log-op',
+        component: () => import('@/views/Log/OP/OP-LOG.vue'),
+        name: Names.OP_LOG,
+        meta: {
+          title: "操作日志",
+          icon: 'ep:home-filled',
+          noCache: true,
+          affix: true,
+          activeMenu: "log-op",
+        }
       }
     ]
   }

@@ -182,9 +182,11 @@ docker run -it --rm \
 docker.elastic.co/elasticsearch/elasticsearch:8.5.3 \
 sh -c "bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key && unzip config/certs/certs.zip -d config/certs"
 
-# 下面的步骤只需要在es02执行
+# 下面的步骤只需要在es02执行 (ES安装完成之后，生成密码文件了才执行）
 ## 从es01 copy文件过来
 scp -i /data/one_console_2.pem -r root@172.27.183.154:/data/es/certs/* /data/es/certs
+scp -i /data/one_console_2.pem -r root@172.27.183.154:/data/es/pwd_elastic /data/es/pwd_elastic
+
 ```
 
 ### 安装

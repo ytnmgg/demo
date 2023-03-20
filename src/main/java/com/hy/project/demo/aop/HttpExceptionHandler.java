@@ -1,5 +1,7 @@
 package com.hy.project.demo.aop;
 
+import javax.validation.ConstraintViolationException;
+
 import com.hy.project.demo.exception.DemoException;
 import com.hy.project.demo.model.AjaxResult;
 import com.hy.project.demo.util.LogUtil;
@@ -9,11 +11,13 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
+import static com.hy.project.demo.exception.DemoExceptionEnum.INVALID_PARAM_EXCEPTION;
 import static com.hy.project.demo.exception.DemoExceptionEnum.UNKNOWN_EXCEPTION;
 
 /**
@@ -32,6 +36,8 @@ public class HttpExceptionHandler {
         AjaxResult result;
         if (ex instanceof DemoException) {
             result = AjaxResult.fail(((DemoException)ex).getCode().getCode(), ex.getMessage());
+        } else if (ex instanceof ConstraintViolationException || ex instanceof BindException) {
+            result = AjaxResult.fail(INVALID_PARAM_EXCEPTION.getCode(), INVALID_PARAM_EXCEPTION.getDescription());
         } else {
             //其他错误
             result = AjaxResult.fail(UNKNOWN_EXCEPTION.getCode(), UNKNOWN_EXCEPTION.getDescription());
