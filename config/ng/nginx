@@ -1,0 +1,13 @@
+/var/log/nginx/*.log {
+  daily
+  missingok
+  rotate 52
+  compress
+  delaycompress
+  notifempty
+  #create 640 nginx adm
+  sharedscripts
+  postrotate
+    docker restart ng01
+  endscript
+}

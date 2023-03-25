@@ -1,0 +1,27 @@
+server:
+  port: 8081
+spring:
+  # 非web应用
+  main:
+    web-application-type: none
+
+#mybatis的相关配置
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: com.hy.project.demo.auth.core.mybatis.entity
+  #开启驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 单点登录配置
+sso:
+  token:
+    header: Authorization
+    # 失效时间（分钟）
+    expireTime: 30
+    # 每次处理的最大token个数
+    maxExpireCount: 100
+  user:
+    # 失效时间（分钟）(24小时）
+    expireTime: 1440

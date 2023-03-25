@@ -2,7 +2,12 @@
 
 ## 安装docker、安装nginx
 ```bash
-sh src/main/resources/bin/preconfig.sh
+sh src/main/resources/bin/deploy-docker-ng.sh
+```
+
+## 安装zookeeper
+```bash
+sh src/main/resources/bin/deploy-zk.sh
 ```
 
 ## 安装 mysql

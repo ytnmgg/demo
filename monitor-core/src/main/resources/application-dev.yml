@@ -1,0 +1,47 @@
+server:
+  port: 8080
+
+spring:
+  # 非web应用
+  main:
+    web-application-type: none
+
+#mybatis的相关配置
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  type-aliases-package: com.hy.project.demo.monitor.core.mybatis.entity
+  #开启驼峰命名
+  configuration:
+    map-underscore-to-camel-case: true
+    #sql日志，dev调试用
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# actuator 监控配置
+management:
+  #actuator端口 如果不配置做默认使用上面8080端口
+  server:
+    port: 8080
+  endpoints:
+    web:
+      exposure:
+        #默认值访问health,info端点  用*可以包含全部端点
+        include: "health,metrics"
+      #修改访问路径 2.0之前默认是/; 2.0默认是/actuator可以通过这个属性值修改
+      base-path: /actuator
+    jmx:
+      exposure:
+        exclude: "*" #jmx不公开所有端点
+  endpoint:
+    shutdown:
+      enabled: true #打开shutdown端点
+    health:
+      show-details: always #获得健康检查中所有指标的详细信息
+
+# ES 相关
+es:
+  cert:
+    filePath: /Users/rick.wl/es_ca.crt
+  user:
+    name: elastic
+    pwdPath: /Users/rick.wl/pwd_elastic
