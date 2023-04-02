@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.web.util.WebUtils;
+//import org.springframework.web.util.WebUtils;
 
 import static com.hy.project.demo.common.constant.RedisConstants.KEY_TOKEN_PREFIX;
 import static com.hy.project.demo.common.constant.RedisConstants.KEY_USER_INFO_PREFIX;
@@ -58,8 +58,9 @@ public class SsoUtil {
     }
 
     public static String getTokenFromCookie(HttpServletRequest request) {
-        Cookie cookie = WebUtils.getCookie(request, "ACCESS_TOKEN");
-        return null != cookie ? cookie.getValue() : null;
+        //Cookie cookie = WebUtils.getCookie(request, "ACCESS_TOKEN");
+        //return null != cookie ? cookie.getValue() : null;
+        return null;
     }
 
     private String getTokenKey(String uuid) {
@@ -67,8 +68,9 @@ public class SsoUtil {
     }
 
     public static String getToken(HttpServletRequest request, String key) {
-        Cookie cookie = WebUtils.getCookie(request, key);
-        return null != cookie ? cookie.getValue() : null;
+        //Cookie cookie = WebUtils.getCookie(request, key);
+        //return null != cookie ? cookie.getValue() : null;
+        return null;
     }
 
     public static String createRedisUserInfoKey(String userId) {

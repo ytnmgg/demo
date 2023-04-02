@@ -1,12 +1,10 @@
-package com.hy.project.demo.auth.core.config;
+package com.hy.project.demo.common.config;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
 import javax.sql.DataSource;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
-import com.alibaba.druid.support.http.StatViewServlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

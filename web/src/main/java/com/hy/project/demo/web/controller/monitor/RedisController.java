@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RedisController {
     private final static Logger LOGGER = LoggerFactory.getLogger(RedisController.class);
 
-    @Autowired
-    RedisService redisService;
+    //@Autowired
+    //RedisService redisService;
 
     //@GetMapping("/list.json")
     //public @ResponseBody

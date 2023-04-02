@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.hy.project.demo.auth.facade.service.LoginService;
 import com.hy.project.demo.auth.facade.service.RsaService;
-import com.hy.project.demo.web.model.AjaxResult;
+import com.hy.project.demo.common.model.AjaxResult;
 import com.hy.project.demo.web.model.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -25,41 +25,41 @@ import static com.hy.project.demo.web.constant.WebConstants.LOGOUT_REQUEST_URL;
 @Controller
 public class LoginController {
 
-    @Autowired
-    LoginService loginService;
-
-    @Autowired
-    RsaService rsaService;
-
-    @Autowired
-    private Environment env;
-
-    //@RequestMapping(LOGIN_PAGE_URL)
-    //public String loginPage(Model model) {
-    //    model.addAttribute("front_sso_version", env.getProperty("front.sso.version"));
-    //    return "login";
+    //@Autowired
+    //LoginService loginService;
+    //
+    //@Autowired
+    //RsaService rsaService;
+    //
+    //@Autowired
+    //private Environment env;
+    //
+    ////@RequestMapping(LOGIN_PAGE_URL)
+    ////public String loginPage(Model model) {
+    ////    model.addAttribute("front_sso_version", env.getProperty("front.sso.version"));
+    ////    return "login";
+    ////}
+    //
+    //@PostMapping(LOGIN_REQUEST_URL)
+    //public @ResponseBody
+    //AjaxResult login(@RequestBody LoginRequest req, HttpServletRequest request, HttpServletResponse response)
+    //    throws Throwable {
+    //    String token = loginService.login(req.getUsername(), req.getPassword(), req.getCallback(),
+    //        request, response);
+    //    return AjaxResult.success(token);
     //}
 
-    @PostMapping(LOGIN_REQUEST_URL)
-    public @ResponseBody
-    AjaxResult login(@RequestBody LoginRequest req, HttpServletRequest request, HttpServletResponse response)
-        throws Throwable {
-        String token = loginService.login(req.getUsername(), req.getPassword(), req.getCallback(),
-            request, response);
-        return AjaxResult.success(token);
-    }
+    //@GetMapping("/get_encrypt_key.json")
+    //public @ResponseBody
+    //AjaxResult getEncryptKey() throws Throwable {
+    //    String key = rsaService.getRsaPublicKeyString();
+    //    return AjaxResult.success(key);
+    //}
 
-    @GetMapping("/get_encrypt_key.json")
-    public @ResponseBody
-    AjaxResult getEncryptKey() throws Throwable {
-        String key = rsaService.getRsaPublicKeyString();
-        return AjaxResult.success(key);
-    }
-
-    @PostMapping(LOGOUT_REQUEST_URL)
-    public @ResponseBody
-    AjaxResult logout(HttpServletRequest httpReq) {
-        loginService.logout(httpReq);
-        return AjaxResult.success(null);
-    }
+    //@PostMapping(LOGOUT_REQUEST_URL)
+    //public @ResponseBody
+    //AjaxResult logout(HttpServletRequest httpReq) {
+    //    loginService.logout(httpReq);
+    //    return AjaxResult.success(null);
+    //}
 }

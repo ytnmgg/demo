@@ -1,4 +1,4 @@
-package com.hy.project.demo.web.util;
+package com.hy.project.demo.common.util;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSON;
 
-import com.hy.project.demo.web.model.AjaxResult;
+import com.hy.project.demo.common.model.AjaxResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

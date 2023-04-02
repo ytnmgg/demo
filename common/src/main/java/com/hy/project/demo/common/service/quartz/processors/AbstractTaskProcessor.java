@@ -26,7 +26,7 @@ public abstract class AbstractTaskProcessor implements TaskProcessor {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractTaskProcessor.class);
 
     @Autowired
-    QuartzService quartzService;
+    protected QuartzService quartzService;
 
     @PostConstruct
     public void init() throws Throwable {
@@ -79,7 +79,7 @@ public abstract class AbstractTaskProcessor implements TaskProcessor {
     }
 
     protected String getSchedulerName() {
-        return Schedulers.DEFAULT_SCHEDULER.getName();
+        return null;
     }
 
     protected String getCronExpression() {

@@ -4,16 +4,21 @@ import java.security.Key;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import com.alibaba.cloud.nacos.NacosConfigManager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
 import com.hy.project.demo.auth.core.util.RsaUtil;
+import com.hy.project.demo.auth.facade.model.RsaGetResult;
 import com.hy.project.demo.auth.facade.service.RsaService;
+import com.hy.project.demo.common.model.BaseRequest;
 import com.hy.project.demo.common.service.redis.RedisService;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +36,8 @@ import static com.hy.project.demo.common.constant.RedisConstants.KEY_KEYS;
  * @date 2021/11/08
  */
 @Service
-public class RsaServiceImpl implements RsaService, InitializingBean {
+@DubboService
+public class RsaServiceImpl implements RsaService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RsaServiceImpl.class);
 
     private Map<String, Object> keys;
@@ -39,10 +45,13 @@ public class RsaServiceImpl implements RsaService, InitializingBean {
     @Autowired
     RedisService redisService;
 
+    @Autowired
+    private NacosConfigManager nacosConfigManager;
+
     @Override
-    public String getRsaPublicKeyString() {
+    public RsaGetResult<String> getRsaPublicKeyString(BaseRequest request) {
         byte[] publicKey = parsePublicKeyBytes(keys);
-        return new String(Base64.encodeBase64(publicKey));
+        return RsaGetResult.of(new String(Base64.encodeBase64(publicKey)));
     }
 
     @Override
@@ -67,9 +76,25 @@ public class RsaServiceImpl implements RsaService, InitializingBean {
         return RsaUtil.decryptByPrivateKeyWithSeg(data, privateKey);
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct
+    public void init() throws Exception {
         initKeys();
+
+        //ConfigService configService = nacosConfigManager.getConfigService();
+        //String result = configService.getConfig("SOME_THING_NEED_TO_CONFIG", "DEFAULT_GROUP", 500);
+        //LOGGER.info("nacos config is: {}", result);
+        //
+        //configService.addListener("SOME_THING_NEED_TO_CONFIG", "DEFAULT_GROUP", new Listener() {
+        //    @Override
+        //    public Executor getExecutor() {
+        //        return Executors.newSingleThreadExecutor();
+        //    }
+        //
+        //    @Override
+        //    public void receiveConfigInfo(String configInfo) {
+        //        LOGGER.info("received nacos config is: {}", configInfo);
+        //    }
+        //});
     }
 
     private void initKeys() throws Exception {

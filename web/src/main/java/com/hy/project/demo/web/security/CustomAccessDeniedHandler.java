@@ -6,15 +6,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hy.project.demo.web.model.AjaxResult;
+import com.hy.project.demo.common.model.AjaxResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-import static com.hy.project.demo.web.util.ResultUtil.CODE_403;
-import static com.hy.project.demo.web.util.ResultUtil.buildJsonResponse;
+import static com.hy.project.demo.common.util.ResultUtil.CODE_403;
+import static com.hy.project.demo.common.util.ResultUtil.buildJsonResponse;
 
 /**
  * @author rick.wl

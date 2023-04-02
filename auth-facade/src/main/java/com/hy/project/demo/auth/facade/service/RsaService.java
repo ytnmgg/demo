@@ -2,6 +2,9 @@ package com.hy.project.demo.auth.facade.service;
 
 import java.security.Key;
 
+import com.hy.project.demo.auth.facade.model.RsaGetResult;
+import com.hy.project.demo.common.model.BaseRequest;
+
 /**
  * @author rick.wl
  * @date 2021/11/08
@@ -13,7 +16,7 @@ public interface RsaService {
      * @return 结果
      * @throws Throwable 异常
      */
-    String getRsaPublicKeyString();
+    RsaGetResult<String> getRsaPublicKeyString(BaseRequest request);
 
     Key getRsaPublicKey();
 

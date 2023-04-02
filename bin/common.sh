@@ -93,7 +93,7 @@ function check_d() {
 # $4: 真实内容
 function replace() {
   p "replace "$3" by real value: ""$4"
-  run $1 "sed -i 's/$3/$4/g' "$2
+  run $1 "sed -i 's^$3^$4^g' "$2
 
 #  run $1 "awk '/"$3"/{print NR}' "$2"|xargs -I '{}' sed -i '{}i "$4"' "$2
 #  run_cmd="sed -i '"$3"/d' "$2
@@ -122,4 +122,19 @@ function removeInvisible() {
   STR=$1
   STR="${STR%%[[:cntrl:]]}"
   eval $2='$STR'
+}
+
+# 从 /data/host-info.config 中查询host信息
+function get_host_info() {
+  host=$1
+  key=$2
+  run $host "cat /data/host-info.config | sed '/^${key}=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" result
+
+   # result是命令执行的输出内容，用于保存到返回结果中给调用方使用
+  if [ $3 ]
+  then
+    # $3是外部传入的引用
+    # 正常最好用 local -n ref=$3 或者 declare -n ref=$3，然后给ref赋值：ref=$result，但是macOS的bash不支持这种写法
+    eval $3='$result'
+  fi
 }

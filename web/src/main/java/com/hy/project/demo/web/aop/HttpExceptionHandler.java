@@ -4,7 +4,7 @@ import javax.validation.ConstraintViolationException;
 
 import com.hy.project.demo.common.exception.DemoException;
 import com.hy.project.demo.common.exception.DemoExceptionEnum;
-import com.hy.project.demo.web.model.AjaxResult;
+import com.hy.project.demo.common.model.AjaxResult;
 import com.hy.project.demo.web.util.LogUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

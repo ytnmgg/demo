@@ -1,4 +1,4 @@
-package com.hy.project.demo.auth.core.config;
+package com.hy.project.demo.common.config;
 
 import java.util.Arrays;
 import java.util.Collections;

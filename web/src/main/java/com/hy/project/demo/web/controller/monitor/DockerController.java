@@ -18,15 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/docker")
 public class DockerController {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(DockerController.class);
-
-    @Autowired
-    DockerService dockerService;
-
-    @GetMapping("/container/list.json")
-    public List<ContainerBase> listContainers() {
-        return dockerService.listContainers();
-    }
+    //
+    //private final static Logger LOGGER = LoggerFactory.getLogger(DockerController.class);
+    //
+    //@Autowired
+    //DockerService dockerService;
+    //
+    //@GetMapping("/container/list.json")
+    //public List<ContainerBase> listContainers() {
+    //    return dockerService.listContainers();
+    //}
 
 }

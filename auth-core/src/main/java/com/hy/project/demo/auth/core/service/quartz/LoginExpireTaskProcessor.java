@@ -1,11 +1,19 @@
 package com.hy.project.demo.auth.core.service.quartz;
 
+import javax.annotation.Resource;
+
+import com.hy.project.demo.auth.core.config.NacosExampleConfig;
 import com.hy.project.demo.auth.facade.service.TokenService;
+import com.hy.project.demo.common.service.quartz.Schedulers;
 import com.hy.project.demo.common.service.quartz.TaskMeta;
 import com.hy.project.demo.common.service.quartz.TaskProcessContext;
 import com.hy.project.demo.common.service.quartz.processors.AbstractTaskProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static com.hy.project.demo.common.util.EnvUtil.isDevEnv;
 
 /**
  * @author rick.wl
@@ -13,9 +21,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class LoginExpireTaskProcessor extends AbstractTaskProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginExpireTaskProcessor.class);
 
     @Autowired
     TokenService tokenService;
+
+    @Resource
+    NacosExampleConfig nacosExampleConfig;
 
     @Override
     public TaskMeta getTaskMeta() {
@@ -24,7 +36,27 @@ public class LoginExpireTaskProcessor extends AbstractTaskProcessor {
 
     @Override
     public void process(TaskProcessContext context) {
+
+        LOGGER.info("nacos example: {}, {}", nacosExampleConfig.getName(), nacosExampleConfig.getAge());
+
         tokenService.expireTokens();
+    }
+
+    @Override
+    public String getSchedulerName() {
+        LOGGER.info("init auth-core quartz scheduler...");
+
+        if (isDevEnv()) {
+            LOGGER.info("will not init auth-core quartz scheduler at env of dev...");
+            return null;
+        }
+
+        try {
+            return quartzService.initAndStartScheduler(Schedulers.AUTH_CORE_SCHEDULER);
+        } catch (Throwable e) {
+            LOGGER.error("initAndStartScheduler failed", e);
+            return null;
+        }
     }
 
     private static class LoginExpireTaskMeta implements TaskMeta {

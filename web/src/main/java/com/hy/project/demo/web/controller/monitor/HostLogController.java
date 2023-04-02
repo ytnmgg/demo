@@ -31,40 +31,40 @@ import static com.hy.project.demo.common.exception.DemoExceptionEnum.INVALID_PAR
 @RestController
 @RequestMapping("/host/log")
 public class HostLogController {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(HostLogController.class);
-
-    @Autowired
-    NginxAccessFileService nginxAccessFileService;
-
-    @GetMapping("/nginx/list.json")
-    public PageResult<List<NginxAccessFileLine>> listNginxLogs(@Valid NginxLogListRequest request) {
-
-        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-        Date gmtBegin = null;
-        Date gmtEnd = null;
-
-        if (StringUtils.isNotBlank(request.getGmtBegin())) {
-            gmtBegin = DateUtil.parse(request.getGmtBegin(), DateUtil.STANDARD_STR);
-        }
-
-        if (StringUtils.isNotBlank(request.getGmtEnd())) {
-            gmtEnd = DateUtil.parse(request.getGmtEnd(), DateUtil.STANDARD_STR);
-        }
-
-        return nginxAccessFileService.listLines(gmtBegin, gmtEnd, request.getPageIndex(), request.getPageSize());
-    }
-
-    @GetMapping("/nginx/status.json")
-    public NginxAccessLogStatusCount countNginxStatus() {
-        return nginxAccessFileService.countStatus();
-    }
-
-    @GetMapping("/nginx/listPoints.json")
-    public List<NginxAccessLogPointModel> listNginxPoints(@Valid NginxLogListPointsRequest request) {
-        Date begin = DateUtil.parse(request.getGmtBegin(), DateUtil.STANDARD_STR);
-        Date end = DateUtil.parse(request.getGmtEnd(), DateUtil.STANDARD_STR);
-        return nginxAccessFileService.listPoints(begin, end);
-    }
+    //
+    //private final static Logger LOGGER = LoggerFactory.getLogger(HostLogController.class);
+    //
+    //@Autowired
+    //NginxAccessFileService nginxAccessFileService;
+    //
+    //@GetMapping("/nginx/list.json")
+    //public PageResult<List<NginxAccessFileLine>> listNginxLogs(@Valid NginxLogListRequest request) {
+    //
+    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+    //    Date gmtBegin = null;
+    //    Date gmtEnd = null;
+    //
+    //    if (StringUtils.isNotBlank(request.getGmtBegin())) {
+    //        gmtBegin = DateUtil.parse(request.getGmtBegin(), DateUtil.STANDARD_STR);
+    //    }
+    //
+    //    if (StringUtils.isNotBlank(request.getGmtEnd())) {
+    //        gmtEnd = DateUtil.parse(request.getGmtEnd(), DateUtil.STANDARD_STR);
+    //    }
+    //
+    //    return nginxAccessFileService.listLines(gmtBegin, gmtEnd, request.getPageIndex(), request.getPageSize());
+    //}
+    //
+    //@GetMapping("/nginx/status.json")
+    //public NginxAccessLogStatusCount countNginxStatus() {
+    //    return nginxAccessFileService.countStatus();
+    //}
+    //
+    //@GetMapping("/nginx/listPoints.json")
+    //public List<NginxAccessLogPointModel> listNginxPoints(@Valid NginxLogListPointsRequest request) {
+    //    Date begin = DateUtil.parse(request.getGmtBegin(), DateUtil.STANDARD_STR);
+    //    Date end = DateUtil.parse(request.getGmtEnd(), DateUtil.STANDARD_STR);
+    //    return nginxAccessFileService.listPoints(begin, end);
+    //}
 
 }

@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import com.hy.project.demo.common.service.quartz.JobInfo;
@@ -16,6 +15,7 @@ import com.hy.project.demo.common.service.quartz.QuartzService;
 import com.hy.project.demo.common.service.quartz.Schedulers;
 import com.hy.project.demo.common.util.AssertUtil;
 import com.hy.project.demo.common.util.DateUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -40,7 +40,6 @@ import org.springframework.stereotype.Service;
 import static com.hy.project.demo.common.constant.TaskConstants.DEFAULT_QUARTZ_CONF_FILE;
 import static com.hy.project.demo.common.exception.DemoExceptionEnum.CONFIGURATION_EXCEPTION;
 import static com.hy.project.demo.common.util.DateUtil.STANDARD_STR;
-import static com.hy.project.demo.common.util.EnvUtil.isDevEnv;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
@@ -58,17 +57,17 @@ public class QuartzServiceImpl implements QuartzService {
     @Autowired
     DataSource dataSource;
 
-    @PostConstruct
-    public void init() throws Throwable {
-        LOGGER.info("QuartzService init...");
-
-        if (isDevEnv()) {
-            LOGGER.info("will not init quartz at env of dev...");
-            return;
-        }
-
-        initDefaultScheduler();
-    }
+    //@PostConstruct
+    //public void init() throws Throwable {
+    //    LOGGER.info("QuartzService init...");
+    //
+    //    if (isDevEnv()) {
+    //        LOGGER.info("will not init quartz at env of dev...");
+    //        return;
+    //    }
+    //
+    //    initDefaultScheduler();
+    //}
 
     @Override
     public void addJob(String schedulerName, Class<? extends Job> jobClass, Map<String, Object> jobData, String jobId,
@@ -159,6 +158,10 @@ public class QuartzServiceImpl implements QuartzService {
 
     @Override
     public Scheduler getScheduler(String schedulerName) {
+        if (StringUtils.isEmpty(schedulerName)) {
+            return null;
+        }
+
         SchedulerFactoryBean schedulerFactoryBean = schedulerFactoryBeans.get(schedulerName);
         if (null == schedulerFactoryBean) {
             return null;
@@ -166,17 +169,24 @@ public class QuartzServiceImpl implements QuartzService {
         return schedulerFactoryBean.getScheduler();
     }
 
-    public void initDefaultScheduler() throws Throwable {
-        initDefaultSchedulerFactoryBean();
-        startScheduler(Schedulers.DEFAULT_SCHEDULER.getName());
-    }
+    @Override
+    public String initAndStartScheduler(Schedulers scheduler) throws Throwable {
+        String schedulerName = scheduler.getName();
 
-    private void initDefaultSchedulerFactoryBean() throws Throwable {
+        Scheduler exist = getScheduler(schedulerName);
+        if (null != exist) {
+            LOGGER.info("scheduler {} already exist, skip init and start", schedulerName);
+            return schedulerName;
+        }
+
         Resource resource = new ClassPathResource(DEFAULT_QUARTZ_CONF_FILE);
         Properties properties = new Properties();
         properties.load(resource.getInputStream());
 
-        initSchedulerFactoryBean(Schedulers.DEFAULT_SCHEDULER.getName(), properties, dataSource);
-    }
+        initSchedulerFactoryBean(schedulerName, properties, dataSource);
 
+        startScheduler(schedulerName);
+
+        return schedulerName;
+    }
 }

@@ -7,9 +7,13 @@
         <groupId>com.hy.project</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
 
     <artifactId>monitor-facade</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>monitor-facade</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -20,11 +24,6 @@
         <dependency>
             <groupId>com.hy.project</groupId>
             <artifactId>common</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <dependency>

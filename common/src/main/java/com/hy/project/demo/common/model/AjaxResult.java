@@ -1,7 +1,6 @@
-package com.hy.project.demo.web.model;
+package com.hy.project.demo.common.model;
 
-import com.hy.project.demo.common.model.BaseResult;
-import com.hy.project.demo.web.util.ResultUtil;
+import com.hy.project.demo.common.util.ResultUtil;
 
 /**
  * @author rick.wl

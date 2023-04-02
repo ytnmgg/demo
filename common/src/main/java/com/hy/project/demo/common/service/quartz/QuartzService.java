@@ -29,4 +29,6 @@ public interface QuartzService {
     List<JobInfo> listJobs() throws Throwable;
 
     Scheduler getScheduler(String schedulerName);
+
+    String initAndStartScheduler(Schedulers scheduler) throws Throwable;
 }

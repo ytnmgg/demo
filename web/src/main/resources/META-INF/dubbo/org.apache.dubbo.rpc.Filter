@@ -1,0 +1,2 @@
+consumerTraceIdFilter=com.hy.project.demo.web.filter.ConsumerTraceIdFilter
+consumerLogFilter=com.hy.project.demo.web.filter.ConsumerLogFilter

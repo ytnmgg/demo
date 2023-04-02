@@ -33,14 +33,14 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationTokenFilter.class);
     private static final List<String> HANDLE_METHODS = new ArrayList<>();
 
-    @Autowired
-    RsaService rsaService;
-
-    @Autowired
-    TokenService tokenService;
-
-    @Autowired
-    RoleService roleService;
+    //@Autowired
+    //RsaService rsaService;
+    //
+    //@Autowired
+    //TokenService tokenService;
+    //
+    //@Autowired
+    //RoleService roleService;
 
     static {
         HANDLE_METHODS.add(HttpMethod.GET.name());
@@ -56,18 +56,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         LOGGER.info("in JwtAuthenticationTokenFilter");
         if (needHandle(httpServletRequest)) {
 
-            SysUser user = tokenService.getUserByToken(httpServletRequest);
-
-            // 设置安全上下文，业务代码获取当前用户信息都从SecurityContextHolder.getContext()获取
-            if (null != user) {
-                LoginUser loginUser = roleService.buildLoginUser(user);
-
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    loginUser,
-                    null, loginUser.getAuthorities());
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            }
+            //SysUser user = tokenService.getUserByToken(httpServletRequest);
+            //
+            //// 设置安全上下文，业务代码获取当前用户信息都从SecurityContextHolder.getContext()获取
+            //if (null != user) {
+            //    LoginUser loginUser = roleService.buildLoginUser(user);
+            //
+            //    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+            //        loginUser,
+            //        null, loginUser.getAuthorities());
+            //    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+            //    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            //}
         }
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);

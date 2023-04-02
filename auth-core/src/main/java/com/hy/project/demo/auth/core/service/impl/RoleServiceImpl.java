@@ -27,6 +27,7 @@ import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.service.redis.RedisService;
 import com.hy.project.demo.common.util.AssertUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ import static com.hy.project.demo.common.exception.DemoExceptionEnum.INVALID_PAR
  * @date 2022/11/10
  */
 @Service
+@DubboService
 public class RoleServiceImpl implements RoleService {
     @Autowired
     RoleRepository roleRepository;

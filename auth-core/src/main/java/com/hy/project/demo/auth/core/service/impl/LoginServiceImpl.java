@@ -5,16 +5,17 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.service.LoginService;
+import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.auth.facade.service.UserService;
 import com.hy.project.demo.common.util.AssertUtil;
 import com.hy.project.demo.common.util.DateUtil;
 import com.hy.project.demo.common.util.ServletUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +31,7 @@ import static com.hy.project.demo.common.util.DateUtil.STANDARD_STR;
  * @date 2021/11/04
  */
 @Service
+@DubboService
 public class LoginServiceImpl implements LoginService {
 
     private static final int MAX_NAME_LENGTH = 128;
@@ -117,14 +119,14 @@ public class LoginServiceImpl implements LoginService {
 
         // TODO：临时逻辑：超级账号第一次登陆，没有密码，用第一次登陆的密码初始化
         if (StringUtils.equals(user.getUserName(), "admin") && StringUtils.isBlank(user.getPassword())) {
-            String passwordEncrypted = bCryptPasswordEncoder.encode(password);
-            user.setPassword(passwordEncrypted);
+            //String passwordEncrypted = bCryptPasswordEncoder.encode(password);
+            //user.setPassword(passwordEncrypted);
             userService.updateSysUser(user);
             return user;
         }
 
-        boolean matches = bCryptPasswordEncoder.matches(password, user.getPassword());
-        AssertUtil.isTrue(matches, INVALID_PARAM_EXCEPTION, "密码不正确");
+        //boolean matches = bCryptPasswordEncoder.matches(password, user.getPassword());
+        //AssertUtil.isTrue(matches, INVALID_PARAM_EXCEPTION, "密码不正确");
 
         return user;
     }

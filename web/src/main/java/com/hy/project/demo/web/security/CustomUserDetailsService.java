@@ -35,14 +35,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         //passwordService.validate(user);
         //
 
-        SysUser mock = new SysUser();
-        mock.setUserId("1");
+        //SysUser mock = new SysUser();
+        //mock.setUserId("1");
+        //
+        //return createLoginUser(mock);
 
-        return createLoginUser(mock);
+        return null;
 
     }
 
-    public UserDetails createLoginUser(SysUser user) {
-        return new LoginUser();
-    }
+    //public UserDetails createLoginUser(SysUser user) {
+    //    return new LoginUser();
+    //}
 }

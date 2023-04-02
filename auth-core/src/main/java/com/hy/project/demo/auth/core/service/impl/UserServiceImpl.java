@@ -19,7 +19,6 @@ import com.hy.project.demo.auth.core.repository.RolePermissionRelationRepository
 import com.hy.project.demo.auth.core.repository.RoleRepository;
 import com.hy.project.demo.auth.core.repository.UserRepository;
 import com.hy.project.demo.auth.core.repository.UserRoleRelationRepository;
-import com.hy.project.demo.auth.facade.model.LoginUser;
 import com.hy.project.demo.auth.facade.model.RoleBase;
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.service.RsaService;
@@ -31,13 +30,12 @@ import com.hy.project.demo.common.util.AssertUtil;
 import com.hy.project.demo.common.util.EnvUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -53,6 +51,7 @@ import static com.hy.project.demo.common.exception.DemoExceptionEnum.UNEXPECTED;
  * @date 2021/11/05
  */
 @Service
+@DubboService
 public class UserServiceImpl implements UserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -80,8 +79,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     RsaService rsaService;
 
-    @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
+    //@Autowired
+    //BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     TransactionTemplate transactionTemplate;
@@ -168,12 +167,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SysUser getMe() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (null != authentication && !(authentication.getPrincipal() instanceof LoginUser)) {
-            return null;
-        }
-        LoginUser loginUser = (LoginUser)authentication.getPrincipal();
-        return loginUser.getUser();
+        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //if (null != authentication && !(authentication.getPrincipal() instanceof LoginUser)) {
+        //    return null;
+        //}
+        //LoginUser loginUser = (LoginUser)authentication.getPrincipal();
+        //return loginUser.getUser();
+        return null;
     }
 
     @Override
@@ -209,9 +209,9 @@ public class UserServiceImpl implements UserService {
                     // 用RSA私钥解密前端加密后的用户登录密码
                     String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(newPwd));
                     // 加密用户密码
-                    String encoded = bCryptPasswordEncoder.encode(pwd);
+                    //String encoded = bCryptPasswordEncoder.encode(pwd);
 
-                    user.setPassword(encoded);
+                    //user.setPassword(encoded);
                     userRepository.updateUser(user);
                 }
             }

@@ -1,10 +1,12 @@
 server:
-  port: 8080
+  port: 18084
 
 spring:
   # 非web应用
-  main:
-    web-application-type: none
+#  main:
+#    web-application-type: none
+  application:
+    name: demo-monitor-core
 
 #mybatis的相关配置
 mybatis:
@@ -45,3 +47,4 @@ es:
   user:
     name: elastic
     pwdPath: /Users/rick.wl/pwd_elastic
+

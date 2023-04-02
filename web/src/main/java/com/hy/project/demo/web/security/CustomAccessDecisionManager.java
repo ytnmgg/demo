@@ -1,12 +1,8 @@
 package com.hy.project.demo.web.security;
 
 import java.util.Collection;
-import java.util.List;
 
-import com.hy.project.demo.auth.facade.model.LoginUser;
-import com.hy.project.demo.auth.facade.model.SysAuthority;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -29,22 +25,22 @@ public class CustomAccessDecisionManager implements AccessDecisionManager {
             return;
         }
 
-        for (ConfigAttribute configAttribute : configAttributes) {
-            if (authentication.getPrincipal() instanceof LoginUser) {
-                LoginUser loginUser = (LoginUser)authentication.getPrincipal();
-                List<SysAuthority> authorities = loginUser.getAuthorities();
-                if (null == authorities) {
-                    continue;
-                }
-
-                for (SysAuthority sysAuthority : authorities) {
-                    if (StringUtils.equals(sysAuthority.getAuthority(), configAttribute.getAttribute())) {
-                        // 权限或者角色有满足的，放行
-                        return;
-                    }
-                }
-            }
-        }
+        //for (ConfigAttribute configAttribute : configAttributes) {
+        //    if (authentication.getPrincipal() instanceof LoginUser) {
+        //        LoginUser loginUser = (LoginUser)authentication.getPrincipal();
+        //        List<SysAuthority> authorities = loginUser.getAuthorities();
+        //        if (null == authorities) {
+        //            continue;
+        //        }
+        //
+        //        for (SysAuthority sysAuthority : authorities) {
+        //            if (StringUtils.equals(sysAuthority.getAuthority(), configAttribute.getAttribute())) {
+        //                // 权限或者角色有满足的，放行
+        //                return;
+        //            }
+        //        }
+        //    }
+        //}
 
         throw new AccessDeniedException("无访问权限");
     }

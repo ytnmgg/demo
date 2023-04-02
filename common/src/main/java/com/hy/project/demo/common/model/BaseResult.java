@@ -9,6 +9,7 @@ public class BaseResult extends ToString {
 
     private String code;
     private String message;
+    private String traceId;
 
     public String getCode() {
         return code;
@@ -24,5 +25,13 @@ public class BaseResult extends ToString {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getTraceId() {
+        return traceId;
+    }
+
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
     }
 }

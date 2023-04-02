@@ -1,4 +1,4 @@
-package com.hy.project.demo.auth.core.config;
+package com.hy.project.demo.common.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

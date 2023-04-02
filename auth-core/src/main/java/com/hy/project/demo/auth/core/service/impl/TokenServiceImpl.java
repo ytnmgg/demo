@@ -22,6 +22,7 @@ import com.hy.project.demo.common.util.EnvUtil;
 import io.jsonwebtoken.Claims;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import static com.hy.project.demo.common.constant.RedisConstants.KEY_LOGIN_SET;
  * @date 2022/09/14
  */
 @Service
+@DubboService
 public class TokenServiceImpl implements TokenService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TokenServiceImpl.class);
     private static final String TOKEN_PREFIX = "Bearer ";

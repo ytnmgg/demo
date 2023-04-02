@@ -2,14 +2,18 @@ package com.hy.project.demo.web.security;
 
 import java.util.Properties;
 
+import com.hy.project.demo.auth.facade.model.RsaGetResult;
+import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.common.constant.RedisConstants;
+import com.hy.project.demo.common.model.AjaxResult;
+import com.hy.project.demo.common.model.BaseRequest;
 import com.hy.project.demo.common.service.redis.RedisService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,15 +27,23 @@ public class AuthorityConfigManager implements InitializingBean {
     @Autowired
     RedisService redisService;
 
+    //@Resource
+    //FeignRsaServiceClient rsaServiceClient;
+
+    @DubboReference
+    RsaService rsaService;
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        init();
+        //init();
+        RsaGetResult<String> result = rsaService.getRsaPublicKeyString(new BaseRequest());
+        LOGGER.info("dubbo result: {}", result);
     }
 
     private void init() {
         try {
             // 加载配置文件
-            Resource resource = new ClassPathResource("authority.conf");
+            org.springframework.core.io.Resource resource = new ClassPathResource("authority.conf");
             Properties properties = new Properties();
             properties.load(resource.getInputStream());
 

@@ -53,12 +53,14 @@ checkOpts () {
 
 function install_jar(){
   host=$1
-  app=$2
-  port=$3
-  debug_port=$4
+  host_inner=$2
+  app=$3
+  port=$4
+  debug_port=$5
   jar="${app}-0.0.1-SNAPSHOT.jar"
   image="${app}:0.0.1"
   dockerfile="Dockerfile-${app}"
+  nacos_cluster=172.27.183.154:8848,172.27.183.155:8848,172.27.183.156:8848
 
   p "copy jar to host"
   copy $host "${app}/target/${jar}" "/data/app/"
@@ -68,13 +70,15 @@ function install_jar(){
   copy $host "config/docker/Dockerfile" "/data/app/${dockerfile}"
 
   # 查询host-info
-  run $host "cat /data/host-info.config | sed '/^mysql_user=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" mysql_user
+  #run $host "cat /data/host-info.config | sed '/^mysql_user=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" mysql_user
+  get_host_info $host "mysql_user" mysql_user
   if [ -z "$mysql_user" ];then
     echo "ERROR: invalid mysql_user in host-info.config"
     exit 1
   fi
 
-  run $host "cat /data/host-info.config | sed '/^mysql_pwd=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" mysql_pwd
+  #run $host "cat /data/host-info.config | sed '/^mysql_pwd=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" mysql_pwd
+  get_host_info $host "mysql_pwd" mysql_pwd
   if [ -z "$mysql_pwd" ];then
     echo "ERROR: invalid mysql_pwd in host-info.config"
     exit 1
@@ -88,6 +92,9 @@ function install_jar(){
   replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_MYSQL_USER@" $mysql_user
   replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_MYSQL_PWD@" $mysql_pwd
   replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_DEBUG_PORT@" $debug_port
+  replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_HOST_INNER@" $host_inner
+  replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_NACOS_CLUSTER@" $nacos_cluster
+
 
   p "check existing container"
   rmc $host "${app}"
@@ -108,6 +115,7 @@ function install_jar(){
 
   pf "run container <"$app">..."
   run $host "docker run -d -e TZ=Asia/Shanghai \
+  -p 20880:20880 \
   -p ${port}:${port} \
   -p ${debug_port}:${debug_port} \
   -v /var/log/app:/var/log/app \
@@ -120,7 +128,7 @@ function install_jar(){
   --name "$app" \
   --network mynet --network-alias "$app" "$image
 
-  p "sleep 10s for es starting"
+  p "sleep 10s for java starting"
   sleep 10s
   check_d $host $app
 }
@@ -129,9 +137,9 @@ function install_jar(){
 pf "build jar..."
 mvn clean && mvn package -DskipTests=true
 
-install_jar 139.224.72.37 "auth-core" 18082 18083
+#install_jar 139.224.72.37 172.27.183.154 "auth-core" 18082 18083
 
-
+install_jar 106.14.208.194 172.27.183.155 "web" 18080 18081
 
 
 

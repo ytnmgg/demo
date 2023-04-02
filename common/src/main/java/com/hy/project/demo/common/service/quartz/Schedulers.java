@@ -3,15 +3,22 @@ package com.hy.project.demo.common.service.quartz;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * @author rick.wl
  * @date 2022/11/23
  */
 public enum Schedulers {
+    ///**
+    // * 默认scheduler
+    // */
+    //DEFAULT_SCHEDULER("DEFAULT_SCHEDULER"),
+
     /**
-     * 默认scheduler
+     * auth core scheduler
      */
-    DEFAULT_SCHEDULER("DEFAULT_SCHEDULER"),
+    AUTH_CORE_SCHEDULER("AUTH_CORE_SCHEDULER"),
 
     ;
 
@@ -23,6 +30,15 @@ public enum Schedulers {
             result.add(scheduler.getName());
         }
         return result;
+    }
+
+    public static Schedulers getByName(String name) {
+        for (Schedulers item : values()) {
+            if (StringUtils.equals(item.toString(), name)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     Schedulers(String name) {

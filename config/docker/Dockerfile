@@ -14,6 +14,10 @@ ENV profile.active prod
 ENV mysql.host @DOCKER_CONF_MYSQL_HOST@
 ENV mysql.user @DOCKER_CONF_MYSQL_USER@
 ENV mysql.pwd @DOCKER_CONF_MYSQL_PWD@
+ENV host.inner @DOCKER_CONF_HOST_INNER@
+ENV nacos.cluster @DOCKER_CONF_NACOS_CLUSTER@
+# dubbo服务注册IP
+ENV DUBBO_IP_TO_REGISTRY @DOCKER_CONF_HOST_INNER@
 # 宿主机docker网卡ip，以及docker remote api的映射端口
 ENV docker.remote.host http://172.17.0.1:8989
 # 宿主机docker remote api 版本
@@ -31,5 +35,11 @@ RUN bash -c 'touch /@DOCKER_CONF_APP_NAME@.jar'
 RUN bash -c 'mkdir -p /var/log/app'
 # 创建nginx日志文件夹
 RUN bash -c 'mkdir -p /var/log/nginx'
-ENTRYPOINT ["java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=@DOCKER_CONF_DEBUG_PORT@","-Djava.security.egd=file:/dev/./urandom","-Duser.timezone=GMT+08","-Dfile.encoding=UTF8","-jar","/@DOCKER_CONF_APP_NAME@.jar"]
+ENTRYPOINT ["java", \
+    "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=@DOCKER_CONF_DEBUG_PORT@", \
+    "-Djava.security.egd=file:/dev/./urandom", \
+    "-Duser.timezone=GMT+08", \
+    "-Dfile.encoding=UTF8", \
+    "-Dproject.name=@DOCKER_CONF_APP_NAME@", \
+    "-jar", "/@DOCKER_CONF_APP_NAME@.jar"]
 

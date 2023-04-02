@@ -1,9 +1,27 @@
 server:
-  port: 8081
+  port: 18082
+
 spring:
   # 非web应用
   main:
     web-application-type: none
+  application:
+    name: demo-auth-core
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        ip: ${host.inner}
+        server-addr: ${nacos.cluster}
+        group: DEFAULT_GROUP
+      config:
+        server-addr: ${nacos.cluster}
+        group: DEFAULT_GROUP
+  #        import-check:
+  #          enabled: false
+  config:
+    import:
+      - nacos:auth-core-prod.yml?group=DEFAULT_GROUP
 
 #mybatis的相关配置
 mybatis:
@@ -25,3 +43,28 @@ sso:
   user:
     # 失效时间（分钟）(24小时）
     expireTime: 1440
+
+dubbo:
+  application:
+    name: demo-auth-core
+    logger: slf4j
+  protocol:
+    name: dubbo
+    port: -1
+    accesslog: true
+  provider:
+    filter: providerTraceIdFilter,default,providerLogFilter
+  registry:
+    protocol: nacos
+    address: ${nacos.cluster}
+    parameters:
+      namespace: public
+      group: DUBBO_GROUP
+  config-center:
+    protocol: nacos
+    address: ${nacos.cluster}
+    group: DUBBO_GROUP
+  metadata-report:
+    protocol: nacos
+    address: ${nacos.cluster}
+    group: DUBBO_GROUP

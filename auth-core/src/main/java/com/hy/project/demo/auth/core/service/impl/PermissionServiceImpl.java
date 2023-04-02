@@ -6,6 +6,7 @@ import com.hy.project.demo.auth.core.repository.PermissionRepository;
 import com.hy.project.demo.auth.facade.model.Permission;
 import com.hy.project.demo.auth.facade.service.PermissionService;
 import com.hy.project.demo.common.model.PageResult;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
  * @date 2022/11/10
  */
 @Service
+@DubboService
 public class PermissionServiceImpl implements PermissionService {
     @Autowired
     PermissionRepository permissionRepository;

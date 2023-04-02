@@ -7,9 +7,13 @@
         <groupId>com.hy.project</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+
     <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
 
     <artifactId>monitor-core</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>auth-core</name>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -21,6 +25,16 @@
             <groupId>com.hy.project</groupId>
             <artifactId>monitor-facade</artifactId>
         </dependency>
+
+        <!-- spring boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>-->
+<!--        </dependency>-->
 
         <!-- 阿里数据库连接池 -->
         <dependency>
@@ -141,6 +155,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.hy.project.demo.monitor.core.MonitorCoreApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <!--创建一个自动可执行的jar或war文件 -->
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

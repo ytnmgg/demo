@@ -1,2 +1,47 @@
 server:
-  port: 8080
+  port: 18080
+
+spring:
+  application:
+    name: demo-web
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        register-enabled: false
+        ip: ${host.inner}
+        server-addr: ${nacos.cluster}
+        group: DEFAULT_GROUP
+
+#feign:
+#  httpclient:
+#    enabled: true # 支持httpClient 默认为true
+#    max-connections: 200 #最大连接数
+#    max-connections-per-route: 50 # 单个路径的最大连接数
+#  circuitbreaker:
+#    enabled: true
+
+dubbo:
+  application:
+    name: demo-web
+  consumer:
+    timeout: 60000
+    retries: 0
+    filter: consumerTraceIdFilter,default,consumerLogFilter
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    protocol: nacos
+    address: ${nacos.cluster}
+    parameters:
+      namespace: public
+      group: DUBBO_GROUP
+  config-center:
+    protocol: nacos
+    address: ${nacos.cluster}
+    group: DUBBO_GROUP
+  metadata-report:
+    protocol: nacos
+    address: ${nacos.cluster}
+    group: DUBBO_GROUP
