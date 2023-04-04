@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -27,7 +28,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 @WebFilter(urlPatterns = "/*", filterName = "RequestContextInitialFilter")
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class RequestContextInitialFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(RequestContextInitialFilter.class);
 
@@ -35,25 +36,36 @@ public class RequestContextInitialFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         FilterChain filterChain)
         throws ServletException, IOException {
+
+        String method = httpServletRequest.getMethod();
+        if (StringUtils.equals(method, HttpMethod.OPTIONS.name())) {
+            LOGGER.info("ignore options request...");
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
+        }
+
+        String traceId = httpServletRequest.getHeader("request-id");
+        if (StringUtils.isEmpty(traceId)) {
+            traceId = UUID.randomUUID().toString();
+            MDC.put("traceId", traceId);
+            LOGGER.info("create traceId in RequestContextInitialFilter: {}", traceId);
+        }
+
+        initMdc(httpServletRequest, traceId);
+
         LOGGER.info("in RequestContextInitialFilter");
         RequestContext context = RequestContextHolder.getCurrentRequestContext();
         context.setEnterTime(System.currentTimeMillis());
         context.setRequest(httpServletRequest);
+        context.setTraceId(traceId);
 
-        String requestId = httpServletRequest.getHeader("request-id");
-        if (StringUtils.isEmpty(requestId)) {
-            requestId = UUID.randomUUID().toString();
-        }
-
-        context.setRequestId(requestId);
-
-        initMdc(httpServletRequest, requestId);
+        httpServletResponse.setHeader("request-id", traceId);
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 
-    private void initMdc(HttpServletRequest request, String requestId) {
-        MDC.put("requestId", requestId);
+    private void initMdc(HttpServletRequest request, String traceId) {
+        MDC.put("traceId", traceId);
         MDC.put("requestUri", request.getRequestURI());
         MDC.put("host", request.getHeader("Host"));
 

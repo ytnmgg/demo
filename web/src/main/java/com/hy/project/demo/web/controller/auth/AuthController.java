@@ -6,16 +6,22 @@ import javax.validation.Valid;
 
 import com.hy.project.demo.auth.facade.model.Permission;
 import com.hy.project.demo.auth.facade.model.Role;
+import com.hy.project.demo.auth.facade.model.request.CreateNewPermissionRequest;
+import com.hy.project.demo.auth.facade.model.request.CreateNewRoleRequest;
+import com.hy.project.demo.auth.facade.model.request.PageQueryRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.UpdateRolePermissionRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
 import com.hy.project.demo.auth.facade.service.PermissionService;
 import com.hy.project.demo.auth.facade.service.RoleService;
+import com.hy.project.demo.common.model.AjaxResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.util.AssertUtil;
-import com.hy.project.demo.common.model.AjaxResult;
 import com.hy.project.demo.web.model.PermissionCreateRequest;
 import com.hy.project.demo.web.model.RoleCreateRequest;
 import com.hy.project.demo.web.model.RolePermissionUpdateRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,61 +38,76 @@ import static com.hy.project.demo.common.exception.DemoExceptionEnum.INVALID_PAR
 @RequestMapping("/auth")
 public class AuthController {
 
-    //@Autowired
-    //PermissionService permissionService;
-    //
-    //@Autowired
-    //RoleService roleService;
-    //
-    //@PostMapping("/permission/create.json")
-    //public AjaxResult createPermission(@RequestBody PermissionCreateRequest request) {
-    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-    //    String result = permissionService.createNewPermission(request.getPermissionName(), request.getPermissionKey());
-    //    return AjaxResult.success(result);
-    //}
-    //
-    //@GetMapping("/permission/list.json")
-    //public AjaxResult listPermissions(@Valid PageRequest request) {
-    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-    //    PageResult<List<Permission>> result = permissionService.pageList(request.getPageIndex(),
-    //        request.getPageSize());
-    //    return AjaxResult.success(result);
-    //}
-    //
-    //@PostMapping("/permission/deleteById.json")
-    //public AjaxResult deletePermissionById(@RequestBody Permission request) {
-    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-    //    permissionService.deletePermission(request.getPermissionId());
-    //    return AjaxResult.success(null);
-    //}
-    //
-    //@PostMapping("/role/create.json")
-    //public AjaxResult createRole(@RequestBody RoleCreateRequest request) {
-    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-    //    String result = roleService.createNewRole(request.getRoleName(), request.getRoleKey(),
-    //        request.getPermissionIds());
-    //    return AjaxResult.success(result);
-    //}
-    //
-    //@GetMapping("/role/list.json")
-    //public AjaxResult listRoles(@Valid PageRequest request) {
-    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-    //    PageResult<List<Role>> result = roleService.pageList(request.getPageIndex(),
-    //        request.getPageSize());
-    //    return AjaxResult.success(result);
-    //}
-    //
-    //@PostMapping("/role/deleteById.json")
-    //public AjaxResult deleteRoleById(@RequestBody Role request) {
-    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-    //    roleService.deleteRole(request.getRoleId());
-    //    return AjaxResult.success(null);
-    //}
-    //
-    //@PostMapping("/role/updateRolePermissions.json")
-    //public AjaxResult updateRolePermissions(@RequestBody RolePermissionUpdateRequest request) {
-    //    AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-    //    roleService.updateRolePermissions(request.getRoleId(), request.getPermissionIds());
-    //    return AjaxResult.success(null);
-    //}
+    @DubboReference
+    PermissionService permissionService;
+
+    @DubboReference
+    RoleService roleService;
+
+    @PostMapping("/permission/create.json")
+    public AjaxResult createPermission(@RequestBody PermissionCreateRequest request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+
+        CreateNewPermissionRequest createNewPermissionRequest = new CreateNewPermissionRequest();
+        createNewPermissionRequest.setName(request.getPermissionName());
+        createNewPermissionRequest.setCode(request.getPermissionKey());
+
+        SimpleResult<String> result = permissionService.createNewPermission(createNewPermissionRequest);
+        return AjaxResult.success(result.getData());
+    }
+
+    @GetMapping("/permission/list.json")
+    public AjaxResult listPermissions(@Valid PageRequest request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        PageQueryRequest pageQueryRequest = new PageQueryRequest();
+        pageQueryRequest.setPageIndex(request.getPageIndex());
+        pageQueryRequest.setPageSize(request.getPageSize());
+        PageResult<List<Permission>> result = permissionService.pageList(pageQueryRequest);
+        return AjaxResult.success(result);
+    }
+
+    @PostMapping("/permission/deleteById.json")
+    public AjaxResult deletePermissionById(@RequestBody Permission request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        permissionService.deletePermission(SimpleRequest.of(request.getPermissionId()));
+        return AjaxResult.success(null);
+    }
+
+    @PostMapping("/role/create.json")
+    public AjaxResult createRole(@RequestBody RoleCreateRequest request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        CreateNewRoleRequest createNewRoleRequest = new CreateNewRoleRequest();
+        createNewRoleRequest.setName(request.getRoleName());
+        createNewRoleRequest.setCode(request.getRoleKey());
+        createNewRoleRequest.setPermissions(request.getPermissionIds());
+        SimpleResult<String> result = roleService.createNewRole(createNewRoleRequest);
+        return AjaxResult.success(result.getData());
+    }
+
+    @GetMapping("/role/list.json")
+    public AjaxResult listRoles(@Valid PageRequest request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setPageIndex(request.getPageIndex());
+        pageRequest.setPageSize(request.getPageSize());
+        PageResult<List<Role>> result = roleService.pageList(pageRequest);
+        return AjaxResult.success(result);
+    }
+
+    @PostMapping("/role/deleteById.json")
+    public AjaxResult deleteRoleById(@RequestBody Role request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        roleService.deleteRole(SimpleRequest.of(request.getRoleId()));
+        return AjaxResult.success(null);
+    }
+
+    @PostMapping("/role/updateRolePermissions.json")
+    public AjaxResult updateRolePermissions(@RequestBody RolePermissionUpdateRequest request) {
+        AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
+        UpdateRolePermissionRequest updateRolePermissionRequest = new UpdateRolePermissionRequest();
+        updateRolePermissionRequest.setRoleId(request.getRoleId());
+        updateRolePermissionRequest.setPermissions(request.getPermissionIds());
+        roleService.updateRolePermissions(updateRolePermissionRequest);
+        return AjaxResult.success(null);
+    }
 }

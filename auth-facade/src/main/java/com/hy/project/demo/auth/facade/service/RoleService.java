@@ -4,7 +4,14 @@ import java.util.List;
 
 import com.hy.project.demo.auth.facade.model.LoginUser;
 import com.hy.project.demo.auth.facade.model.Role;
+import com.hy.project.demo.auth.facade.model.RoleBase;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.CreateNewRoleRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.UpdateRolePermissionRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.common.model.BaseResult;
+import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 
 /**
@@ -13,13 +20,13 @@ import com.hy.project.demo.common.model.PageResult;
  */
 public interface RoleService {
 
-    String createNewRole(String name, String code, List<String> permissionIds);
+    SimpleResult<String> createNewRole(CreateNewRoleRequest request);
 
-    PageResult<List<Role>> pageList(int pageIndex, int pageSize);
+    PageResult<List<Role>> pageList(PageRequest request);
 
-    void deleteRole(String id);
+    BaseResult deleteRole(SimpleRequest<String> request);
 
-    void updateRolePermissions(String roleId, List<String> permissionIds);
+    BaseResult updateRolePermissions(UpdateRolePermissionRequest request);
 
-    LoginUser buildLoginUser(SysUser user);
+    SimpleResult<List<String>> getPermissions(SimpleRequest<List<RoleBase>> request);
 }

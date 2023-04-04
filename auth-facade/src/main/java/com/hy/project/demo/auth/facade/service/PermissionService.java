@@ -3,6 +3,11 @@ package com.hy.project.demo.auth.facade.service;
 import java.util.List;
 
 import com.hy.project.demo.auth.facade.model.Permission;
+import com.hy.project.demo.auth.facade.model.request.CreateNewPermissionRequest;
+import com.hy.project.demo.auth.facade.model.request.PageQueryRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.model.PageResult;
 
 /**
@@ -11,9 +16,9 @@ import com.hy.project.demo.common.model.PageResult;
  */
 public interface PermissionService {
 
-    String createNewPermission(String name, String code);
+    SimpleResult<String> createNewPermission(CreateNewPermissionRequest request);
 
-    PageResult<List<Permission>> pageList(int pageIndex, int pageSize);
+    PageResult<List<Permission>> pageList(PageQueryRequest request);
 
-    void deletePermission(String id);
+    BaseResult deletePermission(SimpleRequest<String> request);
 }

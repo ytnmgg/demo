@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class RequestContext {
     private HttpServletRequest request;
-    private String requestId;
+    private String traceId;
     private Long enterTime;
     private List<Object> requestArgs;
 
@@ -22,12 +22,12 @@ public class RequestContext {
         this.request = request;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getTraceId() {
+        return traceId;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setTraceId(String traceId) {
+        this.traceId = traceId;
     }
 
     public Long getEnterTime() {

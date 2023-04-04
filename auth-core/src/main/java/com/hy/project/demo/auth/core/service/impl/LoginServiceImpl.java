@@ -2,18 +2,20 @@ package com.hy.project.demo.auth.core.service.impl;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.CreateNewUserRequest;
+import com.hy.project.demo.auth.facade.model.request.LoginRequest;
+import com.hy.project.demo.auth.facade.model.request.RegisterRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
 import com.hy.project.demo.auth.facade.service.LoginService;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.auth.facade.service.UserService;
+import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.util.AssertUtil;
 import com.hy.project.demo.common.util.DateUtil;
-import com.hy.project.demo.common.util.ServletUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -53,12 +55,16 @@ public class LoginServiceImpl implements LoginService {
     TokenService tokenService;
 
     @Override
-    public String register(String name, String password) {
+    public SimpleResult<String> register(RegisterRequest request) {
+        String name = request.getName();
+        String password = request.getPassword();
+
         // 验证用户信息
         validateUserForCreate(name, password);
 
         // 用RSA私钥解密前端加密后的用户登录密码
-        String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(password));
+        SimpleResult<String> result = rsaService.decryptByPrivateKey(SimpleRequest.of(Base64.decodeBase64(password)));
+        String pwd = result.getData();
         AssertUtil.isTrue(StringUtils.isNotBlank(pwd) && pwd.length() <= MAX_PASSWORD_LENGTH,
             USER_PASSWORD_LENGTH_INVALID, "密码长度非法");
 
@@ -66,46 +72,56 @@ public class LoginServiceImpl implements LoginService {
         String encoded = bCryptPasswordEncoder.encode(pwd);
 
         // 创建用户
-        return userService.createNewUser(name, encoded);
+        CreateNewUserRequest createNewUserRequest = new CreateNewUserRequest();
+        createNewUserRequest.setName(name);
+        createNewUserRequest.setPassword(encoded);
+        return userService.createNewUser(createNewUserRequest);
     }
 
     @Override
-    public String login(String name, String password, String callback, HttpServletRequest request,
-        HttpServletResponse response)
-        throws Throwable {
+    public SimpleResult<String> login(LoginRequest request) {
 
         // 用RSA私钥解密前端加密后的用户登录密码
-        String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(password));
+        SimpleResult<String> pwdResult = rsaService.decryptByPrivateKey(
+            SimpleRequest.of(Base64.decodeBase64(request.getPassword())));
 
         // 验证用户信息
-        SysUser user = validateUserForLogin(name, pwd);
+        SysUser user = validateUserForLogin(request.getName(), pwdResult.getData());
 
         // 生成token
-        String token = tokenService.createToken(user.getUserId());
+        SimpleResult<String> tokenResult = tokenService.createToken(SimpleRequest.of(user.getUserId()));
 
         // 缓存token
-        LoginInfo loginInfo = buildLoginInfo(token, user, request);
-        tokenService.saveToken(loginInfo);
+        LoginInfo loginInfo = new LoginInfo();
+        loginInfo.setToken(tokenResult.getData());
+        loginInfo.setUserId(user.getUserId());
+        loginInfo.setUserName(user.getUserName());
+        loginInfo.setLoginIp(request.getClientIp());
+        loginInfo.setLoginTime(DateUtil.format(new Date(), STANDARD_STR));
+        loginInfo.setUserAgent(request.getUserAgent());
+        tokenService.saveToken(SimpleRequest.of(loginInfo));
 
         // 把用户信息存入redis（或者更新）
-        userService.touchUser(user);
+        userService.touchUser(SimpleRequest.of(user));
 
         // 写入cookie
         //response.addCookie(new Cookie(COOKIE_SESSION_KEY_PREFIX, token));
 
-        return token;
+        return SimpleResult.of(tokenResult.getData());
     }
 
     @Override
-    public void logout(HttpServletRequest request) {
+    public BaseResult logout(SimpleRequest<SysUser> request) {
 
-        SysUser sysUser = userService.getMe();
+        SysUser sysUser = request.getData();
 
         if (null != sysUser) {
-            tokenService.removeToken(sysUser.getToken());
+            tokenService.removeToken(SimpleRequest.of(sysUser.getToken()));
 
-            userService.clearUser(sysUser.getUserId());
+            userService.clearUser(SimpleRequest.of(sysUser.getUserId()));
         }
+
+        return new BaseResult();
     }
 
     private void validateUserForCreate(String name, String password) {
@@ -114,14 +130,15 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private SysUser validateUserForLogin(String name, String password) {
-        SysUser user = userService.loadSysUserByName(name);
+        SimpleResult<SysUser> userResult = userService.loadSysUserByName(SimpleRequest.of(name));
+        SysUser user = userResult.getData();
         AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "用户不存在");
 
         // TODO：临时逻辑：超级账号第一次登陆，没有密码，用第一次登陆的密码初始化
         if (StringUtils.equals(user.getUserName(), "admin") && StringUtils.isBlank(user.getPassword())) {
             //String passwordEncrypted = bCryptPasswordEncoder.encode(password);
             //user.setPassword(passwordEncrypted);
-            userService.updateSysUser(user);
+            userService.updateSysUser(SimpleRequest.of(user));
             return user;
         }
 
@@ -130,17 +147,4 @@ public class LoginServiceImpl implements LoginService {
 
         return user;
     }
-
-    private LoginInfo buildLoginInfo(String token, SysUser user, HttpServletRequest request) {
-        LoginInfo loginInfo = new LoginInfo();
-        loginInfo.setToken(token);
-        loginInfo.setUserId(user.getUserId());
-        loginInfo.setUserName(user.getUserName());
-        loginInfo.setLoginIp(ServletUtil.getClientIP(request));
-        loginInfo.setLoginTime(DateUtil.format(new Date(), STANDARD_STR));
-        loginInfo.setUserAgent(ServletUtil.getUserAgent(request));
-
-        return loginInfo;
-    }
-
 }

@@ -2,8 +2,15 @@ package com.hy.project.demo.auth.facade.service;
 
 import java.util.List;
 
-import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.CreateNewUserRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.UpdateUserPasswordRequest;
+import com.hy.project.demo.auth.facade.model.request.UpdateUserRoleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.common.model.BaseResult;
+import com.hy.project.demo.common.model.PageRequest;
+import com.hy.project.demo.common.model.PageResult;
 
 /**
  * @author rick.wl
@@ -11,36 +18,27 @@ import com.hy.project.demo.auth.facade.model.SysUser;
  */
 public interface UserService {
 
-    SysUser loadSysUserByName(String name);
+    SimpleResult<SysUser> loadSysUserByName(SimpleRequest<String> request);
 
-    SysUser loadSysUserByUserId(String userId);
+    SimpleResult<SysUser> loadSysUserByUserId(SimpleRequest<String> request);
 
-    void updateSysUser(SysUser sysUser);
+    BaseResult updateSysUser(SimpleRequest<SysUser> request);
 
-    void touchUser(SysUser user);
+    BaseResult touchUser(SimpleRequest<SysUser> request);
 
-    SysUser touchUser(String userId);
+    SimpleResult<SysUser> touchUserById(SimpleRequest<String> request);
 
-    SysUser getCacheUser(String userId);
+    SimpleResult<SysUser> getCacheUser(SimpleRequest<SysUser> request);
 
-    SysUser getMe();
+    BaseResult clearUser(SimpleRequest<String> request);
 
-    void clearUser(String userId);
+    BaseResult deleteUser(SimpleRequest<String> request);
 
-    void deleteUser(String userId);
+    BaseResult updateUserPassword(UpdateUserPasswordRequest request);
 
-    void updateUserPassword(String userId, String newPwd);
+    BaseResult updateUserRoles(UpdateUserRoleRequest request);
 
-    void updateUserRoles(String userId, List<String> roleIds);
+    SimpleResult<String> createNewUser(CreateNewUserRequest request);
 
-    String createNewUser(String name, String password);
-
-    /**
-     * 查询用户ØØ列表
-     *
-     * @param pageIndex index
-     * @param pageSize  页码
-     * @return 结果
-     */
-    PageResult<List<SysUser>> pageListUsers(int pageIndex, int pageSize);
+    PageResult<List<SysUser>> pageListUsers(PageRequest request);
 }

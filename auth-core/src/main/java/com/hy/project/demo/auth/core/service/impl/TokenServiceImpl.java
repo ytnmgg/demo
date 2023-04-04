@@ -1,20 +1,23 @@
 package com.hy.project.demo.auth.core.service.impl;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
 
 import com.alibaba.fastjson.JSON;
 
 import com.hy.project.demo.auth.core.util.SsoUtil;
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.auth.facade.service.UserService;
+import com.hy.project.demo.common.model.BaseRequest;
+import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.service.redis.RedisService;
@@ -29,8 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import static com.hy.project.demo.auth.core.util.SsoUtil.getTokenFromCookie;
-import static com.hy.project.demo.auth.core.util.SsoUtil.getTokenFromHeader;
 import static com.hy.project.demo.auth.core.util.SsoUtil.getUid;
 import static com.hy.project.demo.auth.core.util.SsoUtil.parseToken;
 import static com.hy.project.demo.common.constant.RedisConstants.KEY_LOGIN_HASH;
@@ -48,9 +49,6 @@ public class TokenServiceImpl implements TokenService {
     private static final String DEFAULT_REDIS_TOKEN_TIMEOUT_MINUTES = "30";
     private static final String DEFAULT_REDIS_MAX_EXPIRE_TOKEN_COUNT = "100";
 
-    @Value("${sso.token.header}")
-    private String tokenHeader;
-
     @Value("${sso.token.expireTime}")
     private int tokenExpireTime;
 
@@ -64,17 +62,11 @@ public class TokenServiceImpl implements TokenService {
     RedisService redisService;
 
     @Override
-    public SysUser getUserByToken(HttpServletRequest request) {
+    public SimpleResult<SysUser> getUserByToken(SimpleRequest<String> request) {
 
-        // 获取请求携带的令牌
-        String token = getTokenFromHeader(request, tokenHeader);
-
+        String token = request.getData();
         if (StringUtils.isBlank(token)) {
-            token = getTokenFromCookie(request);
-        }
-
-        if (StringUtils.isBlank(token)) {
-            return null;
+            return SimpleResult.of(null);
         }
 
         if (token.startsWith(TOKEN_PREFIX)) {
@@ -84,48 +76,54 @@ public class TokenServiceImpl implements TokenService {
         // 验证token是否在缓存中
         if (!checkTokenInCache(token)) {
             // 伪造的token或者token过期
-            return null;
+            return SimpleResult.of(null);
         }
 
         try {
-            Claims claims = parseToken(token, rsaService.getRsaPublicKey());
+            SimpleResult<Key> pubKeyResult = rsaService.getRsaPublicKey(new BaseRequest());
+            Claims claims = parseToken(token, pubKeyResult.getData());
             String userId = getUid(claims);
 
             // 刷新token缓存时间
-            touchToken(token);
+            touchToken(SimpleRequest.of(token));
 
             // 通过userId去缓存拿用户并刷新缓存时间（没有就放进去）
-            SysUser user = userService.touchUser(userId);
+            SimpleResult<SysUser> userResult = userService.touchUserById(SimpleRequest.of(userId));
+            SysUser user = userResult.getData();
             user.setToken(token);
 
-            return user;
+            return SimpleResult.of(user);
 
         } catch (Exception e) {
             LOGGER.error("parse user info failed", e);
         }
 
-        return null;
+        return SimpleResult.of(null);
     }
 
     @Override
-    public String createToken(String userId) {
-        return SsoUtil.createToken(UUID.randomUUID().toString(), userId, rsaService.getRsaPrivateKey());
+    public SimpleResult<String> createToken(SimpleRequest<String> request) {
+        SimpleResult<Key> result = rsaService.getRsaPrivateKey(new BaseRequest());
+        return SimpleResult.of(SsoUtil.createToken(UUID.randomUUID().toString(), request.getData(), result.getData()));
     }
 
     @Override
-    public void removeToken(String token) {
-        redisService.removeHash(KEY_LOGIN_HASH, token);
-        redisService.removeZSet(KEY_LOGIN_SET, token);
+    public BaseResult removeToken(SimpleRequest<String> request) {
+        redisService.removeHash(KEY_LOGIN_HASH, request.getData());
+        redisService.removeZSet(KEY_LOGIN_SET, request.getData());
+        return new BaseResult();
     }
 
     @Override
-    public void saveToken(LoginInfo loginInfo) {
+    public BaseResult saveToken(SimpleRequest<LoginInfo> request) {
+        LoginInfo loginInfo = request.getData();
         redisService.setHash(KEY_LOGIN_HASH, loginInfo.getToken(), JSON.toJSONString(loginInfo));
         redisService.addToZSet(KEY_LOGIN_SET, loginInfo.getToken(), System.currentTimeMillis());
+        return new BaseResult();
     }
 
     @Override
-    public void expireTokens() {
+    public BaseResult expireTokens(BaseRequest request) {
         // 捞取的token最大score（登录时间毫秒数），小于这些登录时间的，都会被捞起来踢掉
         long maxScore = System.currentTimeMillis() - getTokenExpireTimeMillis();
         // 定时任务每次捞取的token最大数量
@@ -144,11 +142,13 @@ public class TokenServiceImpl implements TokenService {
 
             LOGGER.info("{} tokens expired", tokens.size());
         }
+        return new BaseResult();
     }
 
     @Override
-    public void touchToken(String token) {
-        redisService.incrementZSetScore(KEY_LOGIN_SET, token, getTokenExpireTimeMillis());
+    public BaseResult touchToken(SimpleRequest<String> request) {
+        redisService.incrementZSetScore(KEY_LOGIN_SET, request.getData(), getTokenExpireTimeMillis());
+        return new BaseResult();
     }
 
     @Override

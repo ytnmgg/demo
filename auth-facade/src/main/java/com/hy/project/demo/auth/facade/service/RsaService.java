@@ -2,7 +2,8 @@ package com.hy.project.demo.auth.facade.service;
 
 import java.security.Key;
 
-import com.hy.project.demo.auth.facade.model.RsaGetResult;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
 import com.hy.project.demo.common.model.BaseRequest;
 
 /**
@@ -16,26 +17,11 @@ public interface RsaService {
      * @return 结果
      * @throws Throwable 异常
      */
-    RsaGetResult<String> getRsaPublicKeyString(BaseRequest request);
+    SimpleResult<String> getRsaPublicKeyString(BaseRequest request);
 
-    Key getRsaPublicKey();
+    SimpleResult<Key> getRsaPublicKey(BaseRequest request);
 
-    /**
-     * 获取RSA私钥，每次开机时产生，缓存在JVM中
-     *
-     * @return 结果
-     * @throws Throwable 异常
-     */
-    String getRsaPrivateKeyString();
+    SimpleResult<Key> getRsaPrivateKey(BaseRequest request);
 
-    Key getRsaPrivateKey();
-
-    /**
-     * 用JVM保存的私钥去解密信息
-     *
-     * @param data 待解密数据
-     * @return 结果
-     * @throws Throwable 异常
-     */
-    String decryptByPrivateKey(byte[] data);
+    SimpleResult<String> decryptByPrivateKey(SimpleRequest<byte[]> request);
 }

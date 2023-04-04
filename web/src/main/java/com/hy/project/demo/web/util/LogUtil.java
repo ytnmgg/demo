@@ -27,7 +27,7 @@ public class LogUtil {
             Long startTime = RequestContextHolder.getCurrentRequestContext().getEnterTime();
 
             JSONObject content = new JSONObject();
-            content.put("request_id", RequestContextHolder.getCurrentRequestContext().getRequestId());
+            content.put("trace_id", RequestContextHolder.getCurrentRequestContext().getTraceId());
             content.put("request_uri", request.getRequestURI());
             content.put("arguments",
                 JSON.toJSONString(RequestContextHolder.getCurrentRequestContext().getRequestArgs()));

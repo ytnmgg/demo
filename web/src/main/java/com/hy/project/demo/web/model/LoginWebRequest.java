@@ -4,7 +4,7 @@ package com.hy.project.demo.web.model;
  * @author rick.wl
  * @date 2021/11/08
  */
-public class LoginRequest {
+public class LoginWebRequest {
     private String username;
     private String password;
     private String callback;

@@ -39,4 +39,10 @@ public class WebUtil {
         Cookie cookie = WebUtils.getCookie(request, "ACCESS_TOKEN");
         return null != cookie ? cookie.getValue() : null;
     }
+
+
+    public static String getTokenFromHeader(HttpServletRequest request, String tokenHeader) {
+        String token = request.getHeader(tokenHeader);
+        return token;
+    }
 }

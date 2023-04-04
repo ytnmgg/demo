@@ -137,7 +137,7 @@ function install_jar(){
 pf "build jar..."
 mvn clean && mvn package -DskipTests=true
 
-#install_jar 139.224.72.37 172.27.183.154 "auth-core" 18082 18083
+install_jar 139.224.72.37 172.27.183.154 "auth-core" 18082 18083
 
 install_jar 106.14.208.194 172.27.183.155 "web" 18080 18081
 

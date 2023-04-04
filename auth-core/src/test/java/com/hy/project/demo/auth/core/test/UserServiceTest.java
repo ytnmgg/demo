@@ -5,6 +5,7 @@ import java.util.List;
 import com.hy.project.demo.auth.core.AuthCoreApplication;
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.service.UserService;
+import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +28,10 @@ public class UserServiceTest {
 
     @Test
     public void listUsersTest() {
-        PageResult<List<SysUser>> result = userService.pageListUsers(1, 10);
+        PageRequest pageRequest = new PageRequest();
+        pageRequest.setPageIndex(1);
+        pageRequest.setPageSize(10);
+        PageResult<List<SysUser>> result = userService.pageListUsers(pageRequest);
         Assert.notNull(result);
     }
 }

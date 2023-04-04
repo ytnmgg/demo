@@ -11,7 +11,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
 import com.hy.project.demo.auth.core.util.RsaUtil;
-import com.hy.project.demo.auth.facade.model.RsaGetResult;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.common.model.BaseRequest;
 import com.hy.project.demo.common.service.redis.RedisService;
@@ -49,31 +50,25 @@ public class RsaServiceImpl implements RsaService {
     private NacosConfigManager nacosConfigManager;
 
     @Override
-    public RsaGetResult<String> getRsaPublicKeyString(BaseRequest request) {
+    public SimpleResult<String> getRsaPublicKeyString(BaseRequest request) {
         byte[] publicKey = parsePublicKeyBytes(keys);
-        return RsaGetResult.of(new String(Base64.encodeBase64(publicKey)));
+        return SimpleResult.of(new String(Base64.encodeBase64(publicKey)));
     }
 
     @Override
-    public Key getRsaPublicKey() {
-        return RsaUtil.parsePublicKey(keys);
+    public SimpleResult<Key> getRsaPublicKey(BaseRequest request) {
+        return SimpleResult.of(RsaUtil.parsePublicKey(keys));
     }
 
     @Override
-    public String getRsaPrivateKeyString() {
+    public SimpleResult<Key> getRsaPrivateKey(BaseRequest request) {
+        return SimpleResult.of(RsaUtil.parsePrivateKey(keys));
+    }
+
+    @Override
+    public SimpleResult<String> decryptByPrivateKey(SimpleRequest<byte[]> request) {
         byte[] privateKey = parsePrivateKeyBytes(keys);
-        return new String(Base64.encodeBase64(privateKey));
-    }
-
-    @Override
-    public Key getRsaPrivateKey() {
-        return RsaUtil.parsePrivateKey(keys);
-    }
-
-    @Override
-    public String decryptByPrivateKey(byte[] data) {
-        byte[] privateKey = parsePrivateKeyBytes(keys);
-        return RsaUtil.decryptByPrivateKeyWithSeg(data, privateKey);
+        return SimpleResult.of(RsaUtil.decryptByPrivateKeyWithSeg(request.getData(), privateKey));
     }
 
     @PostConstruct

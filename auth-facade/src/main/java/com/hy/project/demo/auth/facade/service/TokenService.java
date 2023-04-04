@@ -2,10 +2,12 @@ package com.hy.project.demo.auth.facade.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.common.model.BaseRequest;
+import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 
@@ -15,17 +17,17 @@ import com.hy.project.demo.common.model.PageResult;
  */
 public interface TokenService {
 
-    SysUser getUserByToken(HttpServletRequest request);
+    SimpleResult<SysUser> getUserByToken(SimpleRequest<String> request);
 
-    String createToken(String userId);
+    SimpleResult<String> createToken(SimpleRequest<String> request);
 
-    void removeToken(String token);
+    BaseResult removeToken(SimpleRequest<String> request);
 
-    void saveToken(LoginInfo loginInfo);
+    BaseResult saveToken(SimpleRequest<LoginInfo> request);
 
-    void expireTokens();
+    BaseResult expireTokens(BaseRequest request);
 
-    void touchToken(String token);
+    BaseResult touchToken(SimpleRequest<String> request);
 
     PageResult<List<LoginInfo>> pageQueryLoginInfo(PageRequest request);
 }

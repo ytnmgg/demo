@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
  * @author rick.wl
  * @date 2021/08/30
  */
-public class PageRequest extends ToString {
+public class PageRequest extends BaseRequest {
     private static final long serialVersionUID = -3325526594945168592L;
 
     @Min(2)

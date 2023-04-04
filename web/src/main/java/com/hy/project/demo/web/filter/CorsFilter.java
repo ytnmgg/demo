@@ -26,7 +26,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 @WebFilter(urlPatterns = "/*", filterName = "CorsFilter")
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class CorsFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(CorsFilter.class);
     private static final String HEADER_ORIGIN = "Origin";

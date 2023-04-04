@@ -8,14 +8,14 @@ public class RequestContextHolder {
     private static final ThreadLocal<RequestContext> REQUEST_CONTEXT_THREAD_LOCAL = ThreadLocal.withInitial(
         () -> new RequestContext());
 
-    public static String getRequestId() {
+    public static String getTraceId() {
         RequestContext requestContext = getCurrentRequestContext();
 
         //if (TextUtils.isEmpty(requestContext.getRequestId())) {
         //    String requestId = UUID.randomUUID().toString();
         //    requestContext.setRequestId(requestId);
         //}
-        return requestContext.getRequestId();
+        return requestContext.getTraceId();
     }
 
     public static RequestContext getCurrentRequestContext() {

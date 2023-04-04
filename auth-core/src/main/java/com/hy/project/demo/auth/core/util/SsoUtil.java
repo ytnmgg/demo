@@ -52,17 +52,6 @@ public class SsoUtil {
         return (String)claims.get(LOGIN_USER_UID);
     }
 
-    public static String getTokenFromHeader(HttpServletRequest request, String tokenHeader) {
-        String token = request.getHeader(tokenHeader);
-        return token;
-    }
-
-    public static String getTokenFromCookie(HttpServletRequest request) {
-        //Cookie cookie = WebUtils.getCookie(request, "ACCESS_TOKEN");
-        //return null != cookie ? cookie.getValue() : null;
-        return null;
-    }
-
     private String getTokenKey(String uuid) {
         return LOGIN_TOKEN_KEY + uuid;
     }

@@ -3,10 +3,18 @@ package com.hy.project.demo.web.controller.auth;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.LoginRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
 import com.hy.project.demo.auth.facade.service.LoginService;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.common.model.AjaxResult;
-import com.hy.project.demo.web.model.LoginRequest;
+import com.hy.project.demo.common.model.BaseRequest;
+import com.hy.project.demo.common.util.ServletUtil;
+import com.hy.project.demo.web.model.LoginWebRequest;
+import com.hy.project.demo.web.service.AuthService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -25,41 +33,50 @@ import static com.hy.project.demo.web.constant.WebConstants.LOGOUT_REQUEST_URL;
 @Controller
 public class LoginController {
 
-    //@Autowired
-    //LoginService loginService;
-    //
-    //@Autowired
-    //RsaService rsaService;
-    //
-    //@Autowired
-    //private Environment env;
-    //
-    ////@RequestMapping(LOGIN_PAGE_URL)
-    ////public String loginPage(Model model) {
-    ////    model.addAttribute("front_sso_version", env.getProperty("front.sso.version"));
-    ////    return "login";
-    ////}
-    //
-    //@PostMapping(LOGIN_REQUEST_URL)
-    //public @ResponseBody
-    //AjaxResult login(@RequestBody LoginRequest req, HttpServletRequest request, HttpServletResponse response)
-    //    throws Throwable {
-    //    String token = loginService.login(req.getUsername(), req.getPassword(), req.getCallback(),
-    //        request, response);
-    //    return AjaxResult.success(token);
+    @DubboReference
+    LoginService loginService;
+
+    @DubboReference
+    RsaService rsaService;
+
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    AuthService authService;
+
+    //@RequestMapping(LOGIN_PAGE_URL)
+    //public String loginPage(Model model) {
+    //    model.addAttribute("front_sso_version", env.getProperty("front.sso.version"));
+    //    return "login";
     //}
 
-    //@GetMapping("/get_encrypt_key.json")
-    //public @ResponseBody
-    //AjaxResult getEncryptKey() throws Throwable {
-    //    String key = rsaService.getRsaPublicKeyString();
-    //    return AjaxResult.success(key);
-    //}
+    @PostMapping(LOGIN_REQUEST_URL)
+    public @ResponseBody
+    AjaxResult login(@RequestBody LoginWebRequest req, HttpServletRequest request, HttpServletResponse response) {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setName(req.getUsername());
+        loginRequest.setPassword(req.getPassword());
+        loginRequest.setClientIp(ServletUtil.getClientIP(request));
+        loginRequest.setUserAgent(ServletUtil.getUserAgent(request));
 
-    //@PostMapping(LOGOUT_REQUEST_URL)
-    //public @ResponseBody
-    //AjaxResult logout(HttpServletRequest httpReq) {
-    //    loginService.logout(httpReq);
-    //    return AjaxResult.success(null);
-    //}
+        SimpleResult<String> loginResult = loginService.login(loginRequest);
+
+        return AjaxResult.success(loginResult.getData());
+    }
+
+    @GetMapping("/get_encrypt_key.json")
+    public @ResponseBody
+    AjaxResult getEncryptKey() throws Throwable {
+        SimpleResult<String> result = rsaService.getRsaPublicKeyString(new BaseRequest());
+        return AjaxResult.success(result.getData());
+    }
+
+    @PostMapping(LOGOUT_REQUEST_URL)
+    public @ResponseBody
+    AjaxResult logout(HttpServletRequest httpReq) {
+        SysUser user = authService.getMe();
+        loginService.logout(SimpleRequest.of(user));
+        return AjaxResult.success(null);
+    }
 }

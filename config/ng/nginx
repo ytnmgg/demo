@@ -8,6 +8,6 @@
   #create 640 nginx adm
   sharedscripts
   postrotate
-    docker restart ng01
+    docker restart ng
   endscript
 }

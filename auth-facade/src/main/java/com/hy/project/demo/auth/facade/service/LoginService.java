@@ -1,7 +1,11 @@
 package com.hy.project.demo.auth.facade.service;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.LoginRequest;
+import com.hy.project.demo.auth.facade.model.request.RegisterRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.common.model.BaseResult;
 
 /**
  * @author rick.wl
@@ -12,26 +16,23 @@ public interface LoginService {
     /**
      * 注册用户
      *
-     * @param name     name
-     * @param password password
+     * @param request request
+     * @return 结果
      */
-    String register(String name, String password);
+    SimpleResult<String> register(RegisterRequest request);
 
     /**
      * 登录
      *
-     * @param name     name
-     * @param password password
-     * @param callback callback
-     * @param response response
+     * @param request req
+     * @return result
      */
-    String login(String name, String password, String callback, HttpServletRequest request,
-        HttpServletResponse response) throws Throwable;
+    SimpleResult<String> login(LoginRequest request);
 
     /**
      * 登出
      *
      * @param request 请求
      */
-    void logout(HttpServletRequest request);
+    BaseResult logout(SimpleRequest<SysUser> request);
 }

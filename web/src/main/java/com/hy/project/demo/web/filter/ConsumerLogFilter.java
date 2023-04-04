@@ -25,7 +25,7 @@ public class ConsumerLogFilter implements Filter {
             for (Object arg : args) {
                 if (arg instanceof BaseRequest) {
                     BaseRequest baseRequest = (BaseRequest)arg;
-                    LOGGER.info("base request is: {}", baseRequest);
+                    LOGGER.info("[CONSUMER-REQUEST][{}][{}]", invocation.getMethodName(), baseRequest);
                 }
             }
         }
@@ -35,7 +35,7 @@ public class ConsumerLogFilter implements Filter {
         // after filter ...
         if (null != result && null != result.getValue() && result.getValue() instanceof BaseResult) {
             BaseResult baseResult = (BaseResult)result.getValue();
-            LOGGER.info("base result is: {}", baseResult);
+            LOGGER.info("[CONSUMER-RESULT][{}][{}]", invocation.getMethodName(), baseResult);
         }
 
         return result;

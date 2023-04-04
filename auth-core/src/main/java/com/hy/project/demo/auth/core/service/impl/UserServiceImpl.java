@@ -21,9 +21,16 @@ import com.hy.project.demo.auth.core.repository.UserRepository;
 import com.hy.project.demo.auth.core.repository.UserRoleRelationRepository;
 import com.hy.project.demo.auth.facade.model.RoleBase;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.CreateNewUserRequest;
+import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.UpdateUserPasswordRequest;
+import com.hy.project.demo.auth.facade.model.request.UpdateUserRoleRequest;
+import com.hy.project.demo.auth.facade.model.result.SimpleResult;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.service.UserService;
 import com.hy.project.demo.common.exception.DemoExceptionEnum;
+import com.hy.project.demo.common.model.BaseResult;
+import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.service.redis.RedisService;
 import com.hy.project.demo.common.util.AssertUtil;
@@ -35,7 +42,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -79,35 +86,36 @@ public class UserServiceImpl implements UserService {
     @Autowired
     RsaService rsaService;
 
-    //@Autowired
-    //BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     TransactionTemplate transactionTemplate;
 
     @Override
-    public SysUser loadSysUserByName(String name) {
-        SysUser sysUser = userRepository.findByName(name);
+    public SimpleResult<SysUser> loadSysUserByName(SimpleRequest<String> request) {
+        SysUser sysUser = userRepository.findByName(request.getData());
 
         // 补充role信息
         addRoles(sysUser);
 
-        return sysUser;
+        return SimpleResult.of(sysUser);
     }
 
     @Override
-    public SysUser loadSysUserByUserId(String userId) {
-        SysUser sysUser = userRepository.findByUserId(userId);
+    public SimpleResult<SysUser> loadSysUserByUserId(SimpleRequest<String> request) {
+        SysUser sysUser = userRepository.findByUserId(request.getData());
 
         // 补充role信息
         addRoles(sysUser);
 
-        return sysUser;
+        return SimpleResult.of(sysUser);
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateSysUser(SysUser sysUser) {
+    public BaseResult updateSysUser(SimpleRequest<SysUser> request) {
+        SysUser sysUser = request.getData();
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
                 @Override
@@ -120,25 +128,29 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
+        return new BaseResult();
     }
 
     @Override
-    public void touchUser(SysUser user) {
+    public BaseResult touchUser(SimpleRequest<SysUser> request) {
+        SysUser user = request.getData();
         String key = createRedisUserInfoKey(user.getUserId());
 
         if (!redisService.exists(key)) {
             LOGGER.info("user not exist in cache, create new cache");
             cacheUser(user);
-            return;
+            return new BaseResult();
         }
 
         // 更新
         // TODO. 暂无需要更新的东西，先刷新一下过期时间
         redisService.expire(key, getUserExpireTime(), TimeUnit.MINUTES);
+        return new BaseResult();
     }
 
     @Override
-    public SysUser touchUser(String userId) {
+    public SimpleResult<SysUser> touchUserById(SimpleRequest<String> request) {
+        String userId = request.getData();
         String key = createRedisUserInfoKey(userId);
 
         Object user = redisService.get(key);
@@ -146,45 +158,37 @@ public class UserServiceImpl implements UserService {
         if (null != user) {
             // 刷新缓存时间
             redisService.expire(key, getUserExpireTime(), TimeUnit.MINUTES);
-            return JSONObject.toJavaObject((JSONObject)user, SysUser.class);
+            return SimpleResult.of(JSONObject.toJavaObject((JSONObject)user, SysUser.class));
         } else {
 
             // 从db捞取用户
-            SysUser sysUser = loadSysUserByUserId(userId);
+            SimpleResult<SysUser> sysUserResult = loadSysUserByUserId(SimpleRequest.of(userId));
+            SysUser sysUser = sysUserResult.getData();
             AssertUtil.notNull(sysUser, UNEXPECTED, "未找到用户信息：%s", userId);
 
             // 保存用户到缓存
             cacheUser(sysUser);
 
-            return sysUser;
+            return SimpleResult.of(sysUser);
         }
     }
 
     @Override
-    public SysUser getCacheUser(String userId) {
+    public SimpleResult<SysUser> getCacheUser(SimpleRequest<SysUser> request) {
         return null;
     }
 
     @Override
-    public SysUser getMe() {
-        //Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //if (null != authentication && !(authentication.getPrincipal() instanceof LoginUser)) {
-        //    return null;
-        //}
-        //LoginUser loginUser = (LoginUser)authentication.getPrincipal();
-        //return loginUser.getUser();
-        return null;
-    }
-
-    @Override
-    public void clearUser(String userId) {
-        String key = createRedisUserInfoKey(userId);
+    public BaseResult clearUser(SimpleRequest<String> request) {
+        String key = createRedisUserInfoKey(request.getData());
         redisService.remove(key);
+        return new BaseResult();
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public void deleteUser(String userId) {
+    public BaseResult deleteUser(SimpleRequest<String> request) {
+        String userId = request.getData();
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
                 @Override
@@ -194,33 +198,38 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
+        return new BaseResult();
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateUserPassword(String userId, String newPwd) {
+    public BaseResult updateUserPassword(UpdateUserPasswordRequest request) {
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                    SysUser user = userRepository.lockByUserId(userId);
-                    AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", userId);
+                    SysUser user = userRepository.lockByUserId(request.getUserId());
+                    AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", request.getUserId());
 
                     // 用RSA私钥解密前端加密后的用户登录密码
-                    String pwd = rsaService.decryptByPrivateKey(Base64.decodeBase64(newPwd));
+                    SimpleResult<String> result = rsaService.decryptByPrivateKey(
+                        SimpleRequest.of(Base64.decodeBase64(request.getPassword())));
                     // 加密用户密码
-                    //String encoded = bCryptPasswordEncoder.encode(pwd);
+                    String encoded = bCryptPasswordEncoder.encode(result.getData());
 
-                    //user.setPassword(encoded);
+                    user.setPassword(encoded);
                     userRepository.updateUser(user);
                 }
             }
         );
+        return new BaseResult();
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateUserRoles(String userId, List<String> roleIds) {
+    public BaseResult updateUserRoles(UpdateUserRoleRequest request) {
+        String userId = request.getUserId();
+        List<String> roleIds = request.getRoleIds();
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
                 @Override
@@ -236,11 +245,14 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
+        return new BaseResult();
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public String createNewUser(String name, String password) {
+    public SimpleResult<String> createNewUser(CreateNewUserRequest request) {
+        String name = request.getName();
+        String password = request.getPassword();
         SysUser sysUser = new SysUser();
         sysUser.setUserType("00");
         sysUser.setNickName(name);
@@ -249,7 +261,7 @@ public class UserServiceImpl implements UserService {
         sysUser.setStatus("0");
         sysUser.setDelFlag("0");
 
-        return transactionTemplate.execute(
+        String userId = transactionTemplate.execute(
             new TransactionCallback<String>() {
                 @Override
                 public String doInTransaction(TransactionStatus status) {
@@ -266,11 +278,12 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
+        return SimpleResult.of(userId);
     }
 
     @Override
-    public PageResult<List<SysUser>> pageListUsers(int pageIndex, int pageSize) {
-        PageResult<List<SysUser>> result = userRepository.pageList(pageIndex, pageSize);
+    public PageResult<List<SysUser>> pageListUsers(PageRequest request) {
+        PageResult<List<SysUser>> result = userRepository.pageList(request.getPageIndex(), request.getPageSize());
         if (null == result || CollectionUtils.isEmpty(result.getData())) {
             return result;
         }
