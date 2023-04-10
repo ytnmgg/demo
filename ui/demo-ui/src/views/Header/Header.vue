@@ -40,29 +40,24 @@ const logout = async () => {
 </script>
 
 <template>
-  <div class="h-full flex items-center justify-between shadow shadow-gray-500/30">
-    <div class="h-50px flex items-center ml-10px">
-      <div v-show="isCollapse">
-        <i-ep-expand
-          class="cursor-pointer self-center text-gray-500"
-          @click="toggleCollapse"
-        />
-      </div>
-      <div v-show="!isCollapse">
-        <i-ep-fold
-          class="cursor-pointer self-center text-gray-500"
-          @click="toggleCollapse"
-        />
-      </div>
+  <div class="flex h-12 bg-[#343a40] text-gray-300">
+
+    <div class="flex items-center font-mono font-bold mr-8">
+      <img src="@/assets/images/logo.png" alt="" class="w-8 ml-2 mr-2" />
+      <span>Demo管理系统</span>
     </div>
 
-    <div class="h-full flex items-center mr-20px">
+    <div v-show="isCollapse" class="flex items-center pl-2">
+      <i-ep-expand class="cursor-pointer text-gray-500" @click="toggleCollapse" />
+    </div>
+    <div v-show="!isCollapse" class="flex items-center pl-2">
+      <i-ep-fold class="cursor-pointer text-gray-500 " @click="toggleCollapse" />
+    </div>
+
+    <div class="flex items-center ml-auto mr-5">
       <el-tooltip class="box-item" effect="dark" content="登出" placement="bottom-end">
         <template #default="scope">
-          <icon-logout-outlined
-            class="cursor-pointer self-center text-gray-500"
-            @click="logout"
-          />
+          <icon-logout-outlined class="cursor-pointer text-gray-500" @click="logout" />
         </template>
       </el-tooltip>
     </div>

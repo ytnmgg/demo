@@ -6,7 +6,7 @@ import Header from "@/views/Header/Header.vue";
 
 import { useAppStore } from "@/store/modules/app";
 
-import { ref, computed, unref } from "vue";
+import { ref, computed, unref, onMounted } from "vue";
 
 const activeIndex = ref("1");
 const activeIndex2 = ref("1");
@@ -20,54 +20,76 @@ const appStore = useAppStore();
 
 const isCollapse = computed(() => appStore.getCollapse);
 
+const menueClass = computed(() => {
+  if (appStore.getCollapse) {
+    return "h-full w-auto";
+  } else {
+    return "h-full w-auto";
+  }
+});
+
 const menuRef = ref();
+
+let progress = ref(0);
+onMounted(() => {
+  setInterval(() => {
+    if (progress.value < 100) {
+      progress.value += 10;
+    } else {
+      progress.value = 0;
+    }
+  }, 1000);
+});
 </script>
 
 <template>
-  <div class="flex">
-    <div class="top-0 left-0 h-full">
-      <Menu ref="menuRef"></Menu>
-    </div>
-    <div class="top-0 h-full w-[100%]">
-      <div><Header :menuRef="menuRef"></Header></div>
-      <div class="h-[calc(100vh-50px)]">
-        <el-scrollbar>
-          <router-view></router-view>
-        </el-scrollbar>
-      </div>
+  <div>
+    <Header :menuRef="menuRef"></Header>
 
-      <!-- <ElScrollbar
+    <div class="flex">
+      <div class="">
+        <Menu ref="menuRef"></Menu>
+      </div>
+      <div class="flex-1 min-w-[calc(100vw-201px)]">
+        <div class="h-[calc(100vh-50px)]">
+          <el-scrollbar>
+            <router-view></router-view>
+          </el-scrollbar>
+        </div>
+
+        <!-- <ElScrollbar
             v-loading={pageLoading.value}
             class={[
               `${prefixCls}-content-scrollbar`,
               {
                 '!h-[calc(100%-var(--top-tool-height)-var(--tags-view-height))] mt-[calc(var(--top-tool-height)+var(--tags-view-height))]':
                   fixedHeader.value
-              }
-            ]}
-          >
-            <div
-              class={[
-                {
-                  'fixed top-0 left-0 z-10': fixedHeader.value,
-                  'w-[calc(100%-var(--left-menu-min-width))] left-[var(--left-menu-min-width)]':
-                    collapse.value && fixedHeader.value && !mobile.value,
-                  'w-[calc(100%-var(--left-menu-max-width))] left-[var(--left-menu-max-width)]':
-                    !collapse.value && fixedHeader.value && !mobile.value,
-                  '!w-full !left-0': mobile.value
-                }
-              ]}
-              style="transition: all var(--transition-time-02);"
-            >
-              <ToolHeader class="border-bottom-1 border-solid border-[var(--top-tool-border-color)] bg-[var(--top-header-bg-color)] dark:border-[var(--el-border-color)]"></ToolHeader>
+                  }
+                ]}
+              >
+                <div
+                  class={[
+                    {
+                      'fixed top-0 left-0 z-10': fixedHeader.value,
+                      'w-[calc(100%-var(--left-menu-min-width))] left-[var(--left-menu-min-width)]':
+                        collapse.value && fixedHeader.value && !mobile.value,
+                      'w-[calc(100%-var(--left-menu-max-width))] left-[var(--left-menu-max-width)]':
+                        !collapse.value && fixedHeader.value && !mobile.value,
+                      '!w-full !left-0': mobile.value
+                    }
+                  ]}
+                  style="transition: all var(--transition-time-02);"
+                >
+                  <ToolHeader class="border-bottom-1 border-solid border-[var(--top-tool-border-color)] bg-[var(--top-header-bg-color)] dark:border-[var(--el-border-color)]"></ToolHeader>
 
-              {tagsView.value ? (
-                <TagsView class="border-bottom-1 border-top-1 border-solid border-[var(--tags-view-border-color)] dark:border-[var(--el-border-color)]"></TagsView>
-              ) : undefined}
-            </div>
+                  {tagsView.value ? (
+                    <TagsView class="border-bottom-1 border-top-1 border-solid border-[var(--tags-view-border-color)] dark:border-[var(--el-border-color)]"></TagsView>
+                  ) : undefined}
+                </div>
 
-            <AppView></AppView>
-          </ElScrollbar> -->
+                <AppView></AppView>
+              </ElScrollbar> -->
+      </div>
     </div>
   </div>
 </template>

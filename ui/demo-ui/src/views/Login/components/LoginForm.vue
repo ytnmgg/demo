@@ -157,25 +157,26 @@ onMounted(() => {
     ref="formLogin"
   >
     <el-row>
-      <el-col :span="24" class="pl-10px pr-10px flex justify-center items-center">
+      <el-col :span="24" class="flex justify-center">
         <el-form-item>
-          <h2
-            class="mb-3 text-2xl font-bold text-center text-sky-800 xl:text-3xl enter-x xl:text-center"
-          >
+          <h2 class="mb-3 text-3xl font-bold text-center text-sky-800">
             账号登录
           </h2>
         </el-form-item>
       </el-col>
-      <el-col :span="24" class="pl-10px pr-10px">
+      <el-col :span="24">
         <el-form-item prop="username">
-          <el-input v-model="loginData.loginForm.username" placeholder="请输入用户名称">
+          <el-input
+            v-model="loginData.loginForm.username"
+            placeholder="请输入用户名称"
+          >
             <template #prepend>
               <i-ep-avatar />
             </template>
           </el-input>
         </el-form-item>
       </el-col>
-      <el-col :span="24" class="pl-10px pr-10px">
+      <el-col :span="24">
         <el-form-item prop="password">
           <el-input
             v-model="loginData.loginForm.password"
@@ -189,11 +190,13 @@ onMounted(() => {
           </el-input>
         </el-form-item>
       </el-col>
-      <el-col :span="24" class="pl-10px pr-10px mt-[-10px] mb-[-20px]">
+      <el-col :span="24" class="mt-[-10px] mb-[-20px]">
         <el-form-item>
           <el-row justify="space-between" style="width: 100%">
             <el-col :span="6">
-              <el-checkbox v-model="loginData.loginForm.rememberMe">记住我</el-checkbox>
+              <el-checkbox v-model="loginData.loginForm.rememberMe"
+                >记住我</el-checkbox
+              >
             </el-col>
             <el-col :span="12" :offset="6">
               <el-link type="primary" style="float: right">忘记密码？</el-link>
@@ -214,7 +217,9 @@ onMounted(() => {
       </el-col>
       <el-col :span="24" style="padding-left: 10px; padding-right: 10px">
         <el-form-item>
-          <el-button class="w-[100%]" @click="setLoginState(LoginStateEnum.REGISTER)"
+          <el-button
+            class="w-[100%]"
+            @click="setLoginState(LoginStateEnum.REGISTER)"
             >注册新用户</el-button
           >
         </el-form-item>

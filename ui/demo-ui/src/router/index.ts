@@ -3,6 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import { getAccessToken } from '@/utils/auth'
 import { Names } from './router-names';
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css' 
 
 export const routes: Array<RouteRecordRaw> = [
   {
@@ -135,6 +137,11 @@ const router = createRouter({
   scrollBehavior: () => ({ left: 0, top: 0 })
 })
 
+// 配置进度条
+NProgress.configure({
+  showSpinner: false
+})
+
 // 路由不重定向白名单
 const whiteList = [
   '/login',
@@ -143,6 +150,9 @@ const whiteList = [
 
 // 路由加载前
 router.beforeEach(async (to, from) => {
+  // 开启页面进度条
+  NProgress.start()
+
   if (!getAccessToken()) {
     if (whiteList.indexOf(to.path) !== -1) {
       return true;
@@ -151,6 +161,12 @@ router.beforeEach(async (to, from) => {
       return '/login?redirect=' + to.fullPath;
     }
   }
+})
+
+// 路由加载后
+router.afterEach((to) => {
+  // 关闭页面进度条
+  NProgress.done()
 })
 
 

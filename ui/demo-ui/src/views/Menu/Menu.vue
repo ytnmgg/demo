@@ -44,8 +44,6 @@ const activeMenu = computed(() => {
   return path;
 });
 
-const logoText = computed(() => (unref(isCollapse) ? "" : "Demo管理系统"));
-
 const leftMenu = ref();
 
 const openSubMenu = () => {
@@ -61,12 +59,9 @@ defineExpose({
 
 <template>
   <el-scrollbar>
-    <el-menu :default-active="activeMenu" @select="handleSelect" background-color="#1f2937" text-color="#bfcbd9"
+    <el-menu :default-active="activeMenu" @select="handleSelect" background-color="#343a40" text-color="#bfcbd9"
       :default-openeds="openItems" :collapse="isCollapse" class="h-[100vh]" ref="leftMenu">
-      <div class="flex items-center text-[#4d7c0f] pt-10px pl-10px !h-[50px] bg-[#1f2937]">
-        <img src="@/assets/images/logo.png" alt="" class="w-32px h-32px mr-10px" />
-        <span class="text-20px font-bold">{{ logoText }}</span>
-      </div>
+
       <el-menu-item index="index">
         <icon-grid-icon class="mr-2" /><span>首页</span></el-menu-item>
       <el-sub-menu index="sys">

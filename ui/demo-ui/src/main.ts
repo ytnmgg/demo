@@ -2,10 +2,8 @@ import { createApp } from 'vue'
 import App from '@/App.vue'
 
 // 引入全局样式
-import '@/styles/index.less'
+import './styles/index.css'
 
-// 引入 windi css
-import 'virtual:windi.css'
 
 // 引入状态管理
 import { setupStore } from '@/store'

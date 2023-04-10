@@ -3,7 +3,6 @@ import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import ElementPlus from 'unplugin-element-plus/vite'
-import WindiCSS from 'vite-plugin-windicss'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import Components from 'unplugin-vue-components/vite'
@@ -30,8 +29,6 @@ export default defineConfig({
     ElementPlus({
       // options
     }),
-    
-    WindiCSS(),
 
     // 下面几个配置是ICON相关的，见：
     // https://element-plus.gitee.io/zh-CN/component/icon.html#%E8%87%AA%E5%8A%A8%E5%AF%BC%E5%85%A5

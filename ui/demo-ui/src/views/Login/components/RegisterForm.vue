@@ -20,7 +20,9 @@ import { encrypt } from "@/utils/jsencrypt";
 
 const { handleBackLogin, getLoginState } = useLoginState();
 
-const getShow = computed(() => unref(getLoginState) === LoginStateEnum.REGISTER);
+const getShow = computed(
+  () => unref(getLoginState) === LoginStateEnum.REGISTER
+);
 
 const formRegister = ref<FormInstance>();
 
@@ -98,7 +100,10 @@ const handleRegister = async () => {
 
   try {
     const publicKey = await LoginApi.getPublicKey();
-    const passwordEncrypted = encrypt(publicKey, registerData.registerForm.password);
+    const passwordEncrypted = encrypt(
+      publicKey,
+      registerData.registerForm.password
+    );
 
     const data: UserRegisterVO = {
       username: registerData.registerForm.username,
@@ -193,20 +198,19 @@ const checkPasswordChange = (value: string) => {
     ref="formRegister"
   >
     <el-row>
-      <el-col :span="24" class="pl-10px pr-10px flex justify-center items-center">
+      <el-col :span="24" class="flex justify-center">
         <el-form-item>
-          <h2
-            class="mb-3 text-2xl font-bold text-center text-sky-800 xl:text-3xl enter-x xl:text-center"
-          >
+          <h2 class="mb-3 text-3xl font-bold text-center text-sky-800">
             账号注册
           </h2>
         </el-form-item>
       </el-col>
-      <el-col :span="24" class="pl-10px pr-10px mb-[-10px]">
+      <el-col :span="24">
         <el-form-item prop="username">
-          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
+          <!-- <span
+            class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
             >用户名</span
-          >
+          > -->
           <el-input
             v-model="registerData.registerForm.username"
             placeholder="请输入用户名称"
@@ -215,11 +219,12 @@ const checkPasswordChange = (value: string) => {
           ></el-input>
         </el-form-item>
       </el-col>
-      <el-col :span="24" class="pl-10px pr-10px">
+      <el-col :span="24">
         <el-form-item prop="password">
-          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
+          <!-- <span
+            class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
             >密码</span
-          >
+          > -->
           <el-input
             v-model="registerData.registerForm.password"
             type="password"
@@ -230,7 +235,7 @@ const checkPasswordChange = (value: string) => {
             <template #prepend> <i-ep-lock /> </template
           ></el-input>
         </el-form-item>
-        <div class="password-strength">
+        <div class="password-strength pt-1">
           <el-progress
             :percentage="percentage"
             :color="customColorMethod"
@@ -238,11 +243,12 @@ const checkPasswordChange = (value: string) => {
           />
         </div>
       </el-col>
-      <el-col :span="24" class="pl-10px pr-10px">
+      <el-col :span="24">
         <el-form-item prop="checkPassword">
-          <span class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
+          <!-- <span
+            class="ml-1 w-35 text-gray-600 font-bold inline-flex items-center"
             >确认密码</span
-          >
+          > -->
           <el-input
             v-model="registerData.registerForm.checkPassword"
             type="password"
@@ -253,7 +259,7 @@ const checkPasswordChange = (value: string) => {
             <template #prepend> <i-ep-lock /> </template
           ></el-input>
         </el-form-item>
-        <div class="password-strength">
+        <div class="password-strength pt-1">
           <el-progress
             :percentage="checkPercentage"
             :color="customColorMethod"
