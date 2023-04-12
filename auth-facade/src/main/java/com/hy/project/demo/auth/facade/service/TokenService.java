@@ -4,10 +4,8 @@ import java.util.List;
 
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
-import com.hy.project.demo.common.model.BaseRequest;
-import com.hy.project.demo.common.model.BaseResult;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 
@@ -17,17 +15,17 @@ import com.hy.project.demo.common.model.PageResult;
  */
 public interface TokenService {
 
-    SimpleResult<SysUser> getUserByToken(SimpleRequest<String> request);
+    RpcResult<SysUser> getUserByToken(RpcRequest<String> request);
 
-    SimpleResult<String> createToken(SimpleRequest<String> request);
+    RpcResult<String> createToken(RpcRequest<String> request);
 
-    BaseResult removeToken(SimpleRequest<String> request);
+    RpcResult<Void> removeToken(RpcRequest<String> request);
 
-    BaseResult saveToken(SimpleRequest<LoginInfo> request);
+    RpcResult<Void> saveToken(RpcRequest<LoginInfo> request);
 
-    BaseResult expireTokens(BaseRequest request);
+    RpcResult<Void> expireTokens(RpcRequest<Void> request);
 
-    BaseResult touchToken(SimpleRequest<String> request);
+    RpcResult<Void> touchToken(RpcRequest<String> request);
 
-    PageResult<List<LoginInfo>> pageQueryLoginInfo(PageRequest request);
+    RpcResult<PageResult<List<LoginInfo>>> pageQueryLoginInfo(RpcRequest<PageRequest> request);
 }

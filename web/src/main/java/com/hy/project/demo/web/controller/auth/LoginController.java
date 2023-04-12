@@ -5,12 +5,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.model.request.LoginRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.LoginService;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.common.model.AjaxResult;
-import com.hy.project.demo.common.model.BaseRequest;
 import com.hy.project.demo.common.util.ServletUtil;
 import com.hy.project.demo.web.model.LoginWebRequest;
 import com.hy.project.demo.web.service.AuthService;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import static com.hy.project.demo.common.exception.DemoExceptionEnum.LOGIN_FAIL;
 import static com.hy.project.demo.web.constant.WebConstants.LOGIN_REQUEST_URL;
 import static com.hy.project.demo.web.constant.WebConstants.LOGOUT_REQUEST_URL;
 
@@ -60,15 +60,19 @@ public class LoginController {
         loginRequest.setClientIp(ServletUtil.getClientIP(request));
         loginRequest.setUserAgent(ServletUtil.getUserAgent(request));
 
-        SimpleResult<String> loginResult = loginService.login(loginRequest);
+        RpcResult<String> loginResult = loginService.login(RpcRequest.of(loginRequest));
 
-        return AjaxResult.success(loginResult.getData());
+        if (loginResult.success()) {
+            return AjaxResult.success(loginResult.getData());
+        } else {
+            return AjaxResult.fail(LOGIN_FAIL);
+        }
     }
 
     @GetMapping("/get_encrypt_key.json")
     public @ResponseBody
     AjaxResult getEncryptKey() throws Throwable {
-        SimpleResult<String> result = rsaService.getRsaPublicKeyString(new BaseRequest());
+        RpcResult<String> result = rsaService.getRsaPublicKeyString(RpcRequest.of(null));
         return AjaxResult.success(result.getData());
     }
 
@@ -76,7 +80,7 @@ public class LoginController {
     public @ResponseBody
     AjaxResult logout(HttpServletRequest httpReq) {
         SysUser user = authService.getMe();
-        loginService.logout(SimpleRequest.of(user));
+        loginService.logout(RpcRequest.of(user));
         return AjaxResult.success(null);
     }
 }

@@ -2,9 +2,8 @@ package com.hy.project.demo.auth.facade.service;
 
 import java.security.Key;
 
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
-import com.hy.project.demo.common.model.BaseRequest;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 
 /**
  * @author rick.wl
@@ -17,11 +16,11 @@ public interface RsaService {
      * @return 结果
      * @throws Throwable 异常
      */
-    SimpleResult<String> getRsaPublicKeyString(BaseRequest request);
+    RpcResult<String> getRsaPublicKeyString(RpcRequest<Void> request);
 
-    SimpleResult<Key> getRsaPublicKey(BaseRequest request);
+    RpcResult<Key> getRsaPublicKey(RpcRequest<Void> request);
 
-    SimpleResult<Key> getRsaPrivateKey(BaseRequest request);
+    RpcResult<Key> getRsaPrivateKey(RpcRequest<Void> request);
 
-    SimpleResult<String> decryptByPrivateKey(SimpleRequest<byte[]> request);
+    RpcResult<String> decryptByPrivateKey(RpcRequest<byte[]> request);
 }

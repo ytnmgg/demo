@@ -1,5 +1,6 @@
 package com.hy.project.demo.common.model;
 
+import com.hy.project.demo.common.exception.DemoExceptionEnum;
 import com.hy.project.demo.common.util.ResultUtil;
 
 /**
@@ -29,7 +30,14 @@ public class AjaxResult extends BaseResult {
     public static AjaxResult fail(String code, String message) {
         AjaxResult ajaxResult = new AjaxResult();
         ajaxResult.setCode(code);
-        ajaxResult.setData(message);
+        ajaxResult.setMessage(message);
+        return ajaxResult;
+    }
+
+    public static AjaxResult fail(DemoExceptionEnum exceptionEnum) {
+        AjaxResult ajaxResult = new AjaxResult();
+        ajaxResult.setCode(exceptionEnum.getCode());
+        ajaxResult.setMessage(exceptionEnum.getDescription());
         return ajaxResult;
     }
 }

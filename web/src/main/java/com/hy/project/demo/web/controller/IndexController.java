@@ -26,4 +26,8 @@ public class IndexController {
         model.addAttribute("front_version", env.getProperty("front.version"));
         return "index";
     }
+
+    public static void main(String[] args) {
+
+    }
 }

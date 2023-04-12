@@ -4,11 +4,10 @@ import java.util.List;
 
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.model.request.CreateNewUserRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserPasswordRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserRoleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
-import com.hy.project.demo.common.model.BaseResult;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 
@@ -18,27 +17,27 @@ import com.hy.project.demo.common.model.PageResult;
  */
 public interface UserService {
 
-    SimpleResult<SysUser> loadSysUserByName(SimpleRequest<String> request);
+    RpcResult<SysUser> loadSysUserByName(RpcRequest<String> request);
 
-    SimpleResult<SysUser> loadSysUserByUserId(SimpleRequest<String> request);
+    RpcResult<SysUser> loadSysUserByUserId(RpcRequest<String> request);
 
-    BaseResult updateSysUser(SimpleRequest<SysUser> request);
+    RpcResult<Void> updateSysUser(RpcRequest<SysUser> request);
 
-    BaseResult touchUser(SimpleRequest<SysUser> request);
+    RpcResult<Void> touchUser(RpcRequest<SysUser> request);
 
-    SimpleResult<SysUser> touchUserById(SimpleRequest<String> request);
+    RpcResult<SysUser> touchUserById(RpcRequest<String> request);
 
-    SimpleResult<SysUser> getCacheUser(SimpleRequest<SysUser> request);
+    RpcResult<SysUser> getCacheUser(RpcRequest<SysUser> request);
 
-    BaseResult clearUser(SimpleRequest<String> request);
+    RpcResult<Void> clearUser(RpcRequest<String> request);
 
-    BaseResult deleteUser(SimpleRequest<String> request);
+    RpcResult<Void> deleteUser(RpcRequest<String> request);
 
-    BaseResult updateUserPassword(UpdateUserPasswordRequest request);
+    RpcResult<Void> updateUserPassword(RpcRequest<UpdateUserPasswordRequest> request);
 
-    BaseResult updateUserRoles(UpdateUserRoleRequest request);
+    RpcResult<Void> updateUserRoles(RpcRequest<UpdateUserRoleRequest> request);
 
-    SimpleResult<String> createNewUser(CreateNewUserRequest request);
+    RpcResult<String> createNewUser(RpcRequest<CreateNewUserRequest> request);
 
-    PageResult<List<SysUser>> pageListUsers(PageRequest request);
+    RpcResult<PageResult<List<SysUser>>> pageListUsers(RpcRequest<PageRequest> request);
 }

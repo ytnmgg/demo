@@ -2,7 +2,7 @@
 <configuration>
 
     <property name="LOG_PATTERN"
-              value="%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] [%X{traceId}] %-5level %logger{36}.%M - %msg%n"/>
+              value="%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] [%X{traceId}] %-5level %logger{36}.%M:%line - %msg%n"/>
     <property name="FILE_PATH" value="/var/log/app"/>
     <property name="APP_NAME" value="web"/>
 

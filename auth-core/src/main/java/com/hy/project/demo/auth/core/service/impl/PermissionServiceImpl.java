@@ -6,10 +6,9 @@ import com.hy.project.demo.auth.core.repository.PermissionRepository;
 import com.hy.project.demo.auth.facade.model.Permission;
 import com.hy.project.demo.auth.facade.model.request.CreateNewPermissionRequest;
 import com.hy.project.demo.auth.facade.model.request.PageQueryRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.PermissionService;
-import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.model.PageResult;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,21 +25,22 @@ public class PermissionServiceImpl implements PermissionService {
     PermissionRepository permissionRepository;
 
     @Override
-    public SimpleResult<String> createNewPermission(CreateNewPermissionRequest request) {
+    public RpcResult<String> createNewPermission(RpcRequest<CreateNewPermissionRequest> request) {
         Permission permission = new Permission();
-        permission.setPermissionName(request.getName());
-        permission.setPermissionKey(request.getCode());
-        return SimpleResult.of(permissionRepository.insert(permission));
+        permission.setPermissionName(request.getData().getName());
+        permission.setPermissionKey(request.getData().getCode());
+        return RpcResult.success(permissionRepository.insert(permission));
     }
 
     @Override
-    public PageResult<List<Permission>> pageList(PageQueryRequest request) {
-        return permissionRepository.pageList(request.getPageIndex(), request.getPageSize());
+    public RpcResult<PageResult<List<Permission>>> pageList(RpcRequest<PageQueryRequest> request) {
+        return RpcResult.success(
+            permissionRepository.pageList(request.getData().getPageIndex(), request.getData().getPageSize()));
     }
 
     @Override
-    public BaseResult deletePermission(SimpleRequest<String> request) {
+    public RpcResult<Void> deletePermission(RpcRequest<String> request) {
         permissionRepository.deleteById(request.getData());
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 }

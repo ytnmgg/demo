@@ -9,9 +9,9 @@ import com.hy.project.demo.auth.facade.model.Role;
 import com.hy.project.demo.auth.facade.model.request.CreateNewPermissionRequest;
 import com.hy.project.demo.auth.facade.model.request.CreateNewRoleRequest;
 import com.hy.project.demo.auth.facade.model.request.PageQueryRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateRolePermissionRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.PermissionService;
 import com.hy.project.demo.auth.facade.service.RoleService;
 import com.hy.project.demo.common.model.AjaxResult;
@@ -52,7 +52,7 @@ public class AuthController {
         createNewPermissionRequest.setName(request.getPermissionName());
         createNewPermissionRequest.setCode(request.getPermissionKey());
 
-        SimpleResult<String> result = permissionService.createNewPermission(createNewPermissionRequest);
+        RpcResult<String> result = permissionService.createNewPermission(RpcRequest.of(createNewPermissionRequest));
         return AjaxResult.success(result.getData());
     }
 
@@ -62,14 +62,14 @@ public class AuthController {
         PageQueryRequest pageQueryRequest = new PageQueryRequest();
         pageQueryRequest.setPageIndex(request.getPageIndex());
         pageQueryRequest.setPageSize(request.getPageSize());
-        PageResult<List<Permission>> result = permissionService.pageList(pageQueryRequest);
-        return AjaxResult.success(result);
+        RpcResult<PageResult<List<Permission>>> result = permissionService.pageList(RpcRequest.of(pageQueryRequest));
+        return AjaxResult.success(result.getData());
     }
 
     @PostMapping("/permission/deleteById.json")
     public AjaxResult deletePermissionById(@RequestBody Permission request) {
         AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-        permissionService.deletePermission(SimpleRequest.of(request.getPermissionId()));
+        permissionService.deletePermission(RpcRequest.of(request.getPermissionId()));
         return AjaxResult.success(null);
     }
 
@@ -80,7 +80,7 @@ public class AuthController {
         createNewRoleRequest.setName(request.getRoleName());
         createNewRoleRequest.setCode(request.getRoleKey());
         createNewRoleRequest.setPermissions(request.getPermissionIds());
-        SimpleResult<String> result = roleService.createNewRole(createNewRoleRequest);
+        RpcResult<String> result = roleService.createNewRole(RpcRequest.of(createNewRoleRequest));
         return AjaxResult.success(result.getData());
     }
 
@@ -90,14 +90,14 @@ public class AuthController {
         PageRequest pageRequest = new PageRequest();
         pageRequest.setPageIndex(request.getPageIndex());
         pageRequest.setPageSize(request.getPageSize());
-        PageResult<List<Role>> result = roleService.pageList(pageRequest);
-        return AjaxResult.success(result);
+        RpcResult<PageResult<List<Role>>> result = roleService.pageList(RpcRequest.of(pageRequest));
+        return AjaxResult.success(result.getData());
     }
 
     @PostMapping("/role/deleteById.json")
     public AjaxResult deleteRoleById(@RequestBody Role request) {
         AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-        roleService.deleteRole(SimpleRequest.of(request.getRoleId()));
+        roleService.deleteRole(RpcRequest.of(request.getRoleId()));
         return AjaxResult.success(null);
     }
 
@@ -107,7 +107,7 @@ public class AuthController {
         UpdateRolePermissionRequest updateRolePermissionRequest = new UpdateRolePermissionRequest();
         updateRolePermissionRequest.setRoleId(request.getRoleId());
         updateRolePermissionRequest.setPermissions(request.getPermissionIds());
-        roleService.updateRolePermissions(updateRolePermissionRequest);
+        roleService.updateRolePermissions(RpcRequest.of(updateRolePermissionRequest));
         return AjaxResult.success(null);
     }
 }

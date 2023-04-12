@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.hy.project.demo.auth.facade.model.SysUser;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.RoleService;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.web.util.WebUtil;
@@ -83,7 +83,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             token = WebUtil.getTokenFromCookie(httpServletRequest);
         }
 
-        SimpleResult<SysUser> getUserResult = tokenService.getUserByToken(SimpleRequest.of(token));
+        RpcResult<SysUser> getUserResult = tokenService.getUserByToken(RpcRequest.of(token));
         if (null == getUserResult) {
             return;
         }
@@ -93,7 +93,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // 设置安全上下文，业务代码获取当前用户信息都从SecurityContextHolder.getContext()获取
         if (null != user) {
 
-            SimpleResult<List<String>> permissionResult = roleService.getPermissions(SimpleRequest.of(user.getRoles()));
+            RpcResult<List<String>> permissionResult = roleService.getPermissions(RpcRequest.of(user.getRoles()));
             if (null == permissionResult || CollectionUtils.isEmpty(permissionResult.getData())) {
                 return;
             }

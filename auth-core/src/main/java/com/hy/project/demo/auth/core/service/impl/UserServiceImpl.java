@@ -22,14 +22,13 @@ import com.hy.project.demo.auth.core.repository.UserRoleRelationRepository;
 import com.hy.project.demo.auth.facade.model.RoleBase;
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.model.request.CreateNewUserRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserPasswordRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserRoleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.service.UserService;
 import com.hy.project.demo.common.exception.DemoExceptionEnum;
-import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.service.redis.RedisService;
@@ -93,28 +92,28 @@ public class UserServiceImpl implements UserService {
     TransactionTemplate transactionTemplate;
 
     @Override
-    public SimpleResult<SysUser> loadSysUserByName(SimpleRequest<String> request) {
+    public RpcResult<SysUser> loadSysUserByName(RpcRequest<String> request) {
         SysUser sysUser = userRepository.findByName(request.getData());
 
         // 补充role信息
         addRoles(sysUser);
 
-        return SimpleResult.of(sysUser);
+        return RpcResult.success(sysUser);
     }
 
     @Override
-    public SimpleResult<SysUser> loadSysUserByUserId(SimpleRequest<String> request) {
+    public RpcResult<SysUser> loadSysUserByUserId(RpcRequest<String> request) {
         SysUser sysUser = userRepository.findByUserId(request.getData());
 
         // 补充role信息
         addRoles(sysUser);
 
-        return SimpleResult.of(sysUser);
+        return RpcResult.success(sysUser);
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public BaseResult updateSysUser(SimpleRequest<SysUser> request) {
+    public RpcResult<Void> updateSysUser(RpcRequest<SysUser> request) {
         SysUser sysUser = request.getData();
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
@@ -128,28 +127,28 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Override
-    public BaseResult touchUser(SimpleRequest<SysUser> request) {
+    public RpcResult<Void> touchUser(RpcRequest<SysUser> request) {
         SysUser user = request.getData();
         String key = createRedisUserInfoKey(user.getUserId());
 
         if (!redisService.exists(key)) {
             LOGGER.info("user not exist in cache, create new cache");
             cacheUser(user);
-            return new BaseResult();
+            return RpcResult.success(null);
         }
 
         // 更新
         // TODO. 暂无需要更新的东西，先刷新一下过期时间
         redisService.expire(key, getUserExpireTime(), TimeUnit.MINUTES);
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Override
-    public SimpleResult<SysUser> touchUserById(SimpleRequest<String> request) {
+    public RpcResult<SysUser> touchUserById(RpcRequest<String> request) {
         String userId = request.getData();
         String key = createRedisUserInfoKey(userId);
 
@@ -158,36 +157,36 @@ public class UserServiceImpl implements UserService {
         if (null != user) {
             // 刷新缓存时间
             redisService.expire(key, getUserExpireTime(), TimeUnit.MINUTES);
-            return SimpleResult.of(JSONObject.toJavaObject((JSONObject)user, SysUser.class));
+            return RpcResult.success(JSONObject.toJavaObject((JSONObject)user, SysUser.class));
         } else {
 
             // 从db捞取用户
-            SimpleResult<SysUser> sysUserResult = loadSysUserByUserId(SimpleRequest.of(userId));
+            RpcResult<SysUser> sysUserResult = loadSysUserByUserId(RpcRequest.of(userId));
             SysUser sysUser = sysUserResult.getData();
             AssertUtil.notNull(sysUser, UNEXPECTED, "未找到用户信息：%s", userId);
 
             // 保存用户到缓存
             cacheUser(sysUser);
 
-            return SimpleResult.of(sysUser);
+            return RpcResult.success(sysUser);
         }
     }
 
     @Override
-    public SimpleResult<SysUser> getCacheUser(SimpleRequest<SysUser> request) {
+    public RpcResult<SysUser> getCacheUser(RpcRequest<SysUser> request) {
         return null;
     }
 
     @Override
-    public BaseResult clearUser(SimpleRequest<String> request) {
+    public RpcResult<Void> clearUser(RpcRequest<String> request) {
         String key = createRedisUserInfoKey(request.getData());
         redisService.remove(key);
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public BaseResult deleteUser(SimpleRequest<String> request) {
+    public RpcResult<Void> deleteUser(RpcRequest<String> request) {
         String userId = request.getData();
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
@@ -198,22 +197,23 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public BaseResult updateUserPassword(UpdateUserPasswordRequest request) {
+    public RpcResult<Void> updateUserPassword(RpcRequest<UpdateUserPasswordRequest> request) {
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                    SysUser user = userRepository.lockByUserId(request.getUserId());
-                    AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s", request.getUserId());
+                    SysUser user = userRepository.lockByUserId(request.getData().getUserId());
+                    AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "can not find user: %s",
+                        request.getData().getUserId());
 
                     // 用RSA私钥解密前端加密后的用户登录密码
-                    SimpleResult<String> result = rsaService.decryptByPrivateKey(
-                        SimpleRequest.of(Base64.decodeBase64(request.getPassword())));
+                    RpcResult<String> result = rsaService.decryptByPrivateKey(
+                        RpcRequest.of(Base64.decodeBase64(request.getData().getPassword())));
                     // 加密用户密码
                     String encoded = bCryptPasswordEncoder.encode(result.getData());
 
@@ -222,14 +222,14 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public BaseResult updateUserRoles(UpdateUserRoleRequest request) {
-        String userId = request.getUserId();
-        List<String> roleIds = request.getRoleIds();
+    public RpcResult<Void> updateUserRoles(RpcRequest<UpdateUserRoleRequest> request) {
+        String userId = request.getData().getUserId();
+        List<String> roleIds = request.getData().getRoleIds();
         transactionTemplate.execute(
             new TransactionCallbackWithoutResult() {
                 @Override
@@ -245,14 +245,14 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     //@Transactional(rollbackFor = Exception.class)
     @Override
-    public SimpleResult<String> createNewUser(CreateNewUserRequest request) {
-        String name = request.getName();
-        String password = request.getPassword();
+    public RpcResult<String> createNewUser(RpcRequest<CreateNewUserRequest> request) {
+        String name = request.getData().getName();
+        String password = request.getData().getPassword();
         SysUser sysUser = new SysUser();
         sysUser.setUserType("00");
         sysUser.setNickName(name);
@@ -278,21 +278,22 @@ public class UserServiceImpl implements UserService {
                 }
             }
         );
-        return SimpleResult.of(userId);
+        return RpcResult.success(userId);
     }
 
     @Override
-    public PageResult<List<SysUser>> pageListUsers(PageRequest request) {
-        PageResult<List<SysUser>> result = userRepository.pageList(request.getPageIndex(), request.getPageSize());
+    public RpcResult<PageResult<List<SysUser>>> pageListUsers(RpcRequest<PageRequest> request) {
+        PageResult<List<SysUser>> result = userRepository.pageList(request.getData().getPageIndex(),
+            request.getData().getPageSize());
         if (null == result || CollectionUtils.isEmpty(result.getData())) {
-            return result;
+            return RpcResult.success(result);
         }
 
         List<String> userIds = result.getData().stream().map(SysUser::getUserId).filter(Objects::nonNull).collect(
             Collectors.toList());
         List<UserRoleRelationDO> relations = userRoleRelationRepository.findByUserIds(userIds);
         if (CollectionUtils.isEmpty(relations)) {
-            return result;
+            return RpcResult.success(result);
         }
 
         Map<String, Set<String>> relationMap = new HashMap<>();
@@ -321,7 +322,7 @@ public class UserServiceImpl implements UserService {
             user.setRoles(roles);
         });
 
-        return result;
+        return RpcResult.success(result);
     }
 
     private void cacheUser(SysUser user) {

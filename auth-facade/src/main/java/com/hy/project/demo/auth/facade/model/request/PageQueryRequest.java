@@ -1,12 +1,12 @@
 package com.hy.project.demo.auth.facade.model.request;
 
-import com.hy.project.demo.common.model.BaseRequest;
+import com.hy.project.demo.common.model.ToString;
 
 /**
  * @author rick.wl
  * @date 2023/04/04
  */
-public class PageQueryRequest extends BaseRequest {
+public class PageQueryRequest extends ToString {
     private static final long serialVersionUID = -3630646877729155395L;
 
     private int pageIndex;

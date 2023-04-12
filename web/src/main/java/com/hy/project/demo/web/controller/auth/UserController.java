@@ -6,10 +6,10 @@ import javax.validation.Valid;
 
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserPasswordRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserRoleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.LoginService;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.auth.facade.service.UserService;
@@ -58,8 +58,8 @@ public class UserController {
         PageRequest pageRequest = new PageRequest();
         pageRequest.setPageIndex(request.getPageIndex());
         pageRequest.setPageSize(request.getPageSize());
-        PageResult<List<SysUser>> result = userService.pageListUsers(pageRequest);
-        return AjaxResult.success(result);
+        RpcResult<PageResult<List<SysUser>>> result = userService.pageListUsers(RpcRequest.of(pageRequest));
+        return AjaxResult.success(result.getData());
     }
 
     @PostMapping("/register.json")
@@ -80,19 +80,19 @@ public class UserController {
 
     @GetMapping("/getById.json")
     public AjaxResult getById(String userId) {
-        SimpleResult<SysUser> userResult = userService.loadSysUserByUserId(SimpleRequest.of(userId));
+        RpcResult<SysUser> userResult = userService.loadSysUserByUserId(RpcRequest.of(userId));
         return AjaxResult.success(userResult.getData());
     }
 
     @PostMapping("/update.json")
     public AjaxResult update(@RequestBody SysUser user) {
-        userService.updateSysUser(SimpleRequest.of(user));
+        userService.updateSysUser(RpcRequest.of(user));
         return AjaxResult.success(null);
     }
 
     @PostMapping("/deleteById.json")
     public AjaxResult deleteById(@RequestBody SysUser user) {
-        userService.deleteUser(SimpleRequest.of(user.getUserId()));
+        userService.deleteUser(RpcRequest.of(user.getUserId()));
         return AjaxResult.success(null);
     }
 
@@ -101,7 +101,7 @@ public class UserController {
         UpdateUserPasswordRequest updateUserPasswordRequest = new UpdateUserPasswordRequest();
         updateUserPasswordRequest.setUserId(user.getUserId());
         updateUserPasswordRequest.setPassword(user.getPassword());
-        userService.updateUserPassword(updateUserPasswordRequest);
+        userService.updateUserPassword(RpcRequest.of(updateUserPasswordRequest));
         return AjaxResult.success(null);
     }
 
@@ -111,7 +111,7 @@ public class UserController {
         UpdateUserRoleRequest updateUserRoleRequest = new UpdateUserRoleRequest();
         updateUserRoleRequest.setUserId(request.getUserId());
         updateUserRoleRequest.setRoleIds(request.getRoleIds());
-        userService.updateUserRoles(updateUserRoleRequest);
+        userService.updateUserRoles(RpcRequest.of(updateUserRoleRequest));
         return AjaxResult.success(null);
     }
 
@@ -119,7 +119,7 @@ public class UserController {
     public @ResponseBody
     AjaxResult getEncryptKey(@Valid PageRequest request) throws Throwable {
         AssertUtil.notNull(request, INVALID_PARAM_EXCEPTION, "request can not be null");
-        PageResult<List<LoginInfo>> logins = tokenService.pageQueryLoginInfo(request);
-        return AjaxResult.success(logins);
+        RpcResult<PageResult<List<LoginInfo>>> logins = tokenService.pageQueryLoginInfo(RpcRequest.of(request));
+        return AjaxResult.success(logins.getData());
     }
 }

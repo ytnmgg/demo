@@ -105,13 +105,15 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   async (response: AxiosResponse<Recordable>) => {
     const { data } = response
+    
     if (!data) {
       // 返回“[HTTP]请求没有返回值”;
       throw new Error()
     }
 
     // 未设置状态码则默认成功状态
-    const code = parseInt(data.code) || result_code
+    const code = data.code || result_code
+    
     // 二进制数据则直接返回
     if (
       response.request.responseType === 'blob' ||
@@ -119,12 +121,27 @@ service.interceptors.response.use(
     ) {
       return response.data
     }
+
+    // 业务状态码正确，返回数据
+    if (code === '200') {
+      return data;
+    }
+
     // 获取错误信息
     const msg = data.message || errorCode[code] || errorCode['default']
+    
     if (ignoreMsgs.indexOf(msg) !== -1) {
       // 如果是忽略的错误码，直接返回 msg 异常
       return Promise.reject(msg)
-    } else if (code === 401) {
+
+    } else if (code.startsWith("400-")) {
+      // 入参异常
+      ElNotification.error({
+        title: msg
+      });
+      return Promise.reject(msg);
+
+    } else if (code.startsWith("401-")) {
       return handleAuthorized();
       // 如果未认证，并且未进行刷新令牌，说明可能是访问令牌过期了
       // if (!isRefreshToken) {
@@ -231,4 +248,7 @@ const handleAuthorized = () => {
   }
   return Promise.reject("登录超时,请重新登录!")
 }
+
+
+
 export { service }

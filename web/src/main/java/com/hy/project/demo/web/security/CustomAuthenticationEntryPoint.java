@@ -13,7 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import static com.hy.project.demo.common.util.ResultUtil.CODE_401;
+import static com.hy.project.demo.common.exception.DemoExceptionEnum.AUTH_STATUS_INVALID;
 import static com.hy.project.demo.common.util.ResultUtil.buildJsonResponse;
 
 /**
@@ -28,6 +28,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         AuthenticationException e) throws IOException, ServletException {
         LOGGER.info("in CustomAuthenticationEntryPoint");
-        buildJsonResponse(httpServletResponse, AjaxResult.fail(CODE_401, "请先登录"));
+        buildJsonResponse(httpServletResponse, AjaxResult.fail(AUTH_STATUS_INVALID));
     }
 }

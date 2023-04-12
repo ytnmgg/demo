@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.hy.project.demo.common.exception.DemoExceptionEnum;
 import com.hy.project.demo.common.model.AjaxResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-import static com.hy.project.demo.common.util.ResultUtil.CODE_403;
 import static com.hy.project.demo.common.util.ResultUtil.buildJsonResponse;
 
 /**
@@ -28,6 +28,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
         AccessDeniedException e) throws IOException, ServletException {
         LOGGER.info("in CustomAccessDeniedHandler");
-        buildJsonResponse(httpServletResponse, AjaxResult.fail(CODE_403, "无访问权限"));
+        buildJsonResponse(httpServletResponse, AjaxResult.fail(DemoExceptionEnum.ACCESS_DENIED));
     }
 }

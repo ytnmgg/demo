@@ -7,13 +7,12 @@ import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.model.request.CreateNewUserRequest;
 import com.hy.project.demo.auth.facade.model.request.LoginRequest;
 import com.hy.project.demo.auth.facade.model.request.RegisterRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.LoginService;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.auth.facade.service.UserService;
-import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.util.AssertUtil;
 import com.hy.project.demo.common.util.DateUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -55,15 +54,15 @@ public class LoginServiceImpl implements LoginService {
     TokenService tokenService;
 
     @Override
-    public SimpleResult<String> register(RegisterRequest request) {
-        String name = request.getName();
-        String password = request.getPassword();
+    public RpcResult<String> register(RpcRequest<RegisterRequest> request) {
+        String name = request.getData().getName();
+        String password = request.getData().getPassword();
 
         // 验证用户信息
         validateUserForCreate(name, password);
 
         // 用RSA私钥解密前端加密后的用户登录密码
-        SimpleResult<String> result = rsaService.decryptByPrivateKey(SimpleRequest.of(Base64.decodeBase64(password)));
+        RpcResult<String> result = rsaService.decryptByPrivateKey(RpcRequest.of(Base64.decodeBase64(password)));
         String pwd = result.getData();
         AssertUtil.isTrue(StringUtils.isNotBlank(pwd) && pwd.length() <= MAX_PASSWORD_LENGTH,
             USER_PASSWORD_LENGTH_INVALID, "密码长度非法");
@@ -75,53 +74,53 @@ public class LoginServiceImpl implements LoginService {
         CreateNewUserRequest createNewUserRequest = new CreateNewUserRequest();
         createNewUserRequest.setName(name);
         createNewUserRequest.setPassword(encoded);
-        return userService.createNewUser(createNewUserRequest);
+        return userService.createNewUser(RpcRequest.of(createNewUserRequest));
     }
 
     @Override
-    public SimpleResult<String> login(LoginRequest request) {
+    public RpcResult<String> login(RpcRequest<LoginRequest> request) {
 
         // 用RSA私钥解密前端加密后的用户登录密码
-        SimpleResult<String> pwdResult = rsaService.decryptByPrivateKey(
-            SimpleRequest.of(Base64.decodeBase64(request.getPassword())));
+        RpcResult<String> pwdResult = rsaService.decryptByPrivateKey(
+            RpcRequest.of(Base64.decodeBase64(request.getData().getPassword())));
 
         // 验证用户信息
-        SysUser user = validateUserForLogin(request.getName(), pwdResult.getData());
+        SysUser user = validateUserForLogin(request.getData().getName(), pwdResult.getData());
 
         // 生成token
-        SimpleResult<String> tokenResult = tokenService.createToken(SimpleRequest.of(user.getUserId()));
+        RpcResult<String> tokenResult = tokenService.createToken(RpcRequest.of(user.getUserId()));
 
         // 缓存token
         LoginInfo loginInfo = new LoginInfo();
         loginInfo.setToken(tokenResult.getData());
         loginInfo.setUserId(user.getUserId());
         loginInfo.setUserName(user.getUserName());
-        loginInfo.setLoginIp(request.getClientIp());
+        loginInfo.setLoginIp(request.getData().getClientIp());
         loginInfo.setLoginTime(DateUtil.format(new Date(), STANDARD_STR));
-        loginInfo.setUserAgent(request.getUserAgent());
-        tokenService.saveToken(SimpleRequest.of(loginInfo));
+        loginInfo.setUserAgent(request.getData().getUserAgent());
+        tokenService.saveToken(RpcRequest.of(loginInfo));
 
         // 把用户信息存入redis（或者更新）
-        userService.touchUser(SimpleRequest.of(user));
+        userService.touchUser(RpcRequest.of(user));
 
         // 写入cookie
         //response.addCookie(new Cookie(COOKIE_SESSION_KEY_PREFIX, token));
 
-        return SimpleResult.of(tokenResult.getData());
+        return RpcResult.success(tokenResult.getData());
     }
 
     @Override
-    public BaseResult logout(SimpleRequest<SysUser> request) {
+    public RpcResult<Void> logout(RpcRequest<SysUser> request) {
 
         SysUser sysUser = request.getData();
 
         if (null != sysUser) {
-            tokenService.removeToken(SimpleRequest.of(sysUser.getToken()));
+            tokenService.removeToken(RpcRequest.of(sysUser.getToken()));
 
-            userService.clearUser(SimpleRequest.of(sysUser.getUserId()));
+            userService.clearUser(RpcRequest.of(sysUser.getUserId()));
         }
 
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     private void validateUserForCreate(String name, String password) {
@@ -130,7 +129,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private SysUser validateUserForLogin(String name, String password) {
-        SimpleResult<SysUser> userResult = userService.loadSysUserByName(SimpleRequest.of(name));
+        RpcResult<SysUser> userResult = userService.loadSysUserByName(RpcRequest.of(name));
         SysUser user = userResult.getData();
         AssertUtil.notNull(user, INVALID_PARAM_EXCEPTION, "用户不存在");
 
@@ -138,7 +137,7 @@ public class LoginServiceImpl implements LoginService {
         if (StringUtils.equals(user.getUserName(), "admin") && StringUtils.isBlank(user.getPassword())) {
             //String passwordEncrypted = bCryptPasswordEncoder.encode(password);
             //user.setPassword(passwordEncrypted);
-            userService.updateSysUser(SimpleRequest.of(user));
+            userService.updateSysUser(RpcRequest.of(user));
             return user;
         }
 

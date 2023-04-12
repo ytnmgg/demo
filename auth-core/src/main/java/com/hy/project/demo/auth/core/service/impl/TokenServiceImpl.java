@@ -11,13 +11,11 @@ import com.alibaba.fastjson.JSON;
 import com.hy.project.demo.auth.core.util.SsoUtil;
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.auth.facade.service.UserService;
-import com.hy.project.demo.common.model.BaseRequest;
-import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.service.redis.RedisService;
@@ -62,11 +60,11 @@ public class TokenServiceImpl implements TokenService {
     RedisService redisService;
 
     @Override
-    public SimpleResult<SysUser> getUserByToken(SimpleRequest<String> request) {
+    public RpcResult<SysUser> getUserByToken(RpcRequest<String> request) {
 
         String token = request.getData();
         if (StringUtils.isBlank(token)) {
-            return SimpleResult.of(null);
+            return RpcResult.success(null);
         }
 
         if (token.startsWith(TOKEN_PREFIX)) {
@@ -76,54 +74,54 @@ public class TokenServiceImpl implements TokenService {
         // 验证token是否在缓存中
         if (!checkTokenInCache(token)) {
             // 伪造的token或者token过期
-            return SimpleResult.of(null);
+            return RpcResult.success(null);
         }
 
         try {
-            SimpleResult<Key> pubKeyResult = rsaService.getRsaPublicKey(new BaseRequest());
+            RpcResult<Key> pubKeyResult = rsaService.getRsaPublicKey(RpcRequest.of(null));
             Claims claims = parseToken(token, pubKeyResult.getData());
             String userId = getUid(claims);
 
             // 刷新token缓存时间
-            touchToken(SimpleRequest.of(token));
+            touchToken(RpcRequest.of(token));
 
             // 通过userId去缓存拿用户并刷新缓存时间（没有就放进去）
-            SimpleResult<SysUser> userResult = userService.touchUserById(SimpleRequest.of(userId));
+            RpcResult<SysUser> userResult = userService.touchUserById(RpcRequest.of(userId));
             SysUser user = userResult.getData();
             user.setToken(token);
 
-            return SimpleResult.of(user);
+            return RpcResult.success(user);
 
         } catch (Exception e) {
             LOGGER.error("parse user info failed", e);
         }
 
-        return SimpleResult.of(null);
+        return RpcResult.success(null);
     }
 
     @Override
-    public SimpleResult<String> createToken(SimpleRequest<String> request) {
-        SimpleResult<Key> result = rsaService.getRsaPrivateKey(new BaseRequest());
-        return SimpleResult.of(SsoUtil.createToken(UUID.randomUUID().toString(), request.getData(), result.getData()));
+    public RpcResult<String> createToken(RpcRequest<String> request) {
+        RpcResult<Key> result = rsaService.getRsaPrivateKey(RpcRequest.of(null));
+        return RpcResult.success(SsoUtil.createToken(UUID.randomUUID().toString(), request.getData(), result.getData()));
     }
 
     @Override
-    public BaseResult removeToken(SimpleRequest<String> request) {
+    public RpcResult<Void> removeToken(RpcRequest<String> request) {
         redisService.removeHash(KEY_LOGIN_HASH, request.getData());
         redisService.removeZSet(KEY_LOGIN_SET, request.getData());
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Override
-    public BaseResult saveToken(SimpleRequest<LoginInfo> request) {
+    public RpcResult<Void> saveToken(RpcRequest<LoginInfo> request) {
         LoginInfo loginInfo = request.getData();
         redisService.setHash(KEY_LOGIN_HASH, loginInfo.getToken(), JSON.toJSONString(loginInfo));
         redisService.addToZSet(KEY_LOGIN_SET, loginInfo.getToken(), System.currentTimeMillis());
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Override
-    public BaseResult expireTokens(BaseRequest request) {
+    public RpcResult<Void> expireTokens(RpcRequest<Void> request) {
         // 捞取的token最大score（登录时间毫秒数），小于这些登录时间的，都会被捞起来踢掉
         long maxScore = System.currentTimeMillis() - getTokenExpireTimeMillis();
         // 定时任务每次捞取的token最大数量
@@ -142,32 +140,32 @@ public class TokenServiceImpl implements TokenService {
 
             LOGGER.info("{} tokens expired", tokens.size());
         }
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Override
-    public BaseResult touchToken(SimpleRequest<String> request) {
+    public RpcResult<Void> touchToken(RpcRequest<String> request) {
         redisService.incrementZSetScore(KEY_LOGIN_SET, request.getData(), getTokenExpireTimeMillis());
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Override
-    public PageResult<List<LoginInfo>> pageQueryLoginInfo(PageRequest request) {
+    public RpcResult<PageResult<List<LoginInfo>>> pageQueryLoginInfo(RpcRequest<PageRequest> request) {
         PageResult<List<LoginInfo>> result = new PageResult<>();
-        result.setPageIndex(request.getPageIndex());
-        result.setPageSize(request.getPageSize());
+        result.setPageIndex(request.getData().getPageIndex());
+        result.setPageSize(request.getData().getPageSize());
 
         Long size = redisService.sizeZSet(KEY_LOGIN_SET);
 
         if (null == size || size == 0L) {
             result.setTotalCount(0L);
-            return result;
+            return RpcResult.success(result);
         }
 
         result.setTotalCount(size);
 
-        long start = request.getPageSize() * (request.getPageIndex() - 1L);
-        long end = request.getPageSize() * request.getPageIndex() - 1L;
+        long start = request.getData().getPageSize() * (request.getData().getPageIndex() - 1L);
+        long end = request.getData().getPageSize() * request.getData().getPageIndex() - 1L;
         Set<String> tokens = redisService.reverseRangeZSet(KEY_LOGIN_SET, start, end);
 
         if (CollectionUtils.isNotEmpty(tokens)) {
@@ -185,7 +183,7 @@ public class TokenServiceImpl implements TokenService {
             }
         }
 
-        return result;
+        return RpcResult.success(result);
     }
 
     private boolean checkTokenInCache(String token) {

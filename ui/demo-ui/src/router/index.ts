@@ -9,7 +9,7 @@ import 'nprogress/nprogress.css'
 export const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
-    component: () => import('@/views/Login/Login.vue'),
+    component: () => import('@/views/LoginV2/Login.vue'),
     name: Names.LOGIN,
     meta: {
       hidden: true,

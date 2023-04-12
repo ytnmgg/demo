@@ -5,9 +5,8 @@ import java.util.List;
 import com.hy.project.demo.auth.facade.model.Permission;
 import com.hy.project.demo.auth.facade.model.request.CreateNewPermissionRequest;
 import com.hy.project.demo.auth.facade.model.request.PageQueryRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
-import com.hy.project.demo.common.model.BaseResult;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.common.model.PageResult;
 
 /**
@@ -16,9 +15,9 @@ import com.hy.project.demo.common.model.PageResult;
  */
 public interface PermissionService {
 
-    SimpleResult<String> createNewPermission(CreateNewPermissionRequest request);
+    RpcResult<String> createNewPermission(RpcRequest<CreateNewPermissionRequest> request);
 
-    PageResult<List<Permission>> pageList(PageQueryRequest request);
+    RpcResult<PageResult<List<Permission>>> pageList(RpcRequest<PageQueryRequest> request);
 
-    BaseResult deletePermission(SimpleRequest<String> request);
+    RpcResult<Void> deletePermission(RpcRequest<String> request);
 }

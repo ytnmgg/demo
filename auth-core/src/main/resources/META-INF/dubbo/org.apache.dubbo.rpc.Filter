@@ -1,2 +1,3 @@
 providerTraceIdFilter=com.hy.project.demo.auth.core.filter.ProviderTraceIdFilter
 providerLogFilter=com.hy.project.demo.auth.core.filter.ProviderLogFilter
+providerExceptionHandleFilter=com.hy.project.demo.auth.core.filter.ProviderExceptionHandleFilter

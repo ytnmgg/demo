@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.hy.project.demo.auth.core.AuthCoreApplication;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.UserService;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
@@ -31,7 +33,7 @@ public class UserServiceTest {
         PageRequest pageRequest = new PageRequest();
         pageRequest.setPageIndex(1);
         pageRequest.setPageSize(10);
-        PageResult<List<SysUser>> result = userService.pageListUsers(pageRequest);
+        RpcResult<PageResult<List<SysUser>>> result = userService.pageListUsers(RpcRequest.of(pageRequest));
         Assert.notNull(result);
     }
 }

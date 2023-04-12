@@ -53,7 +53,7 @@ dubbo:
     port: -1
     accesslog: true
   provider:
-    filter: providerTraceIdFilter,default,providerLogFilter
+    filter: providerTraceIdFilter,default,providerLogFilter,providerExceptionHandleFilter
   registry:
     protocol: nacos
     address: ${nacos.cluster}

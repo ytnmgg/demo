@@ -69,7 +69,7 @@ export const appModules: AppState = {
   greyMode: false, // 是否开始灰色模式，用于特殊悼念日
 
   layout: wsCache.get('layout') || 'topLeft', // layout布局
-  isDark: wsCache.get('isDark') || false, // 是否是暗黑模式
+  isDark: wsCache.get('isDark') || true, // 是否是暗黑模式
   currentSize: wsCache.get('default') || 'default', // 组件尺寸
   theme: wsCache.get('theme') || {
     // 主题色

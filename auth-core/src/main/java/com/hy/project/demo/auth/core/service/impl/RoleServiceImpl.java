@@ -20,11 +20,10 @@ import com.hy.project.demo.auth.facade.model.Permission;
 import com.hy.project.demo.auth.facade.model.Role;
 import com.hy.project.demo.auth.facade.model.RoleBase;
 import com.hy.project.demo.auth.facade.model.request.CreateNewRoleRequest;
-import com.hy.project.demo.auth.facade.model.request.SimpleRequest;
+import com.hy.project.demo.auth.facade.model.request.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateRolePermissionRequest;
-import com.hy.project.demo.auth.facade.model.result.SimpleResult;
+import com.hy.project.demo.auth.facade.model.result.RpcResult;
 import com.hy.project.demo.auth.facade.service.RoleService;
-import com.hy.project.demo.common.model.BaseResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.service.redis.RedisService;
@@ -59,52 +58,54 @@ public class RoleServiceImpl implements RoleService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public SimpleResult<String> createNewRole(CreateNewRoleRequest request) {
+    public RpcResult<String> createNewRole(RpcRequest<CreateNewRoleRequest> request) {
         RoleBase role = new RoleBase();
-        role.setRoleName(request.getName());
-        role.setRoleKey(request.getCode());
+        role.setRoleName(request.getData().getName());
+        role.setRoleKey(request.getData().getCode());
         String roleId = roleRepository.insert(role);
 
-        if (CollectionUtils.isNotEmpty(request.getPermissions())) {
-            List<Permission> permissions = createRolePermissionRelations(roleId, request.getPermissions());
+        if (CollectionUtils.isNotEmpty(request.getData().getPermissions())) {
+            List<Permission> permissions = createRolePermissionRelations(roleId, request.getData().getPermissions());
             redisService.setHash(KEY_ROLES, roleId, JSON.toJSONString(permissions));
         }
 
-        return SimpleResult.of(roleId);
+        return RpcResult.success(roleId);
     }
 
     @Override
-    public PageResult<List<Role>> pageList(PageRequest request) {
+    public RpcResult<PageResult<List<Role>>> pageList(RpcRequest<PageRequest> request) {
         // 从db分页捞取角色
-        PageResult<List<RoleBase>> roleBases = roleRepository.pageList(request.getPageIndex(), request.getPageSize());
+        PageResult<List<RoleBase>> roleBases = roleRepository.pageList(request.getData().getPageIndex(),
+            request.getData().getPageSize());
 
         if (null == roleBases || CollectionUtils.isEmpty(roleBases.getData())) {
-            return PageResult.of(Lists.newArrayList());
+            return RpcResult.success(PageResult.of(Lists.newArrayList()));
         }
 
         // 设置角色权限信息
         List<Role> roles = buildAndCachePermissions(roleBases.getData());
 
-        return PageResult.of(roles, roleBases.getPageIndex(), roleBases.getPageSize(), roleBases.getTotalCount());
+        return RpcResult.success(
+            PageResult.of(roles, roleBases.getPageIndex(), roleBases.getPageSize(), roleBases.getTotalCount()));
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public BaseResult deleteRole(SimpleRequest<String> request) {
+    public RpcResult<Void> deleteRole(RpcRequest<String> request) {
         String id = request.getData();
         rolePermissionRelationRepository.deleteByRoleId(id);
         roleRepository.deleteById(id);
 
         redisService.removeHash(KEY_ROLES, id);
 
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public BaseResult updateRolePermissions(UpdateRolePermissionRequest request) {
-        String roleId = request.getRoleId();
-        List<String> permissionIds = request.getPermissions();
+    public RpcResult<Void> updateRolePermissions(RpcRequest<UpdateRolePermissionRequest> request) {
+        String roleId = request.getData().getRoleId();
+        List<String> permissionIds = request.getData().getPermissions();
 
         RoleBase roleBase = roleRepository.lockByRoleId(roleId);
         AssertUtil.notNull(roleBase, INVALID_PARAM_EXCEPTION, "can not find role: %s", roleId);
@@ -118,11 +119,11 @@ public class RoleServiceImpl implements RoleService {
         }
 
         redisService.setHash(KEY_ROLES, roleId, JSON.toJSONString(permissions));
-        return new BaseResult();
+        return RpcResult.success(null);
     }
 
     @Override
-    public SimpleResult<List<String>> getPermissions(SimpleRequest<List<RoleBase>> request) {
+    public RpcResult<List<String>> getPermissions(RpcRequest<List<RoleBase>> request) {
         List<RoleBase> roleBases = request.getData();
         if (CollectionUtils.isEmpty(roleBases)) {
             return null;
@@ -137,7 +138,7 @@ public class RoleServiceImpl implements RoleService {
             }
         }
 
-        return SimpleResult.of(new ArrayList<>(allPermissionKeys));
+        return RpcResult.success(new ArrayList<>(allPermissionKeys));
     }
 
     private List<Permission> createRolePermissionRelations(String roleId, List<String> permissionIds) {

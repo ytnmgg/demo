@@ -4,7 +4,7 @@ package com.hy.project.demo.common.model;
  * @author rick.wl
  * @date 2021/09/02
  */
-public class PageResult<T> extends BaseResult {
+public class PageResult<T> extends ToString {
 
     private static final long serialVersionUID = -7860756718679386155L;
 

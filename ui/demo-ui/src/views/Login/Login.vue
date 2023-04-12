@@ -28,15 +28,6 @@ import { LoginForm, RegisterForm } from "./components";
 
     <!-- 右半边 -->
     <div class="flex-1 p-10 <sm:p-10px dark:bg-v-dark">
-      <!-- 右上角的主题、语言选择 -->
-      <!-- <div
-          class="flex justify-between items-center text-white @2xl:justify-end @xl:justify-end"
-        >
-          <div class="flex justify-end items-center space-x-10px">
-                                      <ThemeSwitch />
-                                      <LocaleDropdown class="<xl:text-white dark:text-white" />
-                                    </div>
-                                  </div> -->
       <!-- 右边的登录界面 -->
       <div class="h-full flex items-center">
         <!-- 账号登录 -->
