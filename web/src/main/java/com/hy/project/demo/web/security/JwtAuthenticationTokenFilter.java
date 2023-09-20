@@ -77,11 +77,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     private void buildAuthContext(HttpServletRequest httpServletRequest) {
         // 获取请求携带的令牌
-        String token = WebUtil.getTokenFromHeader(httpServletRequest, tokenHeader);
-
-        if (StringUtils.isBlank(token)) {
-            token = WebUtil.getTokenFromCookie(httpServletRequest);
-        }
+        //String token = WebUtil.getTokenFromHeader(httpServletRequest, tokenHeader);
+        //
+        //if (StringUtils.isBlank(token)) {
+        //    token = WebUtil.getTokenFromCookie(httpServletRequest);
+        //}
+        String token = WebUtil.getTokenFromCookie(httpServletRequest);
 
         RpcResult<SysUser> getUserResult = tokenService.getUserByToken(RpcRequest.of(token));
         if (null == getUserResult) {

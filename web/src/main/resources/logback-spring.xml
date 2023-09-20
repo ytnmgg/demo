@@ -90,7 +90,7 @@
     </logger>
 
     <root level="INFO">
-        <appender-ref ref="LOG-STDOUT"/>
+<!--        <appender-ref ref="LOG-STDOUT"/>-->
         <appender-ref ref="LOG-INFO"/>
         <appender-ref ref="LOG-WARN"/>
         <appender-ref ref="LOG-ERROR"/>

@@ -41,12 +41,13 @@ const whiteList = [
 service.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     // 是否需要设置 token
-    const needToken = whiteList.indexOf(config.url!) == -1 ? true : false;
+    // const needToken = whiteList.indexOf(config.url!) == -1 ? true : false;
 
-    // const isToken = (config!.headers || {}).isToken === false    
-    if (getAccessToken() && needToken) {
-      (config as Recordable).headers.Authorization = 'Bearer ' + getAccessToken() // 让每个请求携带自定义token
-    }
+    // const isToken = (config!.headers || {}).isToken === false   
+     
+    // if (getAccessToken() && needToken) {
+    //   (config as Recordable).headers.Authorization = 'Bearer ' + getAccessToken() // 让每个请求携带自定义token
+    // }
 
     // 添加requestId
     (config as Recordable).headers['request-id'] = uuidv4();

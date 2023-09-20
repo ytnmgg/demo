@@ -115,6 +115,7 @@ function install_ng() {
     -v /data/app/front:/usr/share/nginx/html \
     --name ${container_name} --network mynet --network-alias ${container_name} \
     nginx:1.23.2"
+    # nginx:1.23.2 'nginx-debug' '-g' 'daemon off;'" # 开启debug的写法
 
   # 检查 nginx docker container 是否运行正常
   check_d $host $container_name

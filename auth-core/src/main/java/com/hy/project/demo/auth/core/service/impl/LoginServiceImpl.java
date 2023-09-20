@@ -141,8 +141,8 @@ public class LoginServiceImpl implements LoginService {
             return user;
         }
 
-        //boolean matches = bCryptPasswordEncoder.matches(password, user.getPassword());
-        //AssertUtil.isTrue(matches, INVALID_PARAM_EXCEPTION, "密码不正确");
+        boolean matches = bCryptPasswordEncoder.matches(password, user.getPassword());
+        AssertUtil.isTrue(matches, INVALID_PARAM_EXCEPTION, "密码不正确");
 
         return user;
     }
