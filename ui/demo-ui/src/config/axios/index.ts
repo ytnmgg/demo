@@ -27,7 +27,7 @@ let isRefreshToken = false
 const service: AxiosInstance = axios.create({
   baseURL: base_url, // api 的 base_url
   timeout: request_timeout, // 请求超时时间
-  withCredentials: false // 禁用 Cookie 等信息
+  withCredentials: true // 启用 Cookie 等信息
 })
 
 // 不设置token白名单

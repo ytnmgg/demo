@@ -328,8 +328,26 @@ sh ui/demo-ui/deploy.sh
 ```bash
 sh src/main/resources/docker/deploy.sh
 ```
+# 4 本地调试
+绑定host，用域名访问
+```bash
+127.0.0.1 demo.rick.com
+106.14.208.194 api.rick.com
+```
+这样可以防止本地页面访问的ip和远端api的ip不一致，cookie带不上去。
+因为前端代码里面做了如下设置，绑定host以后，页面和api地址都属于域名rick.com，可以带cookie
+```bash
+1. .env.dev 设置了api地址:
+VITE_BASE_URL='http://api.rick.com:80'
+
+2. src/utils/auth.ts 设置了cookie的绑定域名:
+  cookies.set(AccessTokenKey, token.accessToken, {domain: "rick.com"})
+
+```
+
 
 # 其它
+
 
 ## 本地调试
 ### 设置idea的Debug&Run Configurations的环境变量

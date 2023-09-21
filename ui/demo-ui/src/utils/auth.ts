@@ -18,6 +18,7 @@ export const setToken = (token: TokenType) => {
   wsCache.set(RefreshTokenKey, token.refreshToken, { exp: token.expiresTime })
   wsCache.set(AccessTokenKey, token.accessToken)
   cookies.set(AccessTokenKey, token.accessToken)
+  cookies.set(AccessTokenKey, token.accessToken, {domain: "rick.com"})
 }
 
 // 删除token
@@ -25,6 +26,7 @@ export const removeToken = () => {
   wsCache.delete(RefreshTokenKey)
   wsCache.delete(AccessTokenKey)
   cookies.remove(AccessTokenKey)
+  cookies.remove(AccessTokenKey, {domain: "rick.com"})
   cookies.remove(grafanaKey)
 }
 
