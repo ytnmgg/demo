@@ -2,7 +2,7 @@
 <configuration>
 
     <property name="LOG_PATTERN"
-              value="%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] [%X{X-B3-TraceId:-}] %-5level %logger{36}.%M - %msg%n"/>
+              value="%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] [%X{traceId}] %-5level %logger{36}.%M:%line - %msg%n"/>
     <property name="FILE_PATH" value="/var/log/app"/>
     <property name="APP_NAME" value="monitor-core"/>
 
@@ -89,8 +89,13 @@
         <appender-ref ref="LOG-STDOUT"/>
     </logger>
 
+    <logger name="dubbo.accesslog" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="LOG-INFO" />
+    </logger>
+
     <root level="INFO">
-        <appender-ref ref="LOG-STDOUT"/>
+<!--        <appender-ref ref="LOG-STDOUT"/>-->
         <appender-ref ref="LOG-INFO"/>
         <appender-ref ref="LOG-WARN"/>
         <appender-ref ref="LOG-ERROR"/>

@@ -1,4 +1,4 @@
-package com.hy.project.demo.monitor.core.service.impl;
+package com.hy.project.demo.monitor.core.service.kafka;
 
 /**
  * @author rick.wl

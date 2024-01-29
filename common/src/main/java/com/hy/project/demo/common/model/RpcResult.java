@@ -1,6 +1,6 @@
-package com.hy.project.demo.auth.facade.model.result;
+package com.hy.project.demo.common.model;
 
-import com.hy.project.demo.common.model.BaseResult;
+import com.hy.project.demo.common.exception.DemoExceptionEnum;
 import org.apache.commons.lang3.StringUtils;
 
 import static com.hy.project.demo.common.util.ResultUtil.CODE_200;
@@ -19,6 +19,10 @@ public class RpcResult<T> extends BaseResult {
         result.setCode(CODE_200);
         result.setData(data);
         return result;
+    }
+
+    public static <T> RpcResult<T> exception(DemoExceptionEnum exceptionEnum) {
+        return exception(exceptionEnum.getCode(), exceptionEnum.getDescription());
     }
 
     public static <T> RpcResult<T> exception(String code, String message) {

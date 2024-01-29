@@ -3,10 +3,25 @@ server:
 
 spring:
   # 非web应用
-  #  main:
-  #    web-application-type: none
+  main:
+    web-application-type: none
   application:
     name: demo-monitor-core
+  cloud:
+    nacos:
+      discovery:
+        enabled: true
+        ip: ${host.inner}
+        server-addr: ${nacos.cluster}
+        group: DEFAULT_GROUP
+      config:
+        server-addr: ${nacos.cluster}
+        group: DEFAULT_GROUP
+  #        import-check:
+  #          enabled: false
+  config:
+    import:
+      - nacos:monitor-core-prod.yml?group=DEFAULT_GROUP
 
 #mybatis的相关配置
 mybatis:
@@ -45,3 +60,31 @@ es:
   user:
     name: elastic
     pwdPath: /var/pwd_elastic
+
+dubbo:
+  application:
+    name: demo-monitor-core
+    logger: slf4j
+  protocol:
+    name: dubbo
+    port: -1
+    accesslog: true
+  provider:
+    filter: providerTraceIdFilter,default,providerLogFilter,providerExceptionHandleFilter
+  registry:
+    protocol: nacos
+    address: ${nacos.cluster}
+    parameters:
+      namespace: public
+      group: DUBBO_GROUP
+  config-center:
+    protocol: nacos
+    address: ${nacos.cluster}
+    group: DUBBO_GROUP
+  metadata-report:
+    protocol: nacos
+    address: ${nacos.cluster}
+    group: DUBBO_GROUP
+
+kafka:
+  bootstrap-servers: ${kafka.bootstrap.servers}

@@ -72,3 +72,8 @@ install_nacos 139.196.230.113 172.27.183.156
 curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' \
   --data-urlencode content@config/nacos/auth-core-prod.yml \
   'http://139.224.72.37:8848/nacos/v1/cs/configs?group=DEFAULT_GROUP&type=yaml&dataId=auth-core-prod.yml'
+
+
+curl -X POST --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode content@config/nacos/monitor-core-prod.yml \
+  'http://139.224.72.37:8848/nacos/v1/cs/configs?group=DEFAULT_GROUP&type=yaml&dataId=monitor-core-prod.yml'

@@ -3,7 +3,7 @@ package com.hy.project.demo.auth.core.service.quartz;
 import javax.annotation.Resource;
 
 import com.hy.project.demo.auth.core.config.NacosExampleConfig;
-import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.common.model.RpcRequest;
 import com.hy.project.demo.auth.facade.service.TokenService;
 import com.hy.project.demo.common.service.quartz.Schedulers;
 import com.hy.project.demo.common.service.quartz.TaskMeta;

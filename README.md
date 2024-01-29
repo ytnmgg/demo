@@ -2,7 +2,7 @@
 
 ## 安装docker、安装nginx
 ```bash
-sh src/main/resources/bin/deploy-docker-ng.sh
+sh bin/deploy-docker-ng.sh -h xxx
 ```
 
 ## 安装zookeeper
@@ -281,25 +281,9 @@ docker ps
 docker exec -it 32320064d6f0 redis-cli
 
 ## 安装kafka
-### 目录创建、下载kafka包
-```bash
-mkdir -p /data/kafka/config
-cd /data/kafka
-wget https://dlcdn.apache.org/kafka/3.3.1/kafka_2.13-3.3.1.tgz
-tar -xzf kafka_2.13-3.3.1.tgz
-cp -r ./kafka_2.13-3.3.1/config/* ./config
 
-# 修改配置，使得可以在本地访问kafka
-# 修改server.properties配置文件，advertised.listeners=PLAINTEXT://localhost:9092 改成 advertised.listeners=PLAINTEXT://106.14.208.194:9092
-# 注意：方便本地调试，用的的宿主机外网ip，实际部署到docker的时候，用宿主机内网ip即可
-sed -i 's#advertised.listeners=PLAINTEXT://localhost:9092#advertised.listeners=PLAINTEXT://106.14.208.194:9092#' config/kraft/server.properties
-```
-
-### 启动kafka
-```bash
-docker build -t kafka-server:latest .
-docker run -d -e TZ=Asia/Shanghai -p 9092:9092 -v /data/kafka/config:/kafka/config --network mynet --network-alias kafka-server --name kafka-server kafka-server:latest
-```
+### 安装
+sh bin/deploy-kafka.sh -h x1,x2,x3
 
 ### 玩kafka
 ```bash
@@ -326,7 +310,9 @@ sh ui/demo-ui/deploy.sh
 
 # 3 部署后端
 ```bash
-sh src/main/resources/docker/deploy.sh
+sh bin/deploy-jar.sh -h xxx -t web
+
+sh bin/deploy-jar.sh -h xxx -t auth-core
 ```
 # 4 本地调试
 绑定host，用域名访问

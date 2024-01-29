@@ -1,6 +1,6 @@
 package com.hy.project.demo.auth.core.filter;
 
-import com.hy.project.demo.auth.facade.model.result.RpcResult;
+import com.hy.project.demo.common.model.RpcResult;
 import com.hy.project.demo.common.exception.DemoException;
 import org.apache.dubbo.rpc.AsyncRpcResult;
 import org.apache.dubbo.rpc.Filter;

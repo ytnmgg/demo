@@ -2,39 +2,13 @@
 
 . bin/common.sh
 
-
-usage()
-{
-  echo "\nUSAGE:\n"
-  echo "-hosts\t<ip列表>\t\t\t(必须)"
-
-  echo "\nNOTE:"
-  echo "\t参数hosts可以单个ip，也可以多个，逗号分隔"
-}
-
-#if [ $# -ne 2 ]
-#then
-#  usage
-#  exit -1
-#fi
-#
-#case "$1" in
-#  -hosts)
-#    given_hosts=$2
-#    ;;
-#  *)
-#    usage
-#    exit -1
-#    ;;
-#esac
-
 #设置分隔符
-OLD_IFS="$IFS"
-IFS=","
-cluster_hosts_pub_array=($given_hosts)
-cluster_hosts_inner_array=($cluster_hosts_inner)
-#恢复原来的分隔符
-IFS="$OLD_IFS"
+#OLD_IFS="$IFS"
+#IFS=","
+#cluster_hosts_pub_array=($given_hosts)
+#cluster_hosts_inner_array=($cluster_hosts_inner)
+##恢复原来的分隔符
+#IFS="$OLD_IFS"
 
 ## 组装ng配置里面的demoapp upstream配置
 #demoapp_upstream=''
@@ -80,12 +54,13 @@ function install_docker() {
 
 function install_ng() {
   host=$1
-  host_inner=$2
-  port=$3
+  upstream_port=$2
   container_name=ng
   image_name=nginx:1.23.2
   image_label_type=ng
-  app_upstream="server ${host_inner}:${port};"
+
+  # 查询服务器配置
+  get_host_info $host "ip_inner" upstream_host
 
   # 准备nginx配置文件
   pf "prepare nginx config file"
@@ -94,6 +69,7 @@ function install_ng() {
   copy $host "config/ng/*" "/data/nginx/"
 
   # 替换ng配置文件中的ip占位符为真实ip地址
+  app_upstream="server ${upstream_host}:${upstream_port};"
   replace $host "/data/nginx/nginx.conf" "@NG_CONF_APP_UPSTREAM@" "$app_upstream"
   replace $host "/data/nginx/nginx.conf" "@DOCKER_HOST_ADDRESS@" $host
 
@@ -128,4 +104,22 @@ function install_ng() {
 }
 
 
-install_ng 106.14.208.194 172.27.183.155 18080
+
+usage()
+{
+  echo "\nUSAGE:"
+  echo "-h\t<host>"
+}
+
+while getopts "h:" opt; do
+    case $opt in
+        h) host=${OPTARG} ;;
+        *) ;;
+    esac
+done
+
+not_empty "-h" ${host} || (usage && exit 1)
+upstream_port=18080
+
+install_docker ${host} &&
+install_ng ${host} ${upstream_port}

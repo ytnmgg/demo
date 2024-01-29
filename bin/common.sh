@@ -7,25 +7,9 @@ set -e
 #set -x
 
 # ================ 环境信息配置 =============
-# 集群外网ip
-cluster_hosts_pub=139.224.72.37,106.14.208.194,139.196.230.113
-# 集群内网ip
-cluster_hosts_inner=172.27.183.154,172.27.183.155,172.27.183.156
-# mysql服务内网地址
-mysql_host_inner=172.27.183.154
-# redis服务内网地址
-redis_host_inner=172.27.183.154
 # 本地ssh授权文件地址
 pem=/Users/rick.wl/work/one_console_2.pem
 # =========================================
-
-#设置分隔符
-OLD_IFS="$IFS"
-IFS=","
-cluster_hosts_pub_array=($cluster_hosts_pub)
-cluster_hosts_inner_array=($cluster_hosts_inner)
-#恢复原来的分隔符
-IFS="$OLD_IFS"
 
 date_format="+%Y-%m-%d %H:%M:%S"
 # 打印主要内容
@@ -130,6 +114,11 @@ function get_host_info() {
   key=$2
   run $host "cat /data/host-info.config | sed '/^${key}=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" result
 
+  if [ -z "$result" ];then
+    echo "ERROR: need ${key} in host-info.config"
+    exit 1
+  fi
+
    # result是命令执行的输出内容，用于保存到返回结果中给调用方使用
   if [ $3 ]
   then
@@ -137,4 +126,14 @@ function get_host_info() {
     # 正常最好用 local -n ref=$3 或者 declare -n ref=$3，然后给ref赋值：ref=$result，但是macOS的bash不支持这种写法
     eval $3='$result'
   fi
+}
+
+# 检查入参某个选项的值不能为空，为空结果返回0
+function not_empty () {
+    local key=$1
+    local value=$2
+    [[ -z "${value}" ]] \
+    && echo  "\033[31mFATAL: ${key} should not be empty! \033[0m" \
+    && return 1
+    return 0
 }

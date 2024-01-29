@@ -17,6 +17,7 @@ import IconClipboardCopyIcon from "~icons/lucide/clipboard-copy";
 import IconClipboardEditIcon from "~icons/lucide/clipboard-edit";
 import IconClapperboardIcon from "~icons/lucide/clapperboard";
 import IconNginxIcon from "~icons/simple-icons/nginx";
+import IconKafka from "~icons/mdi/apache-kafka";
 
 const openSubMenuIndex = "sys";
 
@@ -99,6 +100,12 @@ defineExpose({
           </el-menu-item>
         </el-sub-menu>
       </el-sub-menu>
+      <el-menu-item index="kafka">
+        <template #title>
+          <icon-kafka class="mr-2" />
+          <span>kafka</span>
+        </template>
+      </el-menu-item>
       <el-menu-item index="process" disabled>
         <icon-clapperboard-icon class="mr-2" /><span>工作流程</span></el-menu-item>
     </el-menu>

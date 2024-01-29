@@ -5,9 +5,9 @@ import java.util.List;
 import com.hy.project.demo.auth.facade.model.Role;
 import com.hy.project.demo.auth.facade.model.RoleBase;
 import com.hy.project.demo.auth.facade.model.request.CreateNewRoleRequest;
-import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.common.model.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateRolePermissionRequest;
-import com.hy.project.demo.auth.facade.model.result.RpcResult;
+import com.hy.project.demo.common.model.RpcResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 

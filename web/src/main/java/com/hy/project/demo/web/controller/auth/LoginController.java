@@ -5,8 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.model.request.LoginRequest;
-import com.hy.project.demo.auth.facade.model.request.RpcRequest;
-import com.hy.project.demo.auth.facade.model.result.RpcResult;
+import com.hy.project.demo.common.model.RpcRequest;
+import com.hy.project.demo.common.model.RpcResult;
 import com.hy.project.demo.auth.facade.service.LoginService;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.common.model.AjaxResult;

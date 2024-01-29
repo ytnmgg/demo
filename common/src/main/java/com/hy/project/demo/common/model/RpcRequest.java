@@ -1,6 +1,4 @@
-package com.hy.project.demo.auth.facade.model.request;
-
-import com.hy.project.demo.common.model.BaseRequest;
+package com.hy.project.demo.common.model;
 
 /**
  * @author rick.wl

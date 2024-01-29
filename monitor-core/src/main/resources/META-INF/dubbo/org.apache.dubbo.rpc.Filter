@@ -1,0 +1,3 @@
+providerTraceIdFilter=com.hy.project.demo.monitor.core.filter.ProviderTraceIdFilter
+providerLogFilter=com.hy.project.demo.monitor.core.filter.ProviderLogFilter
+providerExceptionHandleFilter=com.hy.project.demo.monitor.core.filter.ProviderExceptionHandleFilter

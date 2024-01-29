@@ -2,8 +2,8 @@ package com.hy.project.demo.auth.facade.service;
 
 import java.security.Key;
 
-import com.hy.project.demo.auth.facade.model.request.RpcRequest;
-import com.hy.project.demo.auth.facade.model.result.RpcResult;
+import com.hy.project.demo.common.model.RpcRequest;
+import com.hy.project.demo.common.model.RpcResult;
 
 /**
  * @author rick.wl

@@ -6,6 +6,8 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import com.hy.project.demo.common.model.AjaxResult;
+import com.hy.project.demo.common.model.RpcResult;
 import org.springframework.web.util.WebUtils;
 
 import static com.hy.project.demo.web.constant.WebConstants.LOGIN_PAGE_URL;
@@ -44,5 +46,13 @@ public class WebUtil {
     public static String getTokenFromHeader(HttpServletRequest request, String tokenHeader) {
         String token = request.getHeader(tokenHeader);
         return token;
+    }
+
+    public static AjaxResult fromRpcResult(RpcResult<?> rpcResult) {
+        if (rpcResult.success()) {
+           return AjaxResult.success(rpcResult.getData());
+        } else {
+            return AjaxResult.fail(rpcResult.getCode(), rpcResult.getMessage());
+        }
     }
 }

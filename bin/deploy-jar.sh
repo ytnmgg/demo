@@ -2,65 +2,14 @@
 
 . bin/common.sh
 
-usage()
-{
-  echo "\nUSAGE:\n"
-  echo "-h\t<ip列表>\t\t\t\t(必须)"
-  echo "-a\t<web|auth-core|monitor-core>\t\t(必须)"
-
-  echo "\nNOTE:"
-  echo "\t参数hosts可以单个ip，也可以多个，逗号分隔"
-}
-
-checkOpts () {
-    local key=$1
-    local value=$2
-    [[ -z "${value}" ]] \
-    && echo  "\033[31mFATAL: ${key} should not be empty! \033[0m" \
-    && usage \
-    && return 1
-    return 0
-}
-
-#while getopts "h:a:" opt;do
-#    case $opt in
-#        h) given_hosts=${OPTARG} && echo "given_hosts=${given_hosts}" ;;
-#        a) given_app=${OPTARG} && echo "given_app=${given_app}" ;;
-#        *) usage && exit 0 ;;
-#    esac
-#done
-
-
-#read -p "确认参数无误，继续执行脚本？[Y/N]" input
-#if [[ $input = "y" || $input = "Y" ]];then
-#    echo -e "\n------ continue... ------\n"
-#else
-#    echo -e "\n------ exit ------\n"
-#    exit 1
-#fi
-
-#! checkOpts "-h" ${given_hosts} && exit 1
-#! checkOpts "-a" ${given_app} && exit 1
-
-
-##设置分隔符
-#OLD_IFS="$IFS"
-#IFS=","
-#cluster_hosts_pub_array=($given_hosts)
-#cluster_hosts_inner_array=($cluster_hosts_inner)
-##恢复原来的分隔符
-#IFS="$OLD_IFS"
-
 function install_jar(){
   host=$1
-  host_inner=$2
-  app=$3
-  port=$4
-  debug_port=$5
+  app=$2
+  port=$3
+  debug_port=$4
   jar="${app}-0.0.1-SNAPSHOT.jar"
   image="${app}:0.0.1"
   dockerfile="Dockerfile-${app}"
-  nacos_cluster=172.27.183.154:8848,172.27.183.155:8848,172.27.183.156:8848
 
   p "copy jar to host"
   copy $host "${app}/target/${jar}" "/data/app/"
@@ -69,20 +18,14 @@ function install_jar(){
   run $host "mkdir -p /data/app/config"
   copy $host "config/docker/Dockerfile" "/data/app/${dockerfile}"
 
-  # 查询host-info
-  #run $host "cat /data/host-info.config | sed '/^mysql_user=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" mysql_user
+  # 查询服务器配置
   get_host_info $host "mysql_user" mysql_user
-  if [ -z "$mysql_user" ];then
-    echo "ERROR: invalid mysql_user in host-info.config"
-    exit 1
-  fi
-
-  #run $host "cat /data/host-info.config | sed '/^mysql_pwd=/!d;s/.*=[[:space:]]*//;s/[[:space:]]*$//'" mysql_pwd
   get_host_info $host "mysql_pwd" mysql_pwd
-  if [ -z "$mysql_pwd" ];then
-    echo "ERROR: invalid mysql_pwd in host-info.config"
-    exit 1
-  fi
+  get_host_info $host "nacos_cluster" nacos_cluster
+  get_host_info $host "ip_inner" host_inner
+  get_host_info $host "mysql_host_inner" mysql_host_inner
+  get_host_info $host "redis_host_inner" redis_host_inner
+  get_host_info $host "kafka_bootstraps" kafka_bootstraps
 
   p "replace variables to real value in docker file"
   replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_APP_NAME@" $app
@@ -94,6 +37,7 @@ function install_jar(){
   replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_DEBUG_PORT@" $debug_port
   replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_HOST_INNER@" $host_inner
   replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_NACOS_CLUSTER@" $nacos_cluster
+  replace $host "/data/app/${dockerfile}" "@DOCKER_CONF_KAFKA_BOOTSTRAP_SERVERS@" $kafka_bootstraps
 
 
   p "check existing container"
@@ -133,13 +77,50 @@ function install_jar(){
   check_d $host $app
 }
 
-# mvn编译
-pf "build jar..."
-mvn clean && mvn package -DskipTests=true
-
-install_jar 139.224.72.37 172.27.183.154 "auth-core" 18082 18083
-
-install_jar 106.14.208.194 172.27.183.155 "web" 18080 18081
+function build_jar(){
+  # mvn编译
+  pf "build jar..."
+  mvn clean && mvn package -DskipTests=true
+}
 
 
+usage()
+{
+  echo "\nUSAGE:"
+  echo "-h\t<host>"
+  echo "-t\t<web|auth-core|monitor-core>"
+}
 
+while getopts "h:t:" opt; do
+    case $opt in
+        h) host=${OPTARG} ;;
+        t) type=${OPTARG} ;;
+        *) ;;
+    esac
+done
+
+not_empty "-h" ${host} || (usage && exit 1)
+not_empty "-t" ${type} || (usage && exit 1)
+
+case ${type} in
+  web)
+    port=18080
+    debug_port=18081
+  ;;
+  auth-core)
+    port=18082
+    debug_port=18083
+  ;;
+  monitor-core)
+    port=18084
+    debug_port=18085
+  ;;
+  *)
+  ;;
+esac
+
+not_empty "port" ${port}
+not_empty "debug_port" ${debug_port}
+
+build_jar &&
+install_jar ${host} ${type} ${port} ${debug_port}

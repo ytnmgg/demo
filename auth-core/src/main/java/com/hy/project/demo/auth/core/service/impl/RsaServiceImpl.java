@@ -11,8 +11,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 
 import com.hy.project.demo.auth.core.util.RsaUtil;
-import com.hy.project.demo.auth.facade.model.request.RpcRequest;
-import com.hy.project.demo.auth.facade.model.result.RpcResult;
+import com.hy.project.demo.common.model.RpcRequest;
+import com.hy.project.demo.common.model.RpcResult;
 import com.hy.project.demo.auth.facade.service.RsaService;
 import com.hy.project.demo.common.service.redis.RedisService;
 import org.apache.dubbo.config.annotation.DubboService;

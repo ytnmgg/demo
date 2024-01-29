@@ -125,6 +125,14 @@ export const routes: Array<RouteRecordRaw> = [
           affix: true,
           activeMenu: "log-op",
         }
+      },
+      {
+        path: 'kafka',
+        component: () => import('@/views/Kafka/Kafka.vue'),
+        name: "kafka",
+        meta: {
+          activeMenu: "kafka",
+        }
       }
     ]
   }

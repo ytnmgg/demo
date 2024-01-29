@@ -16,6 +16,7 @@ ENV mysql.user @DOCKER_CONF_MYSQL_USER@
 ENV mysql.pwd @DOCKER_CONF_MYSQL_PWD@
 ENV host.inner @DOCKER_CONF_HOST_INNER@
 ENV nacos.cluster @DOCKER_CONF_NACOS_CLUSTER@
+ENV kafka.bootstrap.servers @DOCKER_CONF_KAFKA_BOOTSTRAP_SERVERS@
 # dubbo服务注册IP
 ENV DUBBO_IP_TO_REGISTRY @DOCKER_CONF_HOST_INNER@
 # 宿主机docker网卡ip，以及docker remote api的映射端口

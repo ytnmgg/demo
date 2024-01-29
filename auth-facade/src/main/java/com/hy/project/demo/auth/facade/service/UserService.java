@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.hy.project.demo.auth.facade.model.SysUser;
 import com.hy.project.demo.auth.facade.model.request.CreateNewUserRequest;
-import com.hy.project.demo.auth.facade.model.request.RpcRequest;
+import com.hy.project.demo.common.model.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserPasswordRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserRoleRequest;
-import com.hy.project.demo.auth.facade.model.result.RpcResult;
+import com.hy.project.demo.common.model.RpcResult;
 import com.hy.project.demo.common.model.PageRequest;
 import com.hy.project.demo.common.model.PageResult;
 
