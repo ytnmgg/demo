@@ -141,14 +141,14 @@ export const useAppStore = defineStore({
     },
     setIsDark(isDark: boolean) {
       this.isDark = isDark
-      if (this.isDark) {
-        document.documentElement.classList.add('dark')
-        document.documentElement.classList.remove('light')
-      } else {
-        document.documentElement.classList.add('light')
-        document.documentElement.classList.remove('dark')
-      }
-      wsCache.set('isDark', this.isDark)
+      // if (this.isDark) {
+      //   document.documentElement.classList.add('dark')
+      //   document.documentElement.classList.remove('light')
+      // } else {
+      //   document.documentElement.classList.add('light')
+      //   document.documentElement.classList.remove('dark')
+      // }
+      // wsCache.set('isDark', this.isDark)
     },
     setCurrentSize(currentSize: ElememtPlusSize) {
       this.currentSize = currentSize

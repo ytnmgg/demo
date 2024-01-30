@@ -42,6 +42,10 @@ const logout = async () => {
     },
   });
 };
+
+const onDarkChange = () => {
+  appStore.setIsDark(isDark.value)
+}
 </script>
 
 <template>
@@ -62,7 +66,12 @@ const logout = async () => {
       
       <div class="flex items-center mr-2">
         <el-tooltip class="box-item" effect="dark" content="黑暗模式" placement="bottom-end">
-          <el-switch v-model="isDark" size="small" style="--el-switch-on-color: #64748b; --el-switch-off-color: #94a3b8"></el-switch>
+          <el-switch
+              v-model="isDark"
+              @change="onDarkChange"
+              size="small"
+              style="--el-switch-on-color: #64748b; --el-switch-off-color: #94a3b8">
+          </el-switch>
         </el-tooltip>
       </div>
 

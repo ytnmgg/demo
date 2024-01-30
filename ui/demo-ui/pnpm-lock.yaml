@@ -7,6 +7,7 @@ specifiers:
   '@types/nprogress': ^0.2.0
   '@types/qs': ^6.9.7
   '@vitejs/plugin-vue': ^3.1.0
+  '@vue/shared': ^3.4.15
   '@vueuse/core': ^9.3.0
   '@vueuse/integrations': ^9.12.0
   '@zxcvbn-ts/core': ^2.0.4
@@ -18,7 +19,7 @@ specifiers:
   lodash-es: ^4.17.21
   moment: ^2.29.4
   nprogress: ^0.2.0
-  pinia: ^2.0.17
+  pinia: ^2.0.23
   pinia-plugin-persist: ^1.0.0
   postcss: ^8.4.21
   qs: ^6.11.0
@@ -38,6 +39,7 @@ specifiers:
   web-storage-cache: ^1.1.1
 
 dependencies:
+  '@vue/shared': registry.npmmirror.com/@vue/shared/3.4.15
   '@vueuse/core': registry.npmmirror.com/@vueuse/core/9.3.0_vue@3.2.39
   '@vueuse/integrations': registry.npmmirror.com/@vueuse/integrations/9.12.0_44pjrz7ytpo5aypwvbm3ncy5wy
   '@zxcvbn-ts/core': registry.npmmirror.com/@zxcvbn-ts/core/2.0.5
@@ -421,7 +423,7 @@ packages:
       '@vue/compiler-dom': registry.npmmirror.com/@vue/compiler-dom/3.2.39
       '@vue/compiler-sfc': registry.npmmirror.com/@vue/compiler-sfc/3.2.39
       '@vue/reactivity': registry.npmmirror.com/@vue/reactivity/3.2.39
-      '@vue/shared': registry.npmmirror.com/@vue/shared/3.2.39
+      '@vue/shared': registry.npmmirror.com/@vue/shared/3.4.15
     dev: true
 
   registry.npmmirror.com/@volar/vue-typescript/0.40.13:
@@ -553,6 +555,11 @@ packages:
     resolution: {integrity: sha512-D3dl2ZB9qE6mTuWPk9RlhDeP1dgNRUKC3NJxji74A4yL8M2MwlhLKUC/49WHjrNzSPug58fWx/yFbaTzGAQSBw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vue/shared/-/shared-3.2.39.tgz}
     name: '@vue/shared'
     version: 3.2.39
+
+  registry.npmmirror.com/@vue/shared/3.4.15:
+    resolution: {integrity: sha512-KzfPTxVaWfB+eGcGdbSf4CWdaXcGDqckoeXUh7SB3fZdEtzPCK2Vq9B/lRRL3yutax/LWITz+SwvgyOxz5V75g==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vue/shared/-/shared-3.4.15.tgz}
+    name: '@vue/shared'
+    version: 3.4.15
 
   registry.npmmirror.com/@vueuse/core/9.12.0_vue@3.2.39:
     resolution: {integrity: sha512-h/Di8Bvf6xRcvS/PvUVheiMYYz3U0tH3X25YxONSaAUBa841ayMwxkuzx/DGUMCW/wHWzD8tRy2zYmOC36r4sg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@vueuse/core/-/core-9.12.0.tgz}

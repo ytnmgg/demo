@@ -2,7 +2,6 @@
 import {computed, onMounted, reactive, ref, unref, watch} from "vue";
 import {
   ElButton,
-  ElCard,
   ElConfigProvider,
   ElDialog,
   ElForm,
@@ -17,14 +16,32 @@ import {
 import zhCn from "element-plus/lib/locale/lang/zh-cn";
 import * as KafkaApi from "@/api/kafka";
 import TopicDetail from "@/views/Kafka/TopicDetail.vue";
+import IconRefresh from "~icons/ic/baseline-refresh";
+import IconNew from "~icons/carbon/new-tab";
+import {useAppStore} from "@/store/modules/app";
 
+const appStore = useAppStore()
+
+const bg_color = ref()
+const title_color = ref()
+watch(
+    () => appStore.isDark,
+    () => {
+      if (appStore.isDark) {
+        bg_color.value = "#262626"
+        title_color.value = "#a3a3a3"
+      } else {
+        bg_color.value = "#f8fafc"
+        title_color.value = "#334155"
+      }
+    }
+);
 
 const locale = ref(zhCn);
 
 const clusterObj = reactive<any>({
   tableData: [],
   clusterId: "",
-  // 加载中
   loading: true,
 });
 
@@ -151,57 +168,40 @@ const handleTopicDetailClick = (row: any) => {
   unref(topicDetailRef).showDetail(row);
 };
 
-const handleModifyClick = (row: any) => {
-  // unref(roleCreateRef).showDialog(row);
-};
 
-const handleDeleteClick = async (row: any) => {
-  // ElMessageBox.confirm("确定删除当前角色码? 该操作不可逆！", "警告", {
-  //   type: "warning",
-  // })
-  //     .then(async () => {
-  //       await RoleApi.deleteById({ roleId: row.roleId });
-  //       ElMessage.success("删除角色成功");
-  //       refreshRoleList();
-  //     })
-  //     .catch(() => {
-  //       // catch error
-  //     });
-};
+let tableHeaderColorObj = reactive({
+      background: bg_color, color: title_color, textAlign: "left"
+    }
+);
 
-//
-// const refreshList = () => {
-//   methods.getList();
-// };
-//
-// const addDialogFormVisible = ref(false);
-// const addForm = reactive({
-//   permissionName: "",
-//   permissionKey: "",
-// });
-//
-// const addConfirmLoading = ref(false);
+
 </script>
 
 <template>
-  <div class="flex m-2 text-neutral-400">
+  <div class="flex space-x-2 m-2 text-neutral-400">
     <el-config-provider :locale="locale">
-      <div class="m-1 p-3 w-1/2 bg-neutral-800">
-        <div class="mb-3">集群信息</div>
+      <div
+          class="w-1/2 h-[350px] outline outline-1 outline-neutral-400 dark:outline-neutral-700 rounded-md bg-neutral-50 dark:bg-neutral-800"
+          v-loading="clusterObj.loading">
+        <div class="grid grid-cols-6 rounded-t-md bg-neutral-300 dark:bg-neutral-700 pr-3 pl-3 h-[32px]">
+          <el-link type="primary" :underline="false" class="col-start-1 col-end-3 justify-self-start">
+            {{ '集群ID: ' + clusterObj.clusterId }}
+          </el-link>
+          <el-link class="col-start-6 col-end-6 justify-self-end" type="primary" :underline="false"
+                   @click="methods.getCluster">
+            <icon-refresh class="mr-1"/>
+            刷新
+          </el-link>
+        </div>
+
         <div>
-          <el-card class="box-card"
-                   v-loading="clusterObj.loading"
-          >
-            <div slot="header" class="clearfix mb-3 text-neutral-400">
-              <span>{{ '集群：' + clusterObj.clusterId }}</span>
-              <el-link style="float: right; padding: 3px 0" type="primary" :underline="false"
-                       @click="methods.getCluster">刷新
-              </el-link>
-            </div>
-            <el-table :data="clusterObj.tableData" style="width: 100%" ref="tableRef">
-              <el-table-column prop="id" label="节点id" width="200"/>
+          <div class="">
+            <el-table :data="clusterObj.tableData" :header-cell-style="tableHeaderColorObj" class="min-h-300px"
+                      style="width: 100%;" max-height="249" ref="tableRef">
+              <el-table-column prop="id" label="节点id" width="150">
+              </el-table-column>
               <el-table-column prop="host" label="ip" width="200"/>
-              <el-table-column prop="port" label="端口" width="200"/>
+              <el-table-column prop="port" label="端口" width="150"/>
               <el-table-column prop="status" label="状态">
                 <template #default="scope">
                   <el-tag
@@ -217,79 +217,75 @@ const handleDeleteClick = async (row: any) => {
 
             </el-table>
 
-          </el-card>
+          </div>
 
 
         </div>
       </div>
-      <div class="m-1 p-3 w-1/2 bg-neutral-800">
-        <div class="mb-3">Topic信息</div>
-        <div>
-          <el-card class="box-card"
-          >
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <el-button plain type="primary" @click="handleTopicAddClick">
-                  <i-ep-circle-plus class="mr-5px"/>
-                  新增
-                </el-button>
-              </div>
+      <div
+          class="w-1/2 h-[350px] outline outline-1 outline-neutral-400 dark:outline-neutral-700 rounded-md bg-neutral-50 dark:bg-neutral-800">
+        <div class="grid grid-cols-6 rounded-t-md bg-neutral-300 dark:bg-neutral-700 pr-3 pl-3 h-[32px]">
+          <el-link type="primary" :underline="false" class="col-start-1 col-end-1 justify-self-start">Topic信息
+          </el-link>
+          <el-link type="primary" :underline="false" class="col-start-2 col-end-2 justify-self-start"
+                   @click="handleTopicAddClick">
+            <icon-new class="mr-1"/>
+            新增Topic
+          </el-link>
 
-              <div>
-                <el-link type="primary" :underline="false"
-                         @click="methods.listTopic()">刷新
-                </el-link>
-              </div>
-            </div>
-            <div>
-              <div>
-                <el-table
-                    :data="topicObj.tableList"
-                    v-loading="topicObj.loading"
-                    style="width: 100%"
-                    ref="tableRef"
-                >
-                  <el-table-column prop="name" label="Topic名称"/>
-                  <el-table-column prop="uuid" label="UUID"/>
-
-                  <el-table-column fixed="right" label="操作" width="120">
-                    <template #default="scope">
-                      <el-button
-                          link
-                          type="primary"
-                          size="small"
-                          @click="handleTopicDetailClick(scope.row)"
-                      >
-                        <div class="font-normal flex items-center">
-                          <i-ep-setting class="text-xs mr-1px "/>
-                          详情管理
-                        </div>
-                      </el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </div>
-
-              <div class="flex justify-end mt-3">
-                <el-pagination
-                    v-model:currentPage="topicObj.currentPage"
-                    v-model:page-size="topicObj.pageSize"
-                    layout="total, sizes, prev, pager, next, jumper"
-                    :total="topicObj.total"
-                    :page-sizes="[5, 10, 20, 50]"
-                    :default-page-size="5"
-                >
-                </el-pagination>
-              </div>
-            </div>
-
-
-          </el-card>
-
-          <TopicDetail ref="topicDetailRef" @refreshTopicList="methods.listTopic"></TopicDetail>
-
+          <el-link class="col-start-6 col-end-6 justify-self-end" type="primary" :underline="false"
+                   @click="methods.listTopic">
+            <icon-refresh class="mr-1"/>
+            刷新
+          </el-link>
         </div>
+
+        <div class="flex flex-col justify-between h-[318px]">
+          <div>
+            <el-table
+                :data="topicObj.tableList"
+                :header-cell-style="tableHeaderColorObj"
+                v-loading="topicObj.loading"
+                style="width: 100%; "
+                ref="tableRef"
+            >
+              <el-table-column prop="name" label="Topic名称"/>
+              <el-table-column prop="uuid" label="UUID"/>
+
+              <el-table-column label="操作" width="120">
+                <template #default="scope">
+                  <el-link
+                      type="primary" :underline="false"
+                      @click="handleTopicDetailClick(scope.row)"
+                  >
+                    <div class="font-normal flex items-center">
+                      <i-ep-setting class="text-xs mr-1px "/>
+                      详情管理
+                    </div>
+                  </el-link>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="flex justify-end mt-3 mb-3">
+            <el-pagination
+                v-model:currentPage="topicObj.currentPage"
+                v-model:page-size="topicObj.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="topicObj.total"
+                :page-sizes="[5, 10, 20, 50]"
+                :default-page-size="5"
+            >
+            </el-pagination>
+          </div>
+        </div>
+
+
       </div>
+
+
+      <TopicDetail ref="topicDetailRef" @refreshTopicList="methods.listTopic"></TopicDetail>
+
     </el-config-provider>
   </div>
 

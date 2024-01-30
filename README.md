@@ -333,7 +333,9 @@ VITE_BASE_URL='http://api.rick.com:80'
 
 
 # 其它
-
+## git 多账号
+git 的local config添加core.sshCommand属性，指定当前账号的ssh key就行了：
+> git config core.sshCommand "ssh -i ~/.ssh/id_rsa_example -F /dev/null"
 
 ## 本地调试
 ### 设置idea的Debug&Run Configurations的环境变量
