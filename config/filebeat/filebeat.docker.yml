@@ -1,0 +1,46 @@
+name: @FILEBEAT_NAME@
+tags: ["ng-access-log", "web-info-log"]
+
+processors:
+  - add_cloud_metadata: ~
+
+queue.mem:
+  flush.timeout: 1s
+
+filebeat.inputs:
+  - type: filestream
+    id: ng-log-fs
+    backoff:
+      init: 1s
+      max: 1s
+    fields:
+      fb_id: ng-access-log-fs
+    paths:
+      - /var/log/nginx/access.log
+    parsers:
+      - ndjson:
+          target: "content"
+          add_error_key: true
+  - type: filestream
+    id: info-log-fs
+    backoff:
+      init: 1s
+      max: 1s
+    fields:
+      fb_id: web-info-log-fs
+    paths:
+      - /var/log/app/web-info.log
+    parsers:
+      - multiline:
+          type: pattern
+          pattern: '^\d{2}-\d{2}-\d{4}\s\d{2}:\d{2}:\d{2}\.\d{3}\s\['
+          negate: true
+          match: after
+
+output.kafka:
+  # initial brokers for reading cluster metadata
+  hosts: [@FB_CONF_KAFKA_BOOTSTRAP_SERVERS@]
+  topic: "DEMO_LOG"
+  headers:
+    - key: "FB_ID"
+      value: "%{[fields.fb_id]}"

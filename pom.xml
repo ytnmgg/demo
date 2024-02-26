@@ -33,6 +33,7 @@
         <module>common</module>
         <module>monitor-core</module>
         <module>monitor-facade</module>
+        <module>flink-task</module>
     </modules>
 
     <dependencyManagement>

@@ -285,7 +285,7 @@ docker exec -it 32320064d6f0 redis-cli
 ### 安装
 sh bin/deploy-kafka.sh -h x1,x2,x3
 
-### 玩kafka
+### 使用
 ```bash
 # 创建topic
 bin/kafka-topics.sh --create --topic demo-test --bootstrap-server localhost:9092
@@ -301,6 +301,45 @@ bin/kafka-console-consumer.sh --topic demo-test --from-beginning --bootstrap-ser
 
 ```
 
+## 安装hbase
+
+### 安装
+sh bin/deploy-hbase.sh -h ${ip}
+
+### 监控页面
+http://${ip}:16010/master-status
+
+### 使用
+```bash
+# 登录docker
+docker exec -it hbase bash
+
+# 打开hbase shell
+./hbase/bin/hbase shell
+
+# 命名空间相关操作
+list_namespace
+list_namespace_tables '命名空间名'
+create_namespace '命名空间名'
+drop_namespace '命名空间名'
+
+# 表相关操作
+create '命名空间:表名','列簇名'
+create '表名','列簇名' # 省略命名空间，使用默认命名空间default
+create '命名空间:表名', {NAME => '列簇名1'}, {NAME => '列簇名2'} # 多列簇
+disable '表名' # 失效表
+drop '表名' # 删表（删之前需要先disable）
+
+# 数据相关操作
+scan '表名'
+get '表名','rowkey'
+get '表名','rowkey','列簇:列'
+put '表名','rowkey','列簇:列','属性'
+delete '表名','rowKey','列簇:列'
+deleteall '表名','rowkey'
+truncate '表名' # 清空表数据
+
+```
 
 # 2 前端部署
 ```bash
