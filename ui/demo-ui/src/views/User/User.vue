@@ -26,6 +26,7 @@ import SetRole from "./SetRole.vue";
 
 import { encrypt } from "@/utils/jsencrypt";
 import IconVenetianMask from "~icons/lucide/venetian-mask";
+import UserCreate from "@/views/User/UserCreate.vue";
 
 const locale = ref(zhCn);
 
@@ -164,6 +165,13 @@ const setRoleRef = ref();
 const handleSetRoleClick = (row: SysUser) => {
   unref(setRoleRef).showDialog(row);
 };
+
+const userCreateRef = ref();
+
+const handleAddClick = () => {
+  unref(userCreateRef).showDialog(null);
+};
+
 </script>
 
 <template>
@@ -171,7 +179,7 @@ const handleSetRoleClick = (row: SysUser) => {
     <el-config-provider :locale="locale">
       <div class="flex items-center justify-between">
         <div>
-          <el-button plain type="primary">
+          <el-button plain type="primary" @click="handleAddClick">
             <i-ep-circle-plus class="mr-5px" />新增
           </el-button>
         </div>
@@ -302,6 +310,8 @@ const handleSetRoleClick = (row: SysUser) => {
     </div>
   </el-dialog>
   <SetRole ref="setRoleRef" @refreshList="refreshUserList" />
+  <UserCreate ref="userCreateRef" @refreshList="refreshUserList" />
+
 </template>
 
 <style></style>

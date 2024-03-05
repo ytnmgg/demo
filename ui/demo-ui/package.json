@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "i": "pnpm install",
-    "dev": "vite --mode dev --open",
+    "dev": "vite --mode dev --open --host 127.0.0.1",
     "build": "vue-tsc --noEmit && vite build",
     "build-f": "vite build",
     "preview": "vite preview"

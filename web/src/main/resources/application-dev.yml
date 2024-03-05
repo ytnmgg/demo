@@ -12,6 +12,12 @@ spring:
         ip: 172.27.183.154
         server-addr: 172.27.183.154:8848,172.27.183.155:8848,172.27.183.156:8848
         group: DEFAULT_GROUP
+      config:
+        server-addr: 172.27.183.154:8848,172.27.183.155:8848,172.27.183.156:8848
+        group: DEFAULT_GROUP
+  config:
+    import:
+      - nacos:web-prod.yml?group=DEFAULT_GROUP
 
 #feign:
 #  httpclient:

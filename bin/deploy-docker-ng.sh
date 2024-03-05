@@ -54,13 +54,13 @@ function install_docker() {
 
 function install_ng() {
   host=$1
-  upstream_port=$2
+  upstream=$2
   container_name=ng
   image_name=nginx:1.23.2
   image_label_type=ng
 
-  # 查询服务器配置
-  get_host_info $host "ip_inner" upstream_host
+#  # 查询服务器配置
+#  get_host_info $host "ip_inner" upstream_host
 
   # 准备nginx配置文件
   pf "prepare nginx config file"
@@ -69,8 +69,7 @@ function install_ng() {
   copy $host "config/ng/*" "/data/nginx/"
 
   # 替换ng配置文件中的ip占位符为真实ip地址
-  app_upstream="server ${upstream_host}:${upstream_port};"
-  replace $host "/data/nginx/nginx.conf" "@NG_CONF_APP_UPSTREAM@" "$app_upstream"
+  replace $host "/data/nginx/nginx.conf" "@NG_CONF_APP_UPSTREAM@" "$upstream"
   replace $host "/data/nginx/nginx.conf" "@DOCKER_HOST_ADDRESS@" $host
 
   # 安装ng
@@ -89,6 +88,9 @@ function install_ng() {
     -v /data/nginx/nginx.conf:/etc/nginx/nginx.conf \
     -v /var/log/nginx:/var/log/nginx \
     -v /data/app/front:/usr/share/nginx/html \
+    --add-host ecs01:${ecsIn01} \
+    --add-host ecs02:${ecsIn02} \
+    --add-host ecs03:${ecsIn03} \
     --name ${container_name} --network mynet --network-alias ${container_name} \
     nginx:1.23.2"
     # nginx:1.23.2 'nginx-debug' '-g' 'daemon off;'" # 开启debug的写法
@@ -103,23 +105,8 @@ function install_ng() {
   run $host "logrotate -vf /etc/logrotate.d/nginx"
 }
 
+# 依赖：web应用安装位置
+upstream="server ecs02:18080;"
 
-
-usage()
-{
-  echo "\nUSAGE:"
-  echo "-h\t<host>"
-}
-
-while getopts "h:" opt; do
-    case $opt in
-        h) host=${OPTARG} ;;
-        *) ;;
-    esac
-done
-
-not_empty "-h" ${host} || (usage && exit 1)
-upstream_port=18080
-
-install_docker ${host} &&
-install_ng ${host} ${upstream_port}
+install_docker $ecs02 &&
+install_ng $ecs02 "$upstream"

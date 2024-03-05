@@ -16,9 +16,11 @@ function install_kafka() {
   host2=$2
   host3=$3
 
-  prepare_files $host1
-  prepare_files $host2
-  prepare_files $host3
+  voters="1@ecs01:9093,2@ecs02:9093,3@ecs03:9093"
+
+  prepare_files $host1 "1" $voters
+  prepare_files $host2 "2" $voters
+  prepare_files $host3 "3" $voters
 
   # 生成22位UUID，大小写字母组成
   # 理论上应该用 "bin/kafka-storage.sh random-uuid" 去生成，比较麻烦，这里就直接用shell自己搞了
@@ -33,6 +35,8 @@ function install_kafka() {
 
 function prepare_files() {
   host=$1
+  node_id=$2
+  voters=$3
 
   p "check if kafka directory already exists"
   if run $host "ls "${dir_path}
@@ -46,9 +50,7 @@ function prepare_files() {
 #  run $host "mkdir -p /data/kafka/logs"
 
   # 查询服务器配置
-  get_host_info $host "ip_inner" host_inner
-  get_host_info $host "node_id" node_id
-  get_host_info $host "voters" voters
+  get_host_info $host "host_name" host_name
 
 #  # 拷贝文件
 #  p "copy config files"
@@ -66,7 +68,7 @@ function prepare_files() {
   p "replace variables to real value in config file"
   replace $host ${dir_path}"config/kraft/server.properties" "@NODE_ID@" ${node_id}
   replace $host ${dir_path}"config/kraft/server.properties" "@VOTERS@" ${voters}
-  replace $host ${dir_path}"config/kraft/server.properties" "@ADV_LISTENERS@" "PLAINTEXT://"${host_inner}":9092"
+  replace $host ${dir_path}"config/kraft/server.properties" "@ADV_LISTENERS@" "PLAINTEXT://"${host_name}":9092"
 
   run $host "mkdir -p "${dir_path}"logs"
 }
@@ -99,39 +101,32 @@ function run_docker() {
   run $host "docker run -d -e TZ=Asia/Shanghai \
   -p 9092:9092 \
   -p 9093:9093 \
+  --add-host ecs01:${ecsIn01} \
+  --add-host ecs02:${ecsIn02} \
+  --add-host ecs03:${ecsIn03} \
   --name "$app" \
   --network mynet --network-alias "$app" "$image
 
   p "sleep 10s for kafka starting"
-  sleep 10s
+  sleep 10
   check_d $host $app
 }
 
-usage()
-{
-  echo "\nUSAGE:"
-  echo "-h\t<host>"
-}
 
-while getopts "h:" opt; do
-    case $opt in
-        h) host=${OPTARG} ;;
-        *) ;;
-    esac
-done
+#### 使用
+#```bash
+## 创建topic
+#bin/kafka-topics.sh --create --topic demo-test --bootstrap-server localhost:9092
+#
+## 查看topic
+#bin/kafka-topics.sh --describe --topic demo-test --bootstrap-server localhost:9092
+#
+## 发消息
+#bin/kafka-console-producer.sh --topic demo-test --bootstrap-server localhost:9092
+#
+## 收消息
+#bin/kafka-console-consumer.sh --topic demo-test --from-beginning --bootstrap-server localhost:9092
+#
+#```
 
-not_empty "-h" ${host} || (usage && exit 1)
-
-#设置分隔符
-OLD_IFS="$IFS"
-IFS=","
-host_array=(${host})
-#恢复原来的分隔符
-IFS="$OLD_IFS"
-
-if [ ${#host_array[@]} -ne 3 ]
-then
-  echo "\033[31mFATAL: need 3 hosts in one cluster! \033[0m" && exit 1
-fi
-
-install_kafka ${host_array[@]}
+install_kafka $ecs01 $ecs02 $ecs03

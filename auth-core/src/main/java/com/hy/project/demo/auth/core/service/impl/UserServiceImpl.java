@@ -1,4 +1,5 @@
 package com.hy.project.demo.auth.core.service.impl;
+import java.util.Date;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -253,6 +254,7 @@ public class UserServiceImpl implements UserService {
     public RpcResult<String> createNewUser(RpcRequest<CreateNewUserRequest> request) {
         String name = request.getData().getName();
         String password = request.getData().getPassword();
+        List<String> roleIds = request.getData().getRoleIds();
         SysUser sysUser = new SysUser();
         sysUser.setUserType("00");
         sysUser.setNickName(name);
@@ -271,9 +273,19 @@ public class UserServiceImpl implements UserService {
 
                     String userId = userRepository.insert(sysUser);
 
-                    //// 保存用户角色关系 TODO mock
-                    //userRoleRelationRepository.insert(userId, "1120220909000001");
-
+                    // 保存用户角色关系
+                    List<UserRoleRelationDO> userRoleRelations = new ArrayList<>();
+                    Date now = new Date();
+                    for (String roleId : roleIds) {
+                        UserRoleRelationDO relationDO = new UserRoleRelationDO();
+                        relationDO.setUserId(userId);
+                        relationDO.setRoleId(roleId);
+                        relationDO.setCreateBy("admin");
+                        relationDO.setCreateTime(now);
+                        relationDO.setUpdateTime(now);
+                        userRoleRelations.add(relationDO);
+                    }
+                    userRoleRelationRepository.insertAll(userRoleRelations);
                     return userId;
                 }
             }

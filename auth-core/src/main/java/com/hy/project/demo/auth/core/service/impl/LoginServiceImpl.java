@@ -74,6 +74,7 @@ public class LoginServiceImpl implements LoginService {
         CreateNewUserRequest createNewUserRequest = new CreateNewUserRequest();
         createNewUserRequest.setName(name);
         createNewUserRequest.setPassword(encoded);
+        createNewUserRequest.setRoleIds(request.getData().getRoleIds());
         return userService.createNewUser(RpcRequest.of(createNewUserRequest));
     }
 

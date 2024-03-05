@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import com.hy.project.demo.auth.facade.model.LoginInfo;
 import com.hy.project.demo.auth.facade.model.SysUser;
+import com.hy.project.demo.auth.facade.model.request.RegisterRequest;
 import com.hy.project.demo.common.model.RpcRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserPasswordRequest;
 import com.hy.project.demo.auth.facade.model.request.UpdateUserRoleRequest;
@@ -19,6 +20,7 @@ import com.hy.project.demo.common.model.PageResult;
 import com.hy.project.demo.common.util.AssertUtil;
 import com.hy.project.demo.common.util.ResultUtil;
 import com.hy.project.demo.web.model.LoginWebRequest;
+import com.hy.project.demo.web.model.UserRegisterRequest;
 import com.hy.project.demo.web.model.UserRoleUpdateRequest;
 import com.hy.project.demo.web.service.AuthService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -63,13 +65,13 @@ public class UserController {
     }
 
     @PostMapping("/register.json")
-    public AjaxResult register(@RequestBody LoginWebRequest request) {
-        // mock
-        return AjaxResult.fail(ResultUtil.CODE_403, "暂不支持");
-
-        // 权限管理完善前，注册功能暂时不开放
-        //String userId = loginService.register(request.getUsername(), request.getPassword());
-        //return AjaxResult.success(userId);
+    public AjaxResult register(@RequestBody UserRegisterRequest request) {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setName(request.getUsername());
+        registerRequest.setPassword(request.getPassword());
+        registerRequest.setRoleIds(request.getRoleIds());
+        RpcResult<String> rpcResult = loginService.register(RpcRequest.of(registerRequest));
+        return AjaxResult.success(rpcResult.getData());
     }
 
     @GetMapping("/me.json")

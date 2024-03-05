@@ -1,7 +1,7 @@
 import type { Permission } from "@/api/permission/types";
 
 export type Role = {
-    roleId?: string
+    roleId: string
     roleName?: string
     roleKey?: string
     createTime?: string

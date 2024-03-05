@@ -56,7 +56,7 @@ import { reactive, ref, unref, onMounted, computed, watch } from "vue";
 import * as LoginApi from "@/api/login";
 import { encrypt } from "@/utils/jsencrypt";
 import { TokenType } from "@/api/login/types";
-import { setToken } from "@/utils/auth";
+import { setToken, removeToken } from "@/utils/auth";
 import { useRouter } from "vue-router";
 import type { RouteLocationNormalizedLoaded } from "vue-router";
 import { useAppStore } from "@/store/modules/app";
@@ -107,6 +107,8 @@ const handleLogin = async () => {
       ...loginData.loginForm,
       password: passwordEncrypted,
     };
+
+    removeToken();
 
     const res: string = await LoginApi.loginApi(data);
 

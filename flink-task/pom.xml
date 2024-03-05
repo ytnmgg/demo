@@ -56,14 +56,6 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
                 <executions>
-                    <!-- Default Execution -->
-                    <execution>
-                        <id>default</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
 
                     <!-- WordCount -->
                     <execution>
@@ -74,9 +66,32 @@
                         </goals>
                         <configuration>
                             <classifier>WordCount</classifier>
+                            <includes>
+                                <include>com/hy/project/demo/flink/task/wordcount/**</include>
+                            </includes>
                             <archive>
                                 <manifestEntries>
                                     <program-class>com.hy.project.demo.flink.task.wordcount.WordCount</program-class>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+
+                    <!-- NetWordCount -->
+                    <execution>
+                        <id>NetWordCount</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>NetWordCount</classifier>
+                            <includes>
+                                <include>com/hy/project/demo/flink/task/networdcount/**</include>
+                            </includes>
+                            <archive>
+                                <manifestEntries>
+                                    <program-class>com.hy.project.demo.flink.task.networdcount.NetWordCount</program-class>
                                 </manifestEntries>
                             </archive>
                         </configuration>

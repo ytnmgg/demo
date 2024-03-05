@@ -15,6 +15,7 @@ export type SysUser = {
 export type UserRegisterVO = {
     username: string
     password: string
+    roleIds: Array<string>
 }
 
 export type LoginInfo = {

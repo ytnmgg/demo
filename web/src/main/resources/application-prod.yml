@@ -12,6 +12,13 @@ spring:
         ip: ${host.inner}
         server-addr: ${nacos.cluster}
         group: DEFAULT_GROUP
+      config:
+        server-addr: ${nacos.cluster}
+        group: DEFAULT_GROUP
+
+  config:
+    import:
+      - nacos:web-prod.yml?group=DEFAULT_GROUP
 
 #feign:
 #  httpclient:

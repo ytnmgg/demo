@@ -1,27 +1,22 @@
-package com.hy.project.demo.auth.facade.model.request;
-
-import com.hy.project.demo.common.model.BaseRequest;
+package com.hy.project.demo.web.model;
 
 import java.util.List;
 
 /**
  * @author rick.wl
- * @date 2023/04/02
+ * @date 2021/11/08
  */
-public class RegisterRequest extends BaseRequest {
-    private static final long serialVersionUID = -8847725781648580792L;
-
-    private String name;
+public class UserRegisterRequest {
+    private String username;
     private String password;
-
     private List<String> roleIds;
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

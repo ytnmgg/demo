@@ -8,7 +8,16 @@ set -e
 
 # ================ 环境信息配置 =============
 # 本地ssh授权文件地址
-pem=/Users/rick.wl/work/one_console_2.pem
+#pem=/Users/rick.wl/work/one_console_2.pem
+pem=/Users/ytnmgg/work/ecs.pem
+# 环境机器外网ip，只用于脚本执行，尽量不对外暴露
+ecs01=
+ecs02=
+ecs03=
+# 环境机器内网ip
+ecsIn01=172.27.183.154
+ecsIn02=172.27.183.155
+ecsIn03=172.27.183.156
 # =========================================
 
 date_format="+%Y-%m-%d %H:%M:%S"
@@ -66,7 +75,7 @@ function check_d() {
     return 0;
   else
     echo "check container "$2" failed"
-    return -1;
+    return 1;
   fi
 }
 

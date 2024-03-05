@@ -10,7 +10,7 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://${mysql.host}:3306/demo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true
+        url: jdbc:mysql://${mysql.host}:3306/demo?characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&allowMultiQueries=true
         username: ${mysql.user}
         password: ${mysql.pwd}
         # 初始连接数

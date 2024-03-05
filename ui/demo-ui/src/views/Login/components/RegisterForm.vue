@@ -108,6 +108,7 @@ const handleRegister = async () => {
     const data: UserRegisterVO = {
       username: registerData.registerForm.username,
       password: passwordEncrypted,
+      roleIds: null
     };
 
     await UserApi.register(data);

@@ -15,7 +15,8 @@ export const getAccessToken = () => {
 
 // 设置token
 export const setToken = (token: TokenType) => {
-  wsCache.set(RefreshTokenKey, token.refreshToken, { exp: token.expiresTime })
+  // wsCache.set(RefreshTokenKey, token.refreshToken, { exp: token.expiresTime })
+  wsCache.set(AccessTokenKey, token.accessToken)
   wsCache.set(AccessTokenKey, token.accessToken)
   cookies.set(AccessTokenKey, token.accessToken)
   cookies.set(AccessTokenKey, token.accessToken, {domain: "rick.baidu.com"})
