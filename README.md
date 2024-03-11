@@ -250,10 +250,10 @@ sh ui/demo-ui/deploy.sh
 
 # 3 部署后端
 ```bash
-sh bin/deploy-jar.sh -h xxx -t web
-
-sh bin/deploy-jar.sh -h xxx -t auth-core
+sh bin/deploy-jar.sh 
 ```
+
+
 # 4 本地调试
 绑定host，用域名访问
 ```bash

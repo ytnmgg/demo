@@ -30,6 +30,12 @@
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka</artifactId>
+            <version>3.1.0-1.18</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -50,55 +56,130 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.3.0</version>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
                 <executions>
-
-                    <!-- WordCount -->
+                    <execution>
+                        <id>DemoLog</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>DemoLog</finalName>
+                            <descriptors>
+                                <descriptor>src/main/resources/assembly/assembly-demolog.xml</descriptor>
+                            </descriptors>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>lib/</classpathPrefix>
+                                </manifest>
+                                <manifestEntries>
+                                    <program-class>com.hy.project.demo.flink.task.demolog.DemoLog</program-class>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>WordCount</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>single</goal>
                         </goals>
                         <configuration>
-                            <classifier>WordCount</classifier>
-                            <includes>
-                                <include>com/hy/project/demo/flink/task/wordcount/**</include>
-                            </includes>
+                            <finalName>WordCount</finalName>
+                            <descriptors>
+                                <descriptor>src/main/resources/assembly/assembly-wordcount.xml</descriptor>
+                            </descriptors>
                             <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>lib/</classpathPrefix>
+                                </manifest>
                                 <manifestEntries>
                                     <program-class>com.hy.project.demo.flink.task.wordcount.WordCount</program-class>
                                 </manifestEntries>
                             </archive>
                         </configuration>
                     </execution>
-
-                    <!-- NetWordCount -->
-                    <execution>
-                        <id>NetWordCount</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <classifier>NetWordCount</classifier>
-                            <includes>
-                                <include>com/hy/project/demo/flink/task/networdcount/**</include>
-                            </includes>
-                            <archive>
-                                <manifestEntries>
-                                    <program-class>com.hy.project.demo.flink.task.networdcount.NetWordCount</program-class>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
-                    </execution>
-
                 </executions>
             </plugin>
+
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <version>3.3.0</version>-->
+<!--                <executions>-->
+
+<!--                    &lt;!&ndash; WordCount &ndash;&gt;-->
+<!--                    <execution>-->
+<!--                        <id>WordCount</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <classifier>WordCount</classifier>-->
+<!--                            <includes>-->
+<!--                                <include>com/hy/project/demo/flink/task/wordcount/**</include>-->
+<!--                            </includes>-->
+<!--                            <archive>-->
+<!--                                <manifestEntries>-->
+<!--                                    <program-class>com.hy.project.demo.flink.task.wordcount.WordCount</program-class>-->
+<!--                                </manifestEntries>-->
+<!--                            </archive>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+
+<!--                    &lt;!&ndash; NetWordCount &ndash;&gt;-->
+<!--                    <execution>-->
+<!--                        <id>NetWordCount</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <classifier>NetWordCount</classifier>-->
+<!--                            <includes>-->
+<!--                                <include>com/hy/project/demo/flink/task/networdcount/**</include>-->
+<!--                            </includes>-->
+<!--                            <archive>-->
+<!--                                <manifestEntries>-->
+<!--                                    <program-class>com.hy.project.demo.flink.task.networdcount.NetWordCount-->
+<!--                                    </program-class>-->
+<!--                                </manifestEntries>-->
+<!--                            </archive>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+
+<!--                    &lt;!&ndash; DemoLog &ndash;&gt;-->
+<!--                    <execution>-->
+<!--                        <id>DemoLog</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <classifier>DemoLog</classifier>-->
+<!--                            <includes>-->
+<!--                                <include>com/hy/project/demo/flink/task/demolog/**</include>-->
+<!--                            </includes>-->
+<!--                            <archive>-->
+<!--                                <manifestEntries>-->
+<!--                                    <program-class>com.hy.project.demo.flink.task.demolog.DemoLog</program-class>-->
+<!--                                </manifestEntries>-->
+<!--                            </archive>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+
+<!--                </executions>-->
+<!--            </plugin>-->
 
         </plugins>
     </build>

@@ -1,0 +1,28 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>DemoLog</id>
+    <!-- 输出格式 -->
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <!-- 指定文件组的组装方式，只包含本task的代码路径的文件 -->
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/classes/com/hy/project/demo/flink/task/demolog</directory>
+            <outputDirectory>com/hy/project/demo/flink/task/demolog</outputDirectory>
+        </fileSet>
+    </fileSets>
+    <!-- 指定依赖jar包输出的目录 -->
+    <dependencySets>
+        <dependencySet>
+            <includes>
+                <include>*:flink-connector-kafka:*</include>
+                <include>*:kafka-clients:*</include>
+            </includes>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+</assembly>
