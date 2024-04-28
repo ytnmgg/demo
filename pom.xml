@@ -34,6 +34,9 @@
         <module>monitor-core</module>
         <module>monitor-facade</module>
         <module>flink-task</module>
+        <module>app-sdk</module>
+        <module>app-example</module>
+        <module>app-container</module>
     </modules>
 
     <dependencyManagement>
@@ -66,6 +69,11 @@
             <dependency>
                 <groupId>com.hy.project</groupId>
                 <artifactId>common</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hy.project</groupId>
+                <artifactId>app-sdk</artifactId>
                 <version>0.0.1-SNAPSHOT</version>
             </dependency>
 
