@@ -1,0 +1,2 @@
+env_config:
+  app_key_01: "CONFIG: ${my_env_key_01:default_value_01}"
